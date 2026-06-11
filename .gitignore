@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Generated data (don't commit renders/jsonl; regenerate from seed)
+data/
+
+# OS
+.DS_Store

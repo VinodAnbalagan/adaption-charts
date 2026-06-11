@@ -1,0 +1,713 @@
+"""generator.py — first-pass synthetic figure generator.
+
+Covers Part 2 charts (bar, grouped_bar, stacked_bar, line) and Part 1 marketing
+dashboards (KPI card + channel comparison). The table is generated FIRST; QA is
+derived from it, so answers are always exact. Deterministic reasoning traces are
+attached to every QA target (the moat — never produced by re-reading the image).
+
+Notable fixes vs the skeleton:
+  * KPI-vs-sum question is only emitted when the gap is LEGIBLE (>= a visible
+    threshold) or is otherwise labelled 'unanswerable' — no impossible rows.
+  * stacked/grouped bars added (the documented frontier-weak chart types).
+  * nuisance/realism knobs (rotation, grid, abbrev, palette, similar colors).
+  * CSV tables are actually written.
+"""
+
+from __future__ import annotations
+
+import os
+import csv
+import random
+from typing import List, Dict, Any, Tuple, Optional
+
+import matplotlib
+matplotlib.use("Agg")  # headless
+import matplotlib.pyplot as plt
+
+from .schema import (
+    make_id,
+    SourceInfo,
+    DataTable,
+    SeriesData,
+    FigureData,
+    RenderInfo,
+    StyleInfo,
+    NuisanceInfo,
+    Artifacts,
+    DashboardPanel,
+    FigureExample,
+    make_table_extraction_task,
+    make_qa_task,
+    SCHEMA_VERSION,
+)
+
+# -------------------------
+# Vocab / constants
+# -------------------------
+
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+CHANNELS = ["Email", "Paid Search", "Organic", "Social", "Affiliate", "Display"]
+SEGMENTS = ["Enterprise", "SMB", "Consumer", "Gov", "Education"]
+PRODUCTS = ["Basic", "Pro", "Team", "Enterprise"]
+
+MARKETING_METRICS = [
+    ("CTR", "percent"),
+    ("Conversion Rate", "percent"),
+    ("CPC", "currency"),
+    ("CPA", "currency"),
+    ("ROAS", "ratio"),
+    ("Conversions", "count"),
+    ("Spend", "currency"),
+    ("Revenue", "currency"),
+]
+
+PALETTES = ["tab10", "Set2", "Dark2", "Paired", "viridis"]
+SIMILAR_PALETTES = ["Blues", "Greens", "Purples"]  # low-contrast on purpose
+
+BAR_TITLES = ["Conversions by Channel", "Spend by Campaign", "CTR by Channel",
+              "Revenue by Segment", "ROAS by Channel"]
+GROUPED_TITLES = ["Metric by Channel and Quarter", "Spend by Channel per Region",
+                  "Conversions by Channel and Product"]
+STACKED_TITLES = ["Revenue Composition by Channel", "Spend Breakdown by Quarter",
+                  "Conversions by Source over Time"]
+LINE_TITLES = ["Performance Over Time", "CTR Trend by Month", "Revenue Trend", "ROAS Trend"]
+
+
+# -------------------------
+# Utilities
+# -------------------------
+
+def ensure_dir(path: str) -> None:
+    if path:
+        os.makedirs(path, exist_ok=True)
+
+
+def fmt_value(val: float, unit: str, decimals: int = 1, currency: str = "$") -> str:
+    if unit == "percent":
+        return f"{round(val, decimals)}%"
+    if unit == "currency":
+        return f"{currency}{round(val, 2)}"
+    if unit == "ratio":
+        return f"{round(val, 2)}"
+    if unit == "count":
+        return str(int(round(val)))
+    return str(round(val, decimals))
+
+
+def metric_range(name: str) -> Tuple[float, float]:
+    return {
+        "CTR": (0.5, 8.0),
+        "Conversion Rate": (0.5, 20.0),
+        "CPC": (0.2, 15.0),
+        "CPA": (5.0, 120.0),
+        "ROAS": (0.5, 8.0),
+        "Conversions": (50, 2000),
+        "Spend": (100, 20000),
+        "Revenue": (500, 80000),
+    }.get(name, (1.0, 100.0))
+
+
+def decimals_for(unit: str) -> int:
+    return {"percent": 1, "ratio": 2, "currency": 2, "count": 0}.get(unit, 1)
+
+
+def rand_vals(n: int, low: float, high: float, decimals: int = 1) -> List[float]:
+    if decimals == 0:
+        return [float(random.randint(int(low), int(high))) for _ in range(n)]
+    return [round(random.uniform(low, high), decimals) for _ in range(n)]
+
+
+def argmax_idx(v: List[float]) -> int:
+    return max(range(len(v)), key=lambda i: v[i])
+
+
+def argmin_idx(v: List[float]) -> int:
+    return min(range(len(v)), key=lambda i: v[i])
+
+
+def sample_style(difficulty: str) -> Tuple[StyleInfo, NuisanceInfo]:
+    """Harder difficulty => more nuisance factors (realism stress)."""
+    style = StyleInfo(
+        font_scale=random.choice(["small", "medium", "large"]),
+        rotation_x=random.choice([0, 0, 20, 45]),
+        show_grid=random.random() > 0.3,
+        show_values=random.random() > 0.6,
+        abbrev_numbers=random.random() > 0.6,
+        decimal_places=random.choice([0, 1, 2]),
+        palette=random.choice(PALETTES),
+        legend_loc=random.choice(["best", "upper right", "upper left"]),
+    )
+    nuis = NuisanceInfo()
+    if difficulty in ("medium", "hard"):
+        nuis.crowded_legend = random.random() > 0.6
+        nuis.similar_colors = random.random() > 0.7
+    if difficulty == "hard":
+        nuis.low_res = random.random() > 0.6
+        nuis.jpeg_artifact = random.random() > 0.6
+        nuis.partial_overlap = random.random() > 0.7
+        if nuis.similar_colors:
+            style.palette = random.choice(SIMILAR_PALETTES)
+    return style, nuis
+
+
+def write_csv(path: str, table: DataTable) -> None:
+    ensure_dir(os.path.dirname(path))
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(table.columns)
+        w.writerows(table.rows)
+
+
+def _dpi_for(nuis: NuisanceInfo) -> int:
+    return 70 if nuis.low_res else 150
+
+
+def _save(fig, image_path: str, nuis: NuisanceInfo) -> None:
+    ensure_dir(os.path.dirname(image_path))
+    fig.savefig(image_path, dpi=_dpi_for(nuis))
+    plt.close(fig)
+
+
+# =========================================================
+# SINGLE-SERIES BAR  (Part 2)
+# =========================================================
+
+def _spec_bar() -> Dict[str, Any]:
+    name, unit = random.choice(MARKETING_METRICS)
+    n = random.randint(3, 6)
+    cats = random.sample(CHANNELS, n)
+    low, high = metric_range(name)
+    dec = decimals_for(unit)
+    vals = rand_vals(n, low, high, dec)
+    return {
+        "metric": name, "unit": unit, "dec": dec, "cats": cats, "vals": vals,
+        "columns": ["Category", name],
+        "rows": [[cats[i], vals[i]] for i in range(n)],
+        "units": {"Category": "label", name: unit},
+        "title": random.choice(BAR_TITLES),
+    }
+
+
+def _qa_bar(spec) -> List:
+    name, unit, dec = spec["metric"], spec["unit"], spec["dec"]
+    cats, vals = spec["cats"], spec["vals"]
+    tasks = []
+
+    i = random.randrange(len(cats))
+    tasks.append(make_qa_task(
+        "retrieve_value",
+        f"What is the {name} for {cats[i]}?",
+        fmt_value(vals[i], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[i]], column_keys=[name],
+        reasoning=f"Read the bar for {cats[i]}; its height is {fmt_value(vals[i], unit, dec)}.",
+    ))
+
+    mx = argmax_idx(vals)
+    tasks.append(make_qa_task(
+        "find_extremum",
+        f"Which category has the highest {name}?",
+        cats[mx], "label",
+        row_keys=cats, column_keys=[name],
+        reasoning=f"Compare all bars; {cats[mx]} is tallest at {fmt_value(vals[mx], unit, dec)}.",
+    ))
+
+    a, b = random.sample(range(len(cats)), 2)
+    diff = abs(vals[a] - vals[b])
+    hi, lo = (cats[a], cats[b]) if vals[a] >= vals[b] else (cats[b], cats[a])
+    tasks.append(make_qa_task(
+        "compute_difference",
+        f"What is the difference in {name} between {cats[a]} and {cats[b]}?",
+        fmt_value(diff, unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[a], cats[b]], column_keys=[name],
+        aliases=[str(round(diff, 2)), str(round(diff, 1))],
+        reasoning=f"{hi}={fmt_value(max(vals[a],vals[b]),unit,dec)}, {lo}={fmt_value(min(vals[a],vals[b]),unit,dec)}; difference {fmt_value(diff,unit,dec)}.",
+    ))
+
+    # share-of-total (only when unit is additive)
+    if unit in ("count", "currency"):
+        total = sum(vals)
+        j = random.randrange(len(cats))
+        pct = round(100.0 * vals[j] / total, 1) if total else 0.0
+        tasks.append(make_qa_task(
+            "compute_ratio_percent",
+            f"What percent of total {name} came from {cats[j]}?",
+            f"{pct}%", "numeric_with_unit",
+            row_keys=[cats[j]], column_keys=[name],
+            aliases=[str(pct)],
+            reasoning=f"{cats[j]}={fmt_value(vals[j],unit,dec)} of total {fmt_value(total,unit,dec)}; {vals[j]}/{total}={pct}%.",
+        ))
+    return tasks
+
+
+def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
+    fig, ax = plt.subplots(figsize=(7, 4))
+    try:
+        colors = plt.get_cmap(style.palette)(range(len(spec["cats"])))
+    except Exception:
+        colors = None
+    ax.bar(spec["cats"], spec["vals"], color=colors)
+    ax.set_title(spec["title"])
+    ax.set_ylabel(spec["metric"])
+    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    if style.show_values:
+        for i, v in enumerate(spec["vals"]):
+            ax.text(i, v, fmt_value(v, spec["unit"], spec["dec"]), ha="center", va="bottom", fontsize=8)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExample:
+    spec = _spec_bar()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"bar_{idx:05d}.png")
+    _render_bar(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    return FigureExample(
+        id=make_id("chart"), part="part2_chart", domain="general",
+        figure_kind="chart", chart_type="bar", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_bar_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, []),
+        render=RenderInfo(spec["title"], None, "Category", spec["metric"], [], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        tasks_table_extraction=make_table_extraction_task("chart", "bar", spec["title"], table),
+        tasks_qa=_qa_bar(spec),
+    )
+
+
+# =========================================================
+# GROUPED BAR  (Part 2 — documented-weak)
+# =========================================================
+
+def _spec_grouped() -> Dict[str, Any]:
+    name, unit = random.choice([m for m in MARKETING_METRICS if m[1] in ("count", "currency", "percent")])
+    cats = random.sample(CHANNELS, random.randint(3, 4))     # x groups
+    series = random.sample(["Q1", "Q2", "Q3", "Q4"], random.randint(2, 3))  # bars per group
+    low, high = metric_range(name)
+    dec = decimals_for(unit)
+    data = {s: rand_vals(len(cats), low, high, dec) for s in series}
+    columns = ["Category"] + series
+    rows = [[cats[i]] + [data[s][i] for s in series] for i in range(len(cats))]
+    units = {"Category": "label", **{s: unit for s in series}}
+    return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
+            "data": data, "columns": columns, "rows": rows, "units": units,
+            "title": random.choice(GROUPED_TITLES)}
+
+
+def _qa_grouped(spec) -> List:
+    name, unit, dec = spec["metric"], spec["unit"], spec["dec"]
+    cats, series, data = spec["cats"], spec["series"], spec["data"]
+    tasks = []
+
+    s = random.choice(series); ci = random.randrange(len(cats))
+    tasks.append(make_qa_task(
+        "multi_series_lookup",
+        f"For {cats[ci]}, what is the {name} in {s}?",
+        fmt_value(data[s][ci], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[ci]], column_keys=[s],
+        reasoning=f"Find group {cats[ci]}, then the {s} bar: {fmt_value(data[s][ci], unit, dec)}.",
+    ))
+
+    # extremum across everything
+    flat = [(c, s2, data[s2][i]) for i, c in enumerate(cats) for s2 in series]
+    bc, bs, bv = max(flat, key=lambda t: t[2])
+    tasks.append(make_qa_task(
+        "find_extremum",
+        f"Which category and series has the highest {name}?",
+        f"{bc}, {bs}", "label",
+        row_keys=cats, column_keys=series,
+        reasoning=f"Scan every bar; max is {bc}/{bs} at {fmt_value(bv, unit, dec)}.",
+    ))
+
+    # per-group total (stacked-style reasoning over grouped data)
+    if unit in ("count", "currency"):
+        ci2 = random.randrange(len(cats))
+        tot = sum(data[s2][ci2] for s2 in series)
+        tasks.append(make_qa_task(
+            "compute_sum",
+            f"What is the total {name} for {cats[ci2]} across all series?",
+            fmt_value(tot, unit, dec),
+            "numeric_with_unit" if unit != "count" else "numeric",
+            row_keys=[cats[ci2]], column_keys=series,
+            reasoning="Sum the group's bars: " + " + ".join(fmt_value(data[s2][ci2], unit, dec) for s2 in series) + f" = {fmt_value(tot, unit, dec)}.",
+        ))
+    return tasks
+
+
+def _render_grouped(path, spec, style, nuis):
+    import numpy as np
+    cats, series, data = spec["cats"], spec["series"], spec["data"]
+    x = np.arange(len(cats)); w = 0.8 / len(series)
+    fig, ax = plt.subplots(figsize=(8, 4))
+    try:
+        cmap = plt.get_cmap(style.palette)
+    except Exception:
+        cmap = plt.get_cmap("tab10")
+    for k, s in enumerate(series):
+        ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=cmap(k))
+    ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x)
+    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
+    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
+    spec = _spec_grouped()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"grouped_{idx:05d}.png")
+    _render_grouped(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    return FigureExample(
+        id=make_id("chart"), part="part2_chart", domain="general",
+        figure_kind="chart", chart_type="grouped_bar", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_grouped_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, []),
+        render=RenderInfo(spec["title"], None, "Category", spec["metric"], spec["series"], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        tasks_table_extraction=make_table_extraction_task("chart", "grouped_bar", spec["title"], table),
+        tasks_qa=_qa_grouped(spec),
+    )
+
+
+# =========================================================
+# STACKED BAR  (Part 2 — the most documented-weak type)
+# =========================================================
+
+def _spec_stacked() -> Dict[str, Any]:
+    name, unit = random.choice([("Revenue", "currency"), ("Conversions", "count"), ("Spend", "currency")])
+    cats = random.sample(MONTHS, random.randint(3, 5))        # x axis
+    series = random.sample(CHANNELS, random.randint(2, 4))    # stack segments
+    low, high = metric_range(name)
+    dec = decimals_for(unit)
+    # per-segment values; total = stack height
+    data = {s: rand_vals(len(cats), low / max(1, len(series)), high / max(1, len(series)), dec) for s in series}
+    totals = [round(sum(data[s][i] for s in series), dec) for i in range(len(cats))]
+    columns = ["Period"] + series + ["Total"]
+    rows = [[cats[i]] + [data[s][i] for s in series] + [totals[i]] for i in range(len(cats))]
+    units = {"Period": "label", **{s: unit for s in series}, "Total": unit}
+    return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
+            "data": data, "totals": totals, "columns": columns, "rows": rows,
+            "units": units, "title": random.choice(STACKED_TITLES)}
+
+
+def _qa_stacked(spec) -> List:
+    name, unit, dec = spec["metric"], spec["unit"], spec["dec"]
+    cats, series, data, totals = spec["cats"], spec["series"], spec["data"], spec["totals"]
+    tasks = []
+
+    # segment lookup — the thing models fail (reading a stack segment, not the top)
+    s = random.choice(series); ci = random.randrange(len(cats))
+    tasks.append(make_qa_task(
+        "multi_series_lookup",
+        f"In {cats[ci]}, what is the {s} portion of {name}?",
+        fmt_value(data[s][ci], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[ci]], column_keys=[s],
+        reasoning=f"In the {cats[ci]} stack, the {s} segment spans {fmt_value(data[s][ci], unit, dec)} (segment height, not the cumulative top).",
+    ))
+
+    # stack total
+    ci2 = random.randrange(len(cats))
+    tasks.append(make_qa_task(
+        "compute_sum",
+        f"What is the total {name} in {cats[ci2]}?",
+        fmt_value(totals[ci2], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[ci2]], column_keys=series,
+        reasoning="Total = sum of segments = " + " + ".join(fmt_value(data[s2][ci2], unit, dec) for s2 in series) + f" = {fmt_value(totals[ci2], unit, dec)}.",
+    ))
+
+    # which segment dominates a given period
+    ci3 = random.randrange(len(cats))
+    seg_vals = [(s2, data[s2][ci3]) for s2 in series]
+    top_seg = max(seg_vals, key=lambda t: t[1])[0]
+    tasks.append(make_qa_task(
+        "find_extremum",
+        f"Which segment is largest in {cats[ci3]}?",
+        top_seg, "label",
+        row_keys=[cats[ci3]], column_keys=series,
+        reasoning=f"Compare segment heights within {cats[ci3]}; {top_seg} is largest.",
+    ))
+    return tasks
+
+
+def _render_stacked(path, spec, style, nuis):
+    import numpy as np
+    cats, series, data = spec["cats"], spec["series"], spec["data"]
+    fig, ax = plt.subplots(figsize=(8, 4))
+    try:
+        cmap = plt.get_cmap(style.palette)
+    except Exception:
+        cmap = plt.get_cmap("tab10")
+    bottom = np.zeros(len(cats))
+    for k, s in enumerate(series):
+        vals = np.array(data[s])
+        ax.bar(cats, vals, bottom=bottom, label=s, color=cmap(k))
+        bottom += vals
+    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
+    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> FigureExample:
+    spec = _spec_stacked()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"stacked_{idx:05d}.png")
+    _render_stacked(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    return FigureExample(
+        id=make_id("chart"), part="part2_chart", domain="general",
+        figure_kind="chart", chart_type="stacked_bar", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_stacked_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, []),
+        render=RenderInfo(spec["title"], None, "Period", spec["metric"], spec["series"], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        tasks_table_extraction=make_table_extraction_task("chart", "stacked_bar", spec["title"], table),
+        tasks_qa=_qa_stacked(spec),
+    )
+
+
+# =========================================================
+# LINE  (Part 2)
+# =========================================================
+
+def _spec_line() -> Dict[str, Any]:
+    name, unit = random.choice(MARKETING_METRICS)
+    months = MONTHS[: random.randint(4, 6)]
+    low, high = metric_range(name); dec = decimals_for(unit)
+    vals = []; cur = random.uniform(low, high)
+    for _ in months:
+        cur = max(low, min(high, cur + random.uniform(-(high - low) * 0.08, (high - low) * 0.08)))
+        vals.append(round(cur, dec))
+    return {"metric": name, "unit": unit, "dec": dec, "x": months, "y": vals,
+            "columns": ["Month", name], "rows": [[months[i], vals[i]] for i in range(len(months))],
+            "units": {"Month": "label", name: unit}, "title": random.choice(LINE_TITLES)}
+
+
+def _qa_line(spec) -> List:
+    name, unit, dec = spec["metric"], spec["unit"], spec["dec"]
+    x, y = spec["x"], spec["y"]
+    tasks = []
+    i = random.randrange(len(x))
+    tasks.append(make_qa_task(
+        "retrieve_value", f"What was the {name} in {x[i]}?",
+        fmt_value(y[i], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[x[i]], column_keys=[name],
+        reasoning=f"Read the point at {x[i]}: {fmt_value(y[i], unit, dec)}.",
+    ))
+    mx = argmax_idx(y)
+    tasks.append(make_qa_task(
+        "find_extremum", f"In which month was {name} highest?",
+        x[mx], "label", row_keys=x, column_keys=[name],
+        reasoning=f"Peak of the line is at {x[mx]} ({fmt_value(y[mx], unit, dec)}).",
+    ))
+    trend = "increase" if y[-1] > y[0] else "decrease" if y[-1] < y[0] else "stay the same"
+    tasks.append(make_qa_task(
+        "trend_direction",
+        f"Did {name} generally increase, decrease, or stay the same over the period?",
+        trend, "label", row_keys=[x[0], x[-1]], column_keys=[name],
+        reasoning=f"Start {fmt_value(y[0], unit, dec)} -> end {fmt_value(y[-1], unit, dec)}, so it tends to {trend}.",
+    ))
+    return tasks
+
+
+def _render_line(path, spec, style, nuis):
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.plot(spec["x"], spec["y"], marker="o")
+    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"]); ax.set_xlabel("Time")
+    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.grid(style.show_grid, alpha=0.3)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_line(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExample:
+    spec = _spec_line()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"line_{idx:05d}.png")
+    _render_line(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    series = [SeriesData(spec["metric"], spec["x"], spec["y"])]
+    return FigureExample(
+        id=make_id("chart"), part="part2_chart", domain="general",
+        figure_kind="chart", chart_type="line", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_line_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, series),
+        render=RenderInfo(spec["title"], None, "Month", spec["metric"], [spec["metric"]], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        tasks_table_extraction=make_table_extraction_task("chart", "line", spec["title"], table),
+        tasks_qa=_qa_line(spec),
+    )
+
+
+# =========================================================
+# MARKETING DASHBOARD  (Part 1)  — KPI-vs-sum bug FIXED
+# =========================================================
+
+# A KPI/sum gap is only askable when it is visually legible. We require the gap
+# to be at least this fraction of the shown sum, else we relabel as unanswerable.
+_LEGIBLE_GAP_FRAC = 0.10
+
+
+def _spec_dashboard() -> Dict[str, Any]:
+    name, unit = "Conversions", "count"
+    n = random.randint(3, 5)
+    cats = random.sample(CHANNELS, n)
+    vals = [random.randint(100, 900) for _ in range(n)]
+    shown_sum = sum(vals)
+
+    # FIX: choose a KPI total whose relationship to the shown sum is *legible*.
+    mode = random.choice(["equal", "greater", "less"])
+    if mode == "equal":
+        kpi_total = shown_sum
+    elif mode == "greater":
+        kpi_total = shown_sum + random.randint(
+            int(_LEGIBLE_GAP_FRAC * shown_sum) + 20, int(0.4 * shown_sum) + 50)
+    else:  # less  (e.g. dashboard total excludes a channel)
+        kpi_total = shown_sum - random.randint(
+            int(_LEGIBLE_GAP_FRAC * shown_sum) + 20, int(0.3 * shown_sum) + 30)
+        kpi_total = max(kpi_total, max(vals))  # stay sane
+
+    return {"metric": name, "unit": unit, "cats": cats, "vals": vals,
+            "shown_sum": shown_sum, "kpi_total": kpi_total, "gap_mode": mode,
+            "columns": ["Channel", name], "rows": [[cats[i], vals[i]] for i in range(n)],
+            "units": {"Channel": "label", name: unit},
+            "title": "Campaign Performance Dashboard"}
+
+
+def _qa_dashboard(spec) -> List:
+    name, cats, vals = spec["metric"], spec["cats"], spec["vals"]
+    kpi_total, shown_sum, mode = spec["kpi_total"], spec["shown_sum"], spec["gap_mode"]
+    tasks = []
+
+    i = random.randrange(len(cats))
+    tasks.append(make_qa_task(
+        "retrieve_value",
+        f"How many {name.lower()} came from {cats[i]}?",
+        str(int(vals[i])), "numeric",
+        row_keys=[cats[i]], column_keys=[name], panel_ids=["p2"],
+        reasoning=f"Read the {cats[i]} bar in the channel panel: {int(vals[i])}.",
+    ))
+
+    mx = argmax_idx(vals)
+    tasks.append(make_qa_task(
+        "find_extremum",
+        f"Which channel had the most {name.lower()}?",
+        cats[mx], "label",
+        row_keys=cats, column_keys=[name], panel_ids=["p2"],
+        reasoning=f"{cats[mx]} has the tallest bar ({int(vals[mx])}).",
+    ))
+
+    # FIXED multi-panel question: legible by construction; answer derived from mode.
+    if mode == "equal":
+        ans, alias = "Equal", ["equal", "the same", "same"]
+        reason = f"KPI total {kpi_total} equals the sum of channel bars {shown_sum}."
+    elif mode == "greater":
+        ans, alias = "Yes", ["yes", "true"]
+        reason = f"KPI total {kpi_total} exceeds the channel sum {shown_sum} by {kpi_total - shown_sum}."
+    else:
+        ans, alias = "No", ["no", "false"]
+        reason = f"KPI total {kpi_total} is less than the channel sum {shown_sum} by {shown_sum - kpi_total}."
+    tasks.append(make_qa_task(
+        "multi_panel_linked_reasoning",
+        f"Is the KPI card total greater than the sum of {name.lower()} shown in the channel chart?",
+        ans, "boolean" if mode != "equal" else "label",
+        panel_ids=["p1", "p2"], aliases=alias, reasoning=reason,
+    ))
+    return tasks
+
+
+def _render_dashboard(path, spec, style, nuis):
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4), gridspec_kw={"width_ratios": [1, 2]})
+    # KPI card
+    axes[0].axis("off")
+    axes[0].text(0.5, 0.7, "Total " + spec["metric"], ha="center", va="center", fontsize=13)
+    axes[0].text(0.5, 0.42, f"{spec['kpi_total']:,}", ha="center", va="center", fontsize=26, weight="bold")
+    axes[0].set_facecolor("#f5f5f7")
+    # channel bars
+    try:
+        colors = plt.get_cmap(style.palette)(range(len(spec["cats"])))
+    except Exception:
+        colors = None
+    axes[1].bar(spec["cats"], spec["vals"], color=colors)
+    axes[1].set_title("Conversions by Channel")
+    axes[1].tick_params(axis="x", rotation=style.rotation_x)
+    axes[1].grid(style.show_grid, axis="y", alpha=0.3)
+    fig.suptitle(spec["title"], fontsize=13)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
+    spec = _spec_dashboard()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"dashboard_{idx:05d}.png")
+    _render_dashboard(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    return FigureExample(
+        id=make_id("mkt"), part="part1_marketing", domain="marketing",
+        figure_kind="dashboard", chart_type="multi_panel", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_dashboard_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, []),
+        render=RenderInfo(spec["title"], "Weekly overview", None, None, [], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        panels=[
+            DashboardPanel("p1", "kpi_card", "Total Conversions", value=spec["kpi_total"], unit="count"),
+            DashboardPanel("p2", "channel_comparison_bar", "Conversions by Channel", table=table),
+        ],
+        tasks_table_extraction=make_table_extraction_task(
+            "dashboard", "multi_panel", spec["title"], table,
+            prompt="Extract the quantitative data from this dashboard into a normalized table.",
+        ),
+        tasks_qa=_qa_dashboard(spec),
+        metadata={"panel_count": 2, "dashboard_theme": "marketing_ops", "gap_mode": spec["gap_mode"]},
+    )
+
+
+# =========================================================
+# Dataset builder
+# =========================================================
+
+_BUILDERS = {
+    "bar": build_bar,
+    "grouped_bar": build_grouped,
+    "stacked_bar": build_stacked,
+    "line": build_line,
+    "dashboard": build_dashboard,
+}
+
+
+def build_mixed_dataset(
+    counts: Dict[str, int],
+    render_dir: str = "data/renders",
+    seed: Optional[int] = None,
+) -> List[FigureExample]:
+    """counts: e.g. {'bar':20,'grouped_bar':20,'stacked_bar':20,'line':20,'dashboard':20}"""
+    if seed is not None:
+        random.seed(seed)
+    examples: List[FigureExample] = []
+    for kind, n in counts.items():
+        builder = _BUILDERS[kind]
+        for i in range(n):
+            examples.append(builder(i, render_dir=render_dir))
+    random.shuffle(examples)
+    return examples
