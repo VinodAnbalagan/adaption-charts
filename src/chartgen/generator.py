@@ -38,6 +38,8 @@ from .schema import (
     FigureExample,
     make_table_extraction_task,
     make_qa_task,
+    KPIItem,
+    PanelTable,
     SCHEMA_VERSION,
 )
 
@@ -64,13 +66,51 @@ MARKETING_METRICS = [
 PALETTES = ["tab10", "Set2", "Dark2", "Paired", "viridis"]
 SIMILAR_PALETTES = ["Blues", "Greens", "Purples"]  # low-contrast on purpose
 
-BAR_TITLES = ["Conversions by Channel", "Spend by Campaign", "CTR by Channel",
-              "Revenue by Segment", "ROAS by Channel"]
-GROUPED_TITLES = ["Metric by Channel and Quarter", "Spend by Channel per Region",
-                  "Conversions by Channel and Product"]
-STACKED_TITLES = ["Revenue Composition by Channel", "Spend Breakdown by Quarter",
-                  "Conversions by Source over Time"]
-LINE_TITLES = ["Performance Over Time", "CTR Trend by Month", "Revenue Trend", "ROAS Trend"]
+CAMPAIGNS = ["Spring Sale", "Brand Launch", "Holiday Push", "Retargeting", "Lead Gen", "Black Friday"]
+QUARTERS = ["Q1", "Q2", "Q3", "Q4"]
+
+# -------------------------
+# TEMPLATE FAMILIES
+# Title, metric, and category pool are bound TOGETHER so charts are semantically
+# coherent (no more 'Revenue by Segment' plotting CPA). Each entry:
+#   (title, metric_name, category_pool)
+# metric units come from METRIC_UNITS below.
+# -------------------------
+
+METRIC_UNITS = dict(MARKETING_METRICS)  # name -> unit
+
+BAR_TEMPLATES = [
+    ("Conversions by Channel", "Conversions", CHANNELS),
+    ("Spend by Campaign", "Spend", CAMPAIGNS),
+    ("CTR by Channel", "CTR", CHANNELS),
+    ("Revenue by Segment", "Revenue", SEGMENTS),
+    ("ROAS by Channel", "ROAS", CHANNELS),
+    ("CPA by Campaign", "CPA", CAMPAIGNS),
+    ("CPC by Channel", "CPC", CHANNELS),
+    ("Conversion Rate by Segment", "Conversion Rate", SEGMENTS),
+]
+
+GROUPED_TEMPLATES = [
+    ("Spend by Channel per Quarter", "Spend", CHANNELS, QUARTERS),
+    ("Conversions by Channel per Quarter", "Conversions", CHANNELS, QUARTERS),
+    ("Revenue by Segment per Quarter", "Revenue", SEGMENTS, QUARTERS),
+    ("CTR by Channel per Quarter", "CTR", CHANNELS, QUARTERS),
+]
+
+STACKED_TEMPLATES = [
+    ("Revenue Composition by Channel", "Revenue", CHANNELS),
+    ("Spend Breakdown by Channel", "Spend", CHANNELS),
+    ("Conversions by Source over Time", "Conversions", CHANNELS),
+]
+
+LINE_TEMPLATES = [
+    ("CTR Trend by Month", "CTR"),
+    ("Monthly Revenue Trend", "Revenue"),
+    ("ROAS Trend", "ROAS"),
+    ("Monthly Spend", "Spend"),
+    ("Conversion Rate Over Time", "Conversion Rate"),
+    ("CPA Trend by Month", "CPA"),
+]
 
 
 # -------------------------
@@ -158,6 +198,28 @@ def write_csv(path: str, table: DataTable) -> None:
         w.writerows(table.rows)
 
 
+def series_colors(palette: str, n: int, similar: bool = False) -> list:
+    """Return n visually distinct (or deliberately similar) colors.
+
+    Fixes the classic bug: integer-indexing a CONTINUOUS colormap (Blues, viridis)
+    returns the first few of 256 entries -> near-white / near-identical bars.
+    Qualitative ListedColormaps (tab10, Set2) are indexed directly; continuous maps
+    are sampled across a mid-range band so nothing is invisible.
+    """
+    try:
+        cmap = plt.get_cmap(palette)
+    except Exception:
+        cmap = plt.get_cmap("tab10")
+    colors = getattr(cmap, "colors", None)
+    if colors is not None:  # qualitative map: index discrete entries
+        return [colors[i % len(colors)] for i in range(n)]
+    # continuous map: sample floats in a readable band
+    lo, hi = (0.45, 0.62) if similar else (0.30, 0.85)
+    if n == 1:
+        return [cmap(0.6)]
+    return [cmap(lo + (hi - lo) * i / (n - 1)) for i in range(n)]
+
+
 def _dpi_for(nuis: NuisanceInfo) -> int:
     return 70 if nuis.low_res else 150
 
@@ -173,9 +235,10 @@ def _save(fig, image_path: str, nuis: NuisanceInfo) -> None:
 # =========================================================
 
 def _spec_bar() -> Dict[str, Any]:
-    name, unit = random.choice(MARKETING_METRICS)
-    n = random.randint(3, 6)
-    cats = random.sample(CHANNELS, n)
+    title, name, pool = random.choice(BAR_TEMPLATES)
+    unit = METRIC_UNITS[name]
+    n = random.randint(3, min(6, len(pool)))
+    cats = random.sample(pool, n)
     low, high = metric_range(name)
     dec = decimals_for(unit)
     vals = rand_vals(n, low, high, dec)
@@ -184,7 +247,7 @@ def _spec_bar() -> Dict[str, Any]:
         "columns": ["Category", name],
         "rows": [[cats[i], vals[i]] for i in range(n)],
         "units": {"Category": "label", name: unit},
-        "title": random.choice(BAR_TITLES),
+        "title": title,
     }
 
 
@@ -243,10 +306,7 @@ def _qa_bar(spec) -> List:
 
 def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
     fig, ax = plt.subplots(figsize=(7, 4))
-    try:
-        colors = plt.get_cmap(style.palette)(range(len(spec["cats"])))
-    except Exception:
-        colors = None
+    colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
     ax.bar(spec["cats"], spec["vals"], color=colors)
     ax.set_title(spec["title"])
     ax.set_ylabel(spec["metric"])
@@ -284,9 +344,11 @@ def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExam
 # =========================================================
 
 def _spec_grouped() -> Dict[str, Any]:
-    name, unit = random.choice([m for m in MARKETING_METRICS if m[1] in ("count", "currency", "percent")])
-    cats = random.sample(CHANNELS, random.randint(3, 4))     # x groups
-    series = random.sample(["Q1", "Q2", "Q3", "Q4"], random.randint(2, 3))  # bars per group
+    title, name, pool, series_pool = random.choice(GROUPED_TEMPLATES)
+    unit = METRIC_UNITS[name]
+    cats = random.sample(pool, random.randint(3, 4))            # x groups
+    series = random.sample(series_pool, random.randint(2, 3))   # bars per group
+    series.sort()  # Q1 < Q2 < ... reads naturally
     low, high = metric_range(name)
     dec = decimals_for(unit)
     data = {s: rand_vals(len(cats), low, high, dec) for s in series}
@@ -295,7 +357,7 @@ def _spec_grouped() -> Dict[str, Any]:
     units = {"Category": "label", **{s: unit for s in series}}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
             "data": data, "columns": columns, "rows": rows, "units": units,
-            "title": random.choice(GROUPED_TITLES)}
+            "title": title}
 
 
 def _qa_grouped(spec) -> List:
@@ -344,12 +406,9 @@ def _render_grouped(path, spec, style, nuis):
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     x = np.arange(len(cats)); w = 0.8 / len(series)
     fig, ax = plt.subplots(figsize=(8, 4))
-    try:
-        cmap = plt.get_cmap(style.palette)
-    except Exception:
-        cmap = plt.get_cmap("tab10")
+    colors = series_colors(style.palette, len(series), nuis.similar_colors)
     for k, s in enumerate(series):
-        ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=cmap(k))
+        ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=colors[k])
     ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x)
     ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
     ax.grid(style.show_grid, axis="y", alpha=0.3)
@@ -383,9 +442,11 @@ def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> Figu
 # =========================================================
 
 def _spec_stacked() -> Dict[str, Any]:
-    name, unit = random.choice([("Revenue", "currency"), ("Conversions", "count"), ("Spend", "currency")])
-    cats = random.sample(MONTHS, random.randint(3, 5))        # x axis
-    series = random.sample(CHANNELS, random.randint(2, 4))    # stack segments
+    title, name, seg_pool = random.choice(STACKED_TEMPLATES)
+    unit = METRIC_UNITS[name]
+    cats = sorted(random.sample(range(len(MONTHS)), random.randint(3, 5)))
+    cats = [MONTHS[i] for i in cats]                          # x axis, in calendar order
+    series = random.sample(seg_pool, random.randint(2, 4))    # stack segments
     low, high = metric_range(name)
     dec = decimals_for(unit)
     # per-segment values; total = stack height
@@ -396,7 +457,7 @@ def _spec_stacked() -> Dict[str, Any]:
     units = {"Period": "label", **{s: unit for s in series}, "Total": unit}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
             "data": data, "totals": totals, "columns": columns, "rows": rows,
-            "units": units, "title": random.choice(STACKED_TITLES)}
+            "units": units, "title": title}
 
 
 def _qa_stacked(spec) -> List:
@@ -444,14 +505,11 @@ def _render_stacked(path, spec, style, nuis):
     import numpy as np
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     fig, ax = plt.subplots(figsize=(8, 4))
-    try:
-        cmap = plt.get_cmap(style.palette)
-    except Exception:
-        cmap = plt.get_cmap("tab10")
+    colors = series_colors(style.palette, len(series), nuis.similar_colors)
     bottom = np.zeros(len(cats))
     for k, s in enumerate(series):
         vals = np.array(data[s])
-        ax.bar(cats, vals, bottom=bottom, label=s, color=cmap(k))
+        ax.bar(cats, vals, bottom=bottom, label=s, color=colors[k])
         bottom += vals
     ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
     ax.tick_params(axis="x", rotation=style.rotation_x)
@@ -486,7 +544,8 @@ def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> Figure
 # =========================================================
 
 def _spec_line() -> Dict[str, Any]:
-    name, unit = random.choice(MARKETING_METRICS)
+    title, name = random.choice(LINE_TEMPLATES)
+    unit = METRIC_UNITS[name]
     months = MONTHS[: random.randint(4, 6)]
     low, high = metric_range(name); dec = decimals_for(unit)
     vals = []; cur = random.uniform(low, high)
@@ -495,7 +554,7 @@ def _spec_line() -> Dict[str, Any]:
         vals.append(round(cur, dec))
     return {"metric": name, "unit": unit, "dec": dec, "x": months, "y": vals,
             "columns": ["Month", name], "rows": [[months[i], vals[i]] for i in range(len(months))],
-            "units": {"Month": "label", name: unit}, "title": random.choice(LINE_TITLES)}
+            "units": {"Month": "label", name: unit}, "title": title}
 
 
 def _qa_line(spec) -> List:
@@ -522,6 +581,43 @@ def _qa_line(spec) -> List:
         f"Did {name} generally increase, decrease, or stay the same over the period?",
         trend, "label", row_keys=[x[0], x[-1]], column_keys=[name],
         reasoning=f"Start {fmt_value(y[0], unit, dec)} -> end {fmt_value(y[-1], unit, dec)}, so it tends to {trend}.",
+    ))
+
+    # month-over-month delta (forces reading TWO adjacent points + arithmetic)
+    j = random.randrange(1, len(x))
+    delta = round(y[j] - y[j - 1], dec)
+    if delta == 0:
+        chg_reason = f"{x[j-1]}={fmt_value(y[j-1], unit, dec)}, {x[j]}={fmt_value(y[j], unit, dec)}; no change."
+        chg_aliases = ["0", "no change", "unchanged"]
+    else:
+        direction = "increased" if delta > 0 else "decreased"
+        chg_reason = f"{x[j-1]}={fmt_value(y[j-1], unit, dec)}, {x[j]}={fmt_value(y[j], unit, dec)}; it {direction} by {fmt_value(abs(delta), unit, dec)}."
+        chg_aliases = [str(abs(delta)), f"{direction} by {fmt_value(abs(delta), unit, dec)}"]
+    tasks.append(make_qa_task(
+        "compute_difference",
+        f"By how much did {name} change from {x[j-1]} to {x[j]}?",
+        fmt_value(abs(delta), unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[x[j-1], x[j]], column_keys=[name],
+        aliases=chg_aliases,
+        reasoning=chg_reason,
+    ))
+
+    # compare two specified (non-adjacent when possible) months
+    a, b = sorted(random.sample(range(len(x)), 2))
+    if y[a] == y[b]:
+        cmp_ans = "equal"
+        cmp_reason = f"{x[a]} and {x[b]} are both {fmt_value(y[a], unit, dec)}."
+    else:
+        hi = a if y[a] > y[b] else b
+        cmp_ans = x[hi]
+        cmp_reason = f"{x[a]}={fmt_value(y[a], unit, dec)} vs {x[b]}={fmt_value(y[b], unit, dec)}; {x[hi]} is higher."
+    tasks.append(make_qa_task(
+        "compare_values",
+        f"Which month had higher {name}: {x[a]} or {x[b]}?",
+        cmp_ans, "label",
+        row_keys=[x[a], x[b]], column_keys=[name],
+        reasoning=cmp_reason,
     ))
     return tasks
 
@@ -585,8 +681,18 @@ def _spec_dashboard() -> Dict[str, Any]:
             int(_LEGIBLE_GAP_FRAC * shown_sum) + 20, int(0.3 * shown_sum) + 30)
         kpi_total = max(kpi_total, max(vals))  # stay sane
 
+    # THIRD PANEL: monthly Spend trend line, with its own ground-truth table.
+    months = MONTHS[: random.randint(4, 6)]
+    s_low, s_high = metric_range("Spend")
+    spend = []
+    cur = random.uniform(s_low, s_high)
+    for _ in months:
+        cur = max(s_low, min(s_high, cur + random.uniform(-(s_high - s_low) * 0.10, (s_high - s_low) * 0.10)))
+        spend.append(round(cur, 0))
+
     return {"metric": name, "unit": unit, "cats": cats, "vals": vals,
             "shown_sum": shown_sum, "kpi_total": kpi_total, "gap_mode": mode,
+            "months": months, "spend": spend,
             "columns": ["Channel", name], "rows": [[cats[i], vals[i]] for i in range(n)],
             "units": {"Channel": "label", name: unit},
             "title": "Campaign Performance Dashboard"}
@@ -631,25 +737,46 @@ def _qa_dashboard(spec) -> List:
         ans, "boolean" if mode != "equal" else "label",
         panel_ids=["p1", "p2"], aliases=alias, reasoning=reason,
     ))
+
+    # trend-panel question (third panel)
+    months, spend = spec["months"], spec["spend"]
+    mxs = argmax_idx(spend)
+    tasks.append(make_qa_task(
+        "find_extremum",
+        "In which month was Spend highest?",
+        months[mxs], "label",
+        panel_ids=["p3"],
+        reasoning=f"Peak of the spend trend line is at {months[mxs]} (${int(spend[mxs]):,}).",
+    ))
     return tasks
 
 
 def _render_dashboard(path, spec, style, nuis):
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4), gridspec_kw={"width_ratios": [1, 2]})
+    fig = plt.figure(figsize=(11, 6))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 2], height_ratios=[1, 1])
+    ax_kpi = fig.add_subplot(gs[0, 0])
+    ax_bar = fig.add_subplot(gs[:, 1])
+    ax_trend = fig.add_subplot(gs[1, 0])
+
     # KPI card
-    axes[0].axis("off")
-    axes[0].text(0.5, 0.7, "Total " + spec["metric"], ha="center", va="center", fontsize=13)
-    axes[0].text(0.5, 0.42, f"{spec['kpi_total']:,}", ha="center", va="center", fontsize=26, weight="bold")
-    axes[0].set_facecolor("#f5f5f7")
+    ax_kpi.axis("off")
+    ax_kpi.text(0.5, 0.72, "Total " + spec["metric"], ha="center", va="center", fontsize=12)
+    ax_kpi.text(0.5, 0.40, f"{spec['kpi_total']:,}", ha="center", va="center", fontsize=24, weight="bold")
+    ax_kpi.set_facecolor("#f5f5f7")
+
     # channel bars
-    try:
-        colors = plt.get_cmap(style.palette)(range(len(spec["cats"])))
-    except Exception:
-        colors = None
-    axes[1].bar(spec["cats"], spec["vals"], color=colors)
-    axes[1].set_title("Conversions by Channel")
-    axes[1].tick_params(axis="x", rotation=style.rotation_x)
-    axes[1].grid(style.show_grid, axis="y", alpha=0.3)
+    colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
+    ax_bar.bar(spec["cats"], spec["vals"], color=colors)
+    ax_bar.set_title("Conversions by Channel", fontsize=11)
+    ax_bar.tick_params(axis="x", rotation=style.rotation_x)
+    ax_bar.grid(style.show_grid, axis="y", alpha=0.3)
+
+    # spend trend line (third panel)
+    ax_trend.plot(spec["months"], spec["spend"], marker="o", linewidth=1.5)
+    ax_trend.set_title("Monthly Spend", fontsize=10)
+    ax_trend.tick_params(axis="both", labelsize=7)
+    ax_trend.grid(style.show_grid, alpha=0.3)
+
     fig.suptitle(spec["title"], fontsize=13)
     fig.tight_layout()
     _save(fig, path, nuis)
@@ -661,25 +788,33 @@ def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> Fi
     img = os.path.join(render_dir, f"dashboard_{idx:05d}.png")
     _render_dashboard(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    spend_table = DataTable(
+        ["Month", "Spend"],
+        [[spec["months"][i], spec["spend"][i]] for i in range(len(spec["months"]))],
+        {"Month": "label", "Spend": "currency"},
+    )
     csv_path = img.replace(".png", ".csv")
     write_csv(csv_path, table)
     return FigureExample(
         id=make_id("mkt"), part="part1_marketing", domain="marketing",
         figure_kind="dashboard", chart_type="multi_panel", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_dashboard_v1", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_dashboard_v2", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], "Weekly overview", None, None, [], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
         panels=[
             DashboardPanel("p1", "kpi_card", "Total Conversions", value=spec["kpi_total"], unit="count"),
             DashboardPanel("p2", "channel_comparison_bar", "Conversions by Channel", table=table),
+            DashboardPanel("p3", "time_series_panel", "Monthly Spend", table=spend_table),
         ],
         tasks_table_extraction=make_table_extraction_task(
             "dashboard", "multi_panel", spec["title"], table,
-            prompt="Extract the quantitative data from this dashboard into a normalized table.",
+            prompt="Extract ALL quantitative data from this dashboard: every KPI card and every panel's table.",
+            kpis=[KPIItem("Total Conversions", spec["kpi_total"], "count")],
+            extra_tables=[PanelTable("p3", "Monthly Spend", spend_table)],
         ),
         tasks_qa=_qa_dashboard(spec),
-        metadata={"panel_count": 2, "dashboard_theme": "marketing_ops", "gap_mode": spec["gap_mode"]},
+        metadata={"panel_count": 3, "dashboard_theme": "marketing_ops", "gap_mode": spec["gap_mode"]},
     )
 
 

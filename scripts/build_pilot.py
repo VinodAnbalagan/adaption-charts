@@ -40,11 +40,23 @@ def make_inspect_html(examples, out_path: str) -> None:
         te = d["tasks"]["table_extraction"]
         table = te["target"]["table"] if te else None
         table_html = ""
+        if te:
+            tgt = te["target"]
+            for k in tgt.get("kpis", []):
+                table_html += f"<div class='qa'><b>KPI:</b> {k['name']} = <span class='ans'>{k['value']}</span> ({k.get('unit','')})</div>"
         if table:
             table_html += "<table class='gt'><tr>" + "".join(f"<th>{c}</th>" for c in table["columns"]) + "</tr>"
             for r in table["rows"]:
                 table_html += "<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>"
             table_html += "</table>"
+        if te:
+            for et in te["target"].get("extra_tables", []):
+                t2 = et["table"]
+                table_html += f"<div class='meta'>{et['panel_id']} &middot; {et['title']}</div>"
+                table_html += "<table class='gt'><tr>" + "".join(f"<th>{c}</th>" for c in t2["columns"]) + "</tr>"
+                for r in t2["rows"]:
+                    table_html += "<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>"
+                table_html += "</table>"
         rows.append(f"""
         <div class='card'>
           <div class='meta'>{ex.id} &middot; {ex.chart_type} &middot; {ex.difficulty} &middot; {ex.part}</div>

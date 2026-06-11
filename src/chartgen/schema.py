@@ -215,19 +215,49 @@ class DashboardPanel:
 # -------------------------
 
 @dataclass
+class KPIItem:
+    name: str
+    value: Any
+    unit: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class PanelTable:
+    panel_id: str
+    title: str
+    table: DataTable
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"panel_id": self.panel_id, "title": self.title, "table": self.table.to_dict()}
+
+
+@dataclass
 class TableExtractionTarget:
     figure_kind: FigureKind
     chart_type: ChartType
     title: str
     table: DataTable
+    # Dashboard-level extraction: KPI cards and additional panel tables.
+    # Empty for single charts; populated for dashboards so the target matches
+    # EVERYTHING visible in the image, not just one panel.
+    kpis: List[KPIItem] = field(default_factory=list)
+    extra_tables: List[PanelTable] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        out = {
             "figure_kind": self.figure_kind,
             "chart_type": self.chart_type,
             "title": self.title,
             "table": self.table.to_dict(),
         }
+        if self.kpis:
+            out["kpis"] = [k.to_dict() for k in self.kpis]
+        if self.extra_tables:
+            out["extra_tables"] = [t.to_dict() for t in self.extra_tables]
+        return out
 
 
 @dataclass
@@ -406,6 +436,8 @@ def make_table_extraction_task(
     title: str,
     table: DataTable,
     prompt: str = "Convert this figure into a normalized table.",
+    kpis: Optional[List[KPIItem]] = None,
+    extra_tables: Optional[List[PanelTable]] = None,
 ) -> TableExtractionTask:
     return TableExtractionTask(
         prompt=prompt,
@@ -414,6 +446,8 @@ def make_table_extraction_task(
             chart_type=chart_type,
             title=title,
             table=table,
+            kpis=kpis or [],
+            extra_tables=extra_tables or [],
         ),
     )
 
