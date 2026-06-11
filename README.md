@@ -38,12 +38,8 @@ data/
 - **flat** = one task per row, the shape Adaption ingests. Rows carry `task_type` so the
   two slices can be adapted with **different** configs:
   - `table_extraction` → `reasoning_traces` **OFF** (protect exact numbers; no re-write).
-  - `qa` → `reasoning_traces` **ON** is acceptable (added reasoning helps).
+  - `qa` -> `reasoning_traces` **ON** is acceptable (added reasoning helps).
 
-## Budget reality (important)
-Adaption account caps at **~20k adapted rows**. `flatten_tasks()` multiplies figures into
-~4 rows each, so **20k rows ≈ ~5k figures**. Generate a large raw pool locally, then send
-only the **highest-value, most-diverse** ~5k figures through Adaption. (Curation scorer = TODO.)
 
 ## Validator
 `scripts/build_pilot.py` runs `validate_dataset` automatically. It catches: row/column length
@@ -52,10 +48,9 @@ numeric answers, and `unanswerable` rows that secretly assert a value. Fix DIRTY
 
 ## Known TODOs (next builds)
 1. **Curation scorer** — rank figures by difficulty/diversity to protect the 20k budget.
-2. **HTML/CSS → screenshot** dashboard renderer for Part 1 (real Tableau/GA4 look, not matplotlib subplots).
+2. **HTML/CSS -> screenshot** dashboard renderer for Part 1 (real Tableau/GA4 look, not matplotlib subplots).
 3. More QA types: `compute_ratio_percent` on more chart types, `threshold_count`, `unanswerable`, `hypothetical`.
 4. Area / combo / scatter chart types.
 5. Adaption upload script (Parquet w/ image bytes for pilot; HF-URL images for scale).
 6. Held-out eval harness + baseline scoring.
 
-See the master plan in the Obsidian vault (`Adaption_AutoScientist_Challenge.md`).
