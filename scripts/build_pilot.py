@@ -94,6 +94,7 @@ def main():
     ap.add_argument("--grouped", type=int, default=10)
     ap.add_argument("--stacked", type=int, default=10)
     ap.add_argument("--dashboard", type=int, default=10)
+    ap.add_argument("--funnel", type=int, default=0)
     ap.add_argument("--out", default="data")
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
@@ -106,7 +107,9 @@ def main():
     counts = {
         "bar": args.bar, "line": args.line, "grouped_bar": args.grouped,
         "stacked_bar": args.stacked, "dashboard": args.dashboard,
+        "funnel": args.funnel,
     }
+    counts = {k: v for k, v in counts.items() if v > 0}
     examples = build_mixed_dataset(counts, render_dir=render_dir, seed=args.seed)
 
     n_clean, dirty = validate_dataset(examples)

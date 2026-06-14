@@ -11,3 +11,6 @@ data/
 
 # OS
 .DS_Store
+
+# Secrets — never commit
+.env

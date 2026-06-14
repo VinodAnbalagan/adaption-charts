@@ -48,6 +48,9 @@ QAType = Literal[
     "rank_order",
     "threshold_count",
     "multi_panel_linked_reasoning",
+    "visual_reference",
+    "funnel_conversion",
+    "diagnostic",
     "unanswerable",
     "hypothetical",
 ]

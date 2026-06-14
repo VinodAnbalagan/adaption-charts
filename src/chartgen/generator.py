@@ -57,14 +57,54 @@ MARKETING_METRICS = [
     ("Conversion Rate", "percent"),
     ("CPC", "currency"),
     ("CPA", "currency"),
+    ("CPM", "currency"),
+    ("CPL", "currency"),
+    ("CAC", "currency"),
     ("ROAS", "ratio"),
+    ("ROMI", "percent"),
     ("Conversions", "count"),
     ("Spend", "currency"),
     ("Revenue", "currency"),
+    ("Pipeline Value", "currency"),
 ]
+
+# Marketing funnel: ordered stages, monotonically decreasing counts.
+FUNNEL_STAGES = ["Impressions", "Clicks", "Leads", "MQLs", "SQLs", "Opportunities", "Closed-Won"]
 
 PALETTES = ["tab10", "Set2", "Dark2", "Paired", "viridis"]
 SIMILAR_PALETTES = ["Blues", "Greens", "Purples"]  # low-contrast on purpose
+
+# Qualitative palettes ONLY — guaranteed categorically distinct. Charts that
+# carry a legend (grouped, stacked, funnel) MUST use these, never a continuous
+# map (viridis/Blues), where adjacent series collapse to near-identical shades.
+DISTINCT_PALETTES = ["tab10", "Set1", "Set2", "Dark2"]
+# A hand-ordered high-contrast sequence, used when we need guaranteed maximal
+# separation between the FIRST few series (the common 2-4 series case).
+DISTINCT_SEQUENCE = [
+    "#1f77b4",  # blue
+    "#ff7f0e",  # orange
+    "#2ca02c",  # green
+    "#d62728",  # red
+    "#9467bd",  # purple
+    "#8c564b",  # brown
+    "#e377c2",  # pink
+    "#17becf",  # cyan
+]
+
+# Named-color mode: only charts rendered with THESE exact colors get
+# color-referenced QA ("the red bar"). Naming colors out of arbitrary palettes
+# is unreliable, and a mislabeled color is a poisoned row.
+NAMED_COLORS = {
+    "red": "#d62728",
+    "blue": "#1f77b4",
+    "green": "#2ca02c",
+    "orange": "#ff7f0e",
+    "purple": "#9467bd",
+    "brown": "#8c564b",
+    "pink": "#e377c2",
+    "gray": "#7f7f7f",
+}
+NAMED_COLOR_PROB = 0.5  # fraction of bar/stacked charts using named colors
 
 CAMPAIGNS = ["Spring Sale", "Brand Launch", "Holiday Push", "Retargeting", "Lead Gen", "Black Friday"]
 QUARTERS = ["Q1", "Q2", "Q3", "Q4"]
@@ -140,10 +180,15 @@ def metric_range(name: str) -> Tuple[float, float]:
         "Conversion Rate": (0.5, 20.0),
         "CPC": (0.2, 15.0),
         "CPA": (5.0, 120.0),
+        "CPM": (2.0, 40.0),
+        "CPL": (8.0, 200.0),
+        "CAC": (30.0, 600.0),
         "ROAS": (0.5, 8.0),
+        "ROMI": (-20.0, 350.0),
         "Conversions": (50, 2000),
         "Spend": (100, 20000),
         "Revenue": (500, 80000),
+        "Pipeline Value": (10000, 500000),
     }.get(name, (1.0, 100.0))
 
 
@@ -190,6 +235,20 @@ def sample_style(difficulty: str) -> Tuple[StyleInfo, NuisanceInfo]:
     return style, nuis
 
 
+def distinct_series_colors(n: int) -> list:
+    """n guaranteed-distinct colors for legend-bearing charts (grouped/stacked/
+    funnel). Uses a hand-ordered high-contrast sequence for the first 8 series,
+    then falls back to a qualitative colormap. NEVER returns near-identical
+    shades, and is immune to the similar_colors nuisance (which only belongs on
+    single-series bars where there is no legend to confuse).
+    """
+    if n <= len(DISTINCT_SEQUENCE):
+        return DISTINCT_SEQUENCE[:n]
+    cmap = plt.get_cmap("tab10")
+    base = list(getattr(cmap, "colors", []))
+    return [base[i % len(base)] for i in range(n)]
+
+
 def write_csv(path: str, table: DataTable) -> None:
     ensure_dir(os.path.dirname(path))
     with open(path, "w", newline="", encoding="utf-8") as f:
@@ -220,6 +279,11 @@ def series_colors(palette: str, n: int, similar: bool = False) -> list:
     return [cmap(lo + (hi - lo) * i / (n - 1)) for i in range(n)]
 
 
+# NOTE: similar_colors is a legitimate difficulty nuisance for SINGLE-series bar
+# charts (one fill, no legend) but must never apply to multi-series legend charts
+# below — grouped/stacked/funnel call distinct_series_colors() instead.
+
+
 def _dpi_for(nuis: NuisanceInfo) -> int:
     return 70 if nuis.low_res else 150
 
@@ -242,8 +306,14 @@ def _spec_bar() -> Dict[str, Any]:
     low, high = metric_range(name)
     dec = decimals_for(unit)
     vals = rand_vals(n, low, high, dec)
+    # named-color mode: assign distinct named colors to bars -> enables
+    # color-referenced QA with guaranteed-correct ground truth.
+    color_names = None
+    if random.random() < NAMED_COLOR_PROB:
+        color_names = random.sample(list(NAMED_COLORS.keys()), n)
     return {
         "metric": name, "unit": unit, "dec": dec, "cats": cats, "vals": vals,
+        "color_names": color_names,
         "columns": ["Category", name],
         "rows": [[cats[i], vals[i]] for i in range(n)],
         "units": {"Category": "label", name: unit},
@@ -301,12 +371,49 @@ def _qa_bar(spec) -> List:
             aliases=[str(pct)],
             reasoning=f"{cats[j]}={fmt_value(vals[j],unit,dec)} of total {fmt_value(total,unit,dec)}; {vals[j]}/{total}={pct}%.",
         ))
+
+    # --- visual_reference QA (forces visual grounding; no table shortcut) ---
+    # positional reference: always safe (we control bar order, ties broken by construction)
+    pos_kind = random.choice(["leftmost", "rightmost"])
+    pi = 0 if pos_kind == "leftmost" else len(cats) - 1
+    tasks.append(make_qa_task(
+        "visual_reference",
+        f"What is the value of the {pos_kind} bar?",
+        fmt_value(vals[pi], unit, dec),
+        "numeric_with_unit" if unit != "count" else "numeric",
+        row_keys=[cats[pi]], column_keys=[name],
+        reasoning=f"The {pos_kind} bar is {cats[pi]}; its height is {fmt_value(vals[pi], unit, dec)}.",
+    ))
+    # color reference: only in named-color mode (ground truth guaranteed)
+    if spec.get("color_names"):
+        ci = random.randrange(len(cats))
+        color = spec["color_names"][ci]
+        if random.random() < 0.5:
+            tasks.append(make_qa_task(
+                "visual_reference",
+                f"What is the value of the {color} bar?",
+                fmt_value(vals[ci], unit, dec),
+                "numeric_with_unit" if unit != "count" else "numeric",
+                row_keys=[cats[ci]], column_keys=[name],
+                reasoning=f"The {color} bar is {cats[ci]}; its height is {fmt_value(vals[ci], unit, dec)}.",
+            ))
+        else:
+            tasks.append(make_qa_task(
+                "visual_reference",
+                f"Which category is shown by the {color} bar?",
+                cats[ci], "label",
+                row_keys=[cats[ci]], column_keys=[name],
+                reasoning=f"The {color} bar corresponds to {cats[ci]}.",
+            ))
     return tasks
 
 
 def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
     fig, ax = plt.subplots(figsize=(7, 4))
-    colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
+    if spec.get("color_names"):
+        colors = [NAMED_COLORS[c] for c in spec["color_names"]]
+    else:
+        colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
     ax.bar(spec["cats"], spec["vals"], color=colors)
     ax.set_title(spec["title"])
     ax.set_ylabel(spec["metric"])
@@ -406,7 +513,7 @@ def _render_grouped(path, spec, style, nuis):
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     x = np.arange(len(cats)); w = 0.8 / len(series)
     fig, ax = plt.subplots(figsize=(8, 4))
-    colors = series_colors(style.palette, len(series), nuis.similar_colors)
+    colors = distinct_series_colors(len(series))
     for k, s in enumerate(series):
         ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=colors[k])
     ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x)
@@ -447,6 +554,9 @@ def _spec_stacked() -> Dict[str, Any]:
     cats = sorted(random.sample(range(len(MONTHS)), random.randint(3, 5)))
     cats = [MONTHS[i] for i in cats]                          # x axis, in calendar order
     series = random.sample(seg_pool, random.randint(2, 4))    # stack segments
+    series_color_names = None
+    if random.random() < NAMED_COLOR_PROB:
+        series_color_names = random.sample(list(NAMED_COLORS.keys()), len(series))
     low, high = metric_range(name)
     dec = decimals_for(unit)
     # per-segment values; total = stack height
@@ -456,6 +566,7 @@ def _spec_stacked() -> Dict[str, Any]:
     rows = [[cats[i]] + [data[s][i] for s in series] + [totals[i]] for i in range(len(cats))]
     units = {"Period": "label", **{s: unit for s in series}, "Total": unit}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
+            "series_color_names": series_color_names,
             "data": data, "totals": totals, "columns": columns, "rows": rows,
             "units": units, "title": title}
 
@@ -498,6 +609,20 @@ def _qa_stacked(spec) -> List:
         row_keys=[cats[ci3]], column_keys=series,
         reasoning=f"Compare segment heights within {cats[ci3]}; {top_seg} is largest.",
     ))
+
+    # color-referenced segment lookup (named-color mode only)
+    if spec.get("series_color_names"):
+        si = random.randrange(len(series))
+        color = spec["series_color_names"][si]
+        ci4 = random.randrange(len(cats))
+        tasks.append(make_qa_task(
+            "visual_reference",
+            f"In {cats[ci4]}, what is the value of the {color} segment?",
+            fmt_value(data[series[si]][ci4], unit, dec),
+            "numeric_with_unit" if unit != "count" else "numeric",
+            row_keys=[cats[ci4]], column_keys=[series[si]],
+            reasoning=f"The {color} segments are {series[si]}; in {cats[ci4]} that segment spans {fmt_value(data[series[si]][ci4], unit, dec)}.",
+        ))
     return tasks
 
 
@@ -505,7 +630,10 @@ def _render_stacked(path, spec, style, nuis):
     import numpy as np
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     fig, ax = plt.subplots(figsize=(8, 4))
-    colors = series_colors(style.palette, len(series), nuis.similar_colors)
+    if spec.get("series_color_names"):
+        colors = [NAMED_COLORS[c] for c in spec["series_color_names"]]
+    else:
+        colors = distinct_series_colors(len(series))
     bottom = np.zeros(len(cats))
     for k, s in enumerate(series):
         vals = np.array(data[s])
@@ -819,6 +947,158 @@ def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> Fi
 
 
 # =========================================================
+# MARKETING FUNNEL  (Part 1)  — stage-to-stage conversion + diagnostic
+# =========================================================
+
+FUNNEL_TITLES = [
+    "Lead Funnel Performance",
+    "Marketing Funnel Overview",
+    "Demand Gen Funnel",
+    "Campaign Funnel: Awareness to Close",
+]
+
+
+def _spec_funnel() -> Dict[str, Any]:
+    """Ordered funnel stages with monotonically decreasing counts.
+    Stage-to-stage conversion rates and drop-offs are the funnel-specific
+    reasoning targets; a diagnostic question reads the worst drop-off.
+    """
+    # take a contiguous slice of the canonical funnel (>=4 stages)
+    start = random.randint(0, 2)
+    end = random.randint(start + 4, len(FUNNEL_STAGES))
+    stages = FUNNEL_STAGES[start:end]
+    n = len(stages)
+
+    # top-of-funnel volume, then each stage retains a random fraction of the prior
+    top = random.choice([50000, 80000, 100000, 250000, 500000])
+    counts = [top]
+    for _ in range(1, n):
+        retain = random.uniform(0.18, 0.62)  # realistic step conversion
+        counts.append(max(1, int(round(counts[-1] * retain))))
+
+    columns = ["Stage", "Count"]
+    rows = [[stages[i], counts[i]] for i in range(n)]
+    units = {"Stage": "label", "Count": "count"}
+    return {"stages": stages, "counts": counts, "columns": columns,
+            "rows": rows, "units": units, "title": random.choice(FUNNEL_TITLES)}
+
+
+def _qa_funnel(spec) -> List:
+    stages, counts = spec["stages"], spec["counts"]
+    n = len(stages)
+    tasks = []
+
+    # 1. raw stage count (retrieve)
+    i = random.randrange(n)
+    tasks.append(make_qa_task(
+        "retrieve_value",
+        f"How many {stages[i]} were there?",
+        str(counts[i]), "numeric",
+        row_keys=[stages[i]], column_keys=["Count"],
+        reasoning=f"Read the {stages[i]} stage of the funnel: {counts[i]:,}.",
+    ))
+
+    # 2. stage-to-stage conversion rate (the core funnel skill)
+    j = random.randrange(1, n)
+    conv = round(100.0 * counts[j] / counts[j - 1], 1)
+    tasks.append(make_qa_task(
+        "funnel_conversion",
+        f"What is the conversion rate from {stages[j-1]} to {stages[j]}?",
+        f"{conv}%", "numeric_with_unit",
+        row_keys=[stages[j - 1], stages[j]], column_keys=["Count"],
+        aliases=[str(conv)],
+        reasoning=f"{stages[j]} ({counts[j]:,}) / {stages[j-1]} ({counts[j-1]:,}) = {conv}%.",
+    ))
+
+    # 3. drop-off between two adjacent stages (absolute)
+    k = random.randrange(1, n)
+    drop = counts[k - 1] - counts[k]
+    tasks.append(make_qa_task(
+        "compute_difference",
+        f"How many were lost between {stages[k-1]} and {stages[k]}?",
+        str(drop), "numeric",
+        row_keys=[stages[k - 1], stages[k]], column_keys=["Count"],
+        aliases=[f"{drop:,}"],
+        reasoning=f"{stages[k-1]} ({counts[k-1]:,}) - {stages[k]} ({counts[k]:,}) = {drop:,} lost.",
+    ))
+
+    # 4. end-to-end funnel conversion (multi-hop: first to last)
+    e2e = round(100.0 * counts[-1] / counts[0], 2)
+    tasks.append(make_qa_task(
+        "funnel_conversion",
+        f"What is the overall conversion rate from {stages[0]} to {stages[-1]}?",
+        f"{e2e}%", "numeric_with_unit",
+        row_keys=[stages[0], stages[-1]], column_keys=["Count"],
+        aliases=[str(e2e)],
+        reasoning=f"{stages[-1]} ({counts[-1]:,}) / {stages[0]} ({counts[0]:,}) = {e2e}%.",
+    ))
+
+    # 5. diagnostic (PM-AGI action-based shape, over our exact numbers):
+    #    find the WORST stage-to-stage conversion -> the bottleneck.
+    step_convs = [(stages[s - 1], stages[s], counts[s] / counts[s - 1]) for s in range(1, n)]
+    worst = min(step_convs, key=lambda t: t[2])
+    worst_pct = round(100.0 * worst[2], 1)
+    tasks.append(make_qa_task(
+        "diagnostic",
+        "Which funnel stage transition has the largest drop-off (the bottleneck)?",
+        f"{worst[0]} to {worst[1]}", "label",
+        row_keys=[worst[0], worst[1]], column_keys=["Count"],
+        aliases=[f"{worst[0]}->{worst[1]}", f"{worst[0]}\u2192{worst[1]}"],
+        reasoning=(f"Compare step conversion rates; {worst[0]}->{worst[1]} is lowest at "
+                   f"{worst_pct}%, the biggest leak in the funnel."),
+    ))
+    return tasks
+
+
+def _render_funnel(path, spec, style, nuis):
+    """Horizontal funnel: centered bars, widest at top, narrowing down.
+    Labels use white text with a dark outline so they stay legible on any
+    bar color (dark continuous palettes like viridis would hide black text)."""
+    import matplotlib.patheffects as pe
+    stages, counts = spec["stages"], spec["counts"]
+    n = len(stages)
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    colors = distinct_series_colors(n)
+    maxc = max(counts)
+    for i, (st, c) in enumerate(zip(stages, counts)):
+        width = c / maxc
+        y = n - 1 - i
+        ax.barh(y, width, left=(1 - width) / 2, color=colors[i], height=0.7)
+        txt = ax.text(0.5, y, f"{st}: {c:,}", ha="center", va="center",
+                      fontsize=8 if nuis.crowded_legend else 9,
+                      color="white", weight="bold")
+        txt.set_path_effects([pe.withStroke(linewidth=2.5, foreground="#222222")])
+    ax.set_xlim(0, 1); ax.set_ylim(-0.5, n - 0.5)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_title(spec["title"])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    fig.tight_layout()
+    _save(fig, path, nuis)
+
+
+def build_funnel(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
+    spec = _spec_funnel()
+    style, nuis = sample_style(difficulty)
+    img = os.path.join(render_dir, f"funnel_{idx:05d}.png")
+    _render_funnel(img, spec, style, nuis)
+    table = DataTable(spec["columns"], spec["rows"], spec["units"])
+    csv_path = img.replace(".png", ".csv")
+    write_csv(csv_path, table)
+    return FigureExample(
+        id=make_id("mkt"), part="part1_marketing", domain="marketing",
+        figure_kind="chart", chart_type="funnel", difficulty=difficulty,
+        source=SourceInfo("synthetic", "generator_funnel_v1", "safe_synthetic"),
+        data=FigureData(SCHEMA_VERSION, table, []),
+        render=RenderInfo(spec["title"], None, "Stage", "Count", spec["stages"], style, nuis),
+        artifacts=Artifacts(img, table_csv_path=csv_path),
+        tasks_table_extraction=make_table_extraction_task("chart", "funnel", spec["title"], table),
+        tasks_qa=_qa_funnel(spec),
+        metadata={"stage_count": len(spec["stages"])},
+    )
+
+
+# =========================================================
 # Dataset builder
 # =========================================================
 
@@ -828,6 +1108,7 @@ _BUILDERS = {
     "stacked_bar": build_stacked,
     "line": build_line,
     "dashboard": build_dashboard,
+    "funnel": build_funnel,
 }
 
 

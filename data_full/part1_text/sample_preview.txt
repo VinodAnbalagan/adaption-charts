@@ -1,0 +1,38 @@
+===== chart_12170c4f15ec [markdown_table] =====
+## CPA by Campaign
+
+| Channel | CPA |
+|---|---|
+| Spring Sale | 62.83 |
+| Lead Gen | 103.06 |
+| Retargeting | 23.1 |
+
+===== chart_12170c4f15ec [pivoted] =====
+## CPA by Campaign
+
+| Value | Spring Sale | Lead Gen | Retargeting |
+|---|---|---|---|
+| CPA | 62.83 | 103.06 | 23.1 |
+
+===== chart_3b2a73d28f8b [analyst_prose] =====
+Conversion Rate by Segment — performance snapshot.
+SMB led with 18.0%, while Enterprise was lowest at 1.6%.
+Gov came in at 9.2%.
+
+===== chart_3b2a73d28f8b [pivoted] =====
+## Conversion Rate by Segment
+
+| Value | SMB | Gov | Enterprise |
+|---|---|---|---|
+| Conversion Rate | 18.0 | 9.2 | 1.6 |
+
+===== chart_2e89a759ac3e [bullet_summary] =====
+Conversion Rate by Segment — key figures:
+- Consumer: 8.4%
+- Gov: 13.0%
+- Education: 6.1%
+
+===== chart_2e89a759ac3e [analyst_prose] =====
+Conversion Rate by Segment.
+Gov led with 13.0%, while Education was lowest at 6.1%.
+Consumer recorded 8.4%.

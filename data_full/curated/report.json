@@ -1,0 +1,29 @@
+{
+  "part1_marketing": {
+    "row_budget": 800,
+    "rows_used": 800,
+    "figures_selected": 160,
+    "figures_available": 212,
+    "per_bucket": {
+      "('part1_marketing', 'multi_panel')": 160
+    },
+    "mean_score_selected": 5.34,
+    "mean_score_pool": 5.305,
+    "flat_rows_written": 800
+  },
+  "part2_chart": {
+    "row_budget": 1300,
+    "rows_used": 1300,
+    "figures_selected": 242,
+    "figures_available": 723,
+    "per_bucket": {
+      "('part2_chart', 'grouped_bar')": 61,
+      "('part2_chart', 'line')": 60,
+      "('part2_chart', 'bar')": 60,
+      "('part2_chart', 'stacked_bar')": 61
+    },
+    "mean_score_selected": 4.401,
+    "mean_score_pool": 4.835,
+    "flat_rows_written": 1300
+  }
+}
