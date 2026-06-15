@@ -39,13 +39,20 @@ from chartgen.serialize import (
 DROP_QA_TYPES = {"visual_reference"}
 
 # QA whose answer is computed over the WHOLE table (denominator = all rows, or
-# sum of all rows). These may ONLY attach to forms that render every row, or the
-# stated answer won't match what's visible in the text. All current forms render
-# all rows (analyst_prose fixed to do so), but this guard makes the invariant
-# explicit and protects against any future partial-render form.
+# sum of all rows). These may ONLY attach to forms that render every row AND do
+# not introduce competing/partial figures, or the stated answer won't match what
+# is visible in the text.
+#
+# NOTE: 'noisy' is deliberately EXCLUDED here. By design it renders partial
+# breakdowns and can surface a competing per-period total, so a whole-table sum
+# or share-of-total becomes genuinely ambiguous against the visible text
+# (verified: the only gate failures at 98.3% were compute_sum on noisy, where the
+# platform correctly read a stated total instead of re-summing a partial list).
+# Noisy KEEPS the QA types where distractors are fair game (retrieve_value,
+# find_extremum, compute_difference between two named values, etc.).
 WHOLE_TABLE_QA = {"compute_ratio_percent", "compute_sum"}
 FULL_TABLE_FORMS = {"markdown_table", "compact_block", "pivoted",
-                    "bullet_summary", "analyst_prose", "noisy"}
+                    "bullet_summary", "analyst_prose"}
 
 
 def load_jsonl(path: str):

@@ -294,6 +294,45 @@ def _save(fig, image_path: str, nuis: NuisanceInfo) -> None:
     plt.close(fig)
 
 
+# Canonical refusal answer for unanswerable questions. Fixed string so the
+# grader/verifier can match it and the model learns ONE refusal form.
+UNANSWERABLE_ANSWER = "Not stated in the report"
+UNANSWERABLE_ALIASES = [
+    "not stated", "not in the report", "not available", "cannot be determined",
+    "not shown", "n/a", "the report does not state this",
+]
+
+
+def _unanswerable_qa(present: List[str], pool: List[str], metric: str,
+                     kind: str = "category"):
+    """Build a PROVABLY-unanswerable QA: ask for the metric of a category that
+    is NOT present in this figure. Safe by construction — we only pick from
+    pool items absent from `present`, so the asked value genuinely isn't in the
+    rendered data. Returns a QATask, or None if every pool item is present.
+
+    kind only affects the question wording ('category' vs 'period').
+    """
+    absent = [c for c in pool if c not in present]
+    if not absent:
+        return None
+    target = random.choice(absent)
+    if kind == "period":
+        q = f"What was the {metric} in {target}?"
+        reason = (f"The report does not include {target}; only "
+                  f"{', '.join(present)} are reported, so this cannot be answered.")
+    else:
+        q = f"What is the {metric} for {target}?"
+        reason = (f"{target} does not appear in the report; only "
+                  f"{', '.join(present)} are listed, so this cannot be answered.")
+    return make_qa_task(
+        "unanswerable", q,
+        UNANSWERABLE_ANSWER, "unanswerable",
+        row_keys=[], column_keys=[metric],
+        aliases=list(UNANSWERABLE_ALIASES),
+        reasoning=reason,
+    )
+
+
 # =========================================================
 # SINGLE-SERIES BAR  (Part 2)
 # =========================================================
@@ -313,7 +352,7 @@ def _spec_bar() -> Dict[str, Any]:
         color_names = random.sample(list(NAMED_COLORS.keys()), n)
     return {
         "metric": name, "unit": unit, "dec": dec, "cats": cats, "vals": vals,
-        "color_names": color_names,
+        "color_names": color_names, "pool": pool,
         "columns": ["Category", name],
         "rows": [[cats[i], vals[i]] for i in range(n)],
         "units": {"Category": "label", name: unit},
@@ -362,14 +401,15 @@ def _qa_bar(spec) -> List:
     if unit in ("count", "currency"):
         total = sum(vals)
         j = random.randrange(len(cats))
-        pct = round(100.0 * vals[j] / total, 1) if total else 0.0
+        raw_pct = 100.0 * vals[j] / total if total else 0.0
+        pct = round(raw_pct, 1)
         tasks.append(make_qa_task(
             "compute_ratio_percent",
             f"What percent of total {name} came from {cats[j]}?",
             f"{pct}%", "numeric_with_unit",
             row_keys=[cats[j]], column_keys=[name],
-            aliases=[str(pct)],
-            reasoning=f"{cats[j]}={fmt_value(vals[j],unit,dec)} of total {fmt_value(total,unit,dec)}; {vals[j]}/{total}={pct}%.",
+            aliases=[str(pct), f"{pct}%", f"{round(raw_pct, 2)}%", str(round(raw_pct, 2))],
+            reasoning=f"{cats[j]}={fmt_value(vals[j],unit,dec)} of total {fmt_value(total,unit,dec)}; {fmt_value(vals[j],unit,dec)}/{fmt_value(total,unit,dec)} = {pct}%.",
         ))
 
     # --- visual_reference QA (forces visual grounding; no table shortcut) ---
@@ -405,6 +445,12 @@ def _qa_bar(spec) -> List:
                 row_keys=[cats[ci]], column_keys=[name],
                 reasoning=f"The {color} bar corresponds to {cats[ci]}.",
             ))
+
+    # unanswerable: ask for a category absent from THIS figure (provably safe).
+    if random.random() < 0.35 and spec.get("pool"):
+        ua = _unanswerable_qa(cats, spec["pool"], name, kind="category")
+        if ua is not None:
+            tasks.append(ua)
     return tasks
 
 
@@ -464,7 +510,7 @@ def _spec_grouped() -> Dict[str, Any]:
     units = {"Category": "label", **{s: unit for s in series}}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
             "data": data, "columns": columns, "rows": rows, "units": units,
-            "title": title}
+            "pool": pool, "title": title}
 
 
 def _qa_grouped(spec) -> List:
@@ -505,6 +551,12 @@ def _qa_grouped(spec) -> List:
             row_keys=[cats[ci2]], column_keys=series,
             reasoning="Sum the group's bars: " + " + ".join(fmt_value(data[s2][ci2], unit, dec) for s2 in series) + f" = {fmt_value(tot, unit, dec)}.",
         ))
+
+    # unanswerable: ask for a category (x-group) absent from THIS figure.
+    if random.random() < 0.35 and spec.get("pool"):
+        ua = _unanswerable_qa(cats, spec["pool"], name, kind="category")
+        if ua is not None:
+            tasks.append(ua)
     return tasks
 
 
@@ -747,6 +799,12 @@ def _qa_line(spec) -> List:
         row_keys=[x[a], x[b]], column_keys=[name],
         reasoning=cmp_reason,
     ))
+
+    # unanswerable: ask for a MONTH not rendered in this figure (provably absent).
+    if random.random() < 0.35:
+        ua = _unanswerable_qa(list(x), MONTHS, name, kind="period")
+        if ua is not None:
+            tasks.append(ua)
     return tasks
 
 
@@ -1000,13 +1058,14 @@ def _qa_funnel(spec) -> List:
 
     # 2. stage-to-stage conversion rate (the core funnel skill)
     j = random.randrange(1, n)
-    conv = round(100.0 * counts[j] / counts[j - 1], 1)
+    raw_conv = 100.0 * counts[j] / counts[j - 1]
+    conv = round(raw_conv, 1)
     tasks.append(make_qa_task(
         "funnel_conversion",
         f"What is the conversion rate from {stages[j-1]} to {stages[j]}?",
         f"{conv}%", "numeric_with_unit",
         row_keys=[stages[j - 1], stages[j]], column_keys=["Count"],
-        aliases=[str(conv)],
+        aliases=[str(conv), f"{conv}%", f"{round(raw_conv, 2)}%"],
         reasoning=f"{stages[j]} ({counts[j]:,}) / {stages[j-1]} ({counts[j-1]:,}) = {conv}%.",
     ))
 
@@ -1023,13 +1082,14 @@ def _qa_funnel(spec) -> List:
     ))
 
     # 4. end-to-end funnel conversion (multi-hop: first to last)
-    e2e = round(100.0 * counts[-1] / counts[0], 2)
+    raw_e2e = 100.0 * counts[-1] / counts[0]
+    e2e = round(raw_e2e, 2)
     tasks.append(make_qa_task(
         "funnel_conversion",
         f"What is the overall conversion rate from {stages[0]} to {stages[-1]}?",
         f"{e2e}%", "numeric_with_unit",
         row_keys=[stages[0], stages[-1]], column_keys=["Count"],
-        aliases=[str(e2e)],
+        aliases=[str(e2e), f"{e2e}%", f"{round(raw_e2e, 1)}%"],
         reasoning=f"{stages[-1]} ({counts[-1]:,}) / {stages[0]} ({counts[0]:,}) = {e2e}%.",
     ))
 

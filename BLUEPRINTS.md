@@ -1,5 +1,15 @@
 # Blueprints — Adaption "global constraints" steering text
 
+## QA types in the dataset (Part 1 text)
+retrieve_value, find_extremum, compare_values, compute_difference, compute_sum,
+compute_ratio_percent, multi_series_lookup, trend_direction, funnel_conversion,
+diagnostic, multi_panel_linked_reasoning, and **unanswerable** (asks for a
+category/period PROVABLY absent from the report; canonical answer
+"Not stated in the report"). The unanswerable rows train refusal/abstention —
+verified safe by construction (378 generated, 0 cases where the asked item was
+actually present). They are label-like, so they should preserve ~100% through
+the platform; confirm in the next gate.
+
 The Blueprint is the steering wheel. The platform's enhancement defaults to
 RE-DERIVING numeric answers from chart pixels and will even reject an exact
 ground-truth value as a "hallucination" for being more precise than the image.
