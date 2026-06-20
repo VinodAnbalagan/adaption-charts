@@ -20,6 +20,7 @@ Forms / tiers:
 
 from __future__ import annotations
 
+import re
 import random
 from typing import Dict, Any, List, Tuple
 
@@ -66,6 +67,26 @@ _PERIODS = ["weekly", "monthly", "quarterly", "this period"]
 def pick_form(rng: random.Random) -> str:
     forms, weights = zip(*FORM_WEIGHTS.items())
     return rng.choices(forms, weights=weights, k=1)[0]
+
+
+_MONTH_ABBR = {"jan", "feb", "mar", "apr", "may", "jun",
+               "jul", "aug", "sep", "oct", "nov", "dec"}
+
+
+def _is_period_col(labels) -> bool:
+    """True iff EVERY column label looks like a time period (Q1-Q4 or a month).
+    Used to label a pivoted table's corner cell "Period" instead of leaking the
+    first quarter's name (the old check only caught Q1/Q2/Jan/Feb, so a Q3/Q4
+    table got a confusing "| Q3 | ..." corner header).
+    """
+    if not labels:
+        return False
+    for c in labels:
+        s = str(c).strip().lower()
+        if re.fullmatch(r"q[1-4]", s) or s[:3] in _MONTH_ABBR:
+            continue
+        return False
+    return True
 
 
 def rewrite_prompt(prompt: str) -> str:
@@ -146,7 +167,7 @@ def to_pivoted(fig, rng):
     keys = [str(r[0]) for r in rows]
     # the pivot rows are the metric columns; header is the real axis name
     axis = cols[1] if len(cols) > 2 else "Value"
-    header = "Period" if any(q in str(cols[1:]) for q in ("Q1", "Q2", "Jan", "Feb")) else axis
+    header = "Period" if _is_period_col(cols[1:]) else axis
     lines = [f"## {title}", "",
              f"| {header} | " + " | ".join(keys) + " |",
              "|" + "|".join(["---"] * (len(keys) + 1)) + "|"]
@@ -256,5 +277,48 @@ SERIALIZERS = {
 }
 
 
+def to_dashboard_report(fig, rng):
+    """Render a multi-panel dashboard as a COMPLETE multi-section text report:
+    the KPI card(s) AND every panel table. The single-table serializers emit
+    only the primary panel, which leaves cross-panel questions (KPI vs channel
+    sum) and other-panel questions (monthly-spend extremum) unanswerable from
+    the text. This renders every panel so all dashboard QA is grounded.
+    """
+    panels = fig.get("panels", [])
+    title = fig.get("render", {}).get("title", "Dashboard")
+    if not panels:
+        # no structured panels -> fall back to the primary table
+        return to_bullet_summary(fig, rng)
+    fmt = FmtPolicy(rng)
+    lines = [f"{title}"]
+
+    # KPI cards first (value panels, no table) -- the headline figures
+    for p in panels:
+        if p.get("table") is None and p.get("value") is not None:
+            lines.append("")
+            lines.append(f"{p['title']}: {fmt.num(p['value'], p.get('unit') or '')}")
+
+    # then every panel that carries a table
+    for p in panels:
+        tbl = p.get("table")
+        if not tbl:
+            continue
+        cols = tbl["columns"]
+        rows = tbl["rows"]
+        units = tbl.get("units", {})
+        lines.append("")
+        lines.append(f"{p['title']}:")
+        for r in rows:
+            if len(cols) == 2:
+                lines.append(f"- {r[0]}: {fmt.num(r[1], units.get(cols[1], ''))}")
+            else:
+                parts = [f"{cols[i]} {fmt.num(r[i], units.get(cols[i], ''))}"
+                         for i in range(1, len(cols))]
+                lines.append(f"- {r[0]}: " + "; ".join(parts))
+    return "\n".join(lines)
+
+
 def serialize_figure(fig: Dict[str, Any], form: str, rng: random.Random) -> str:
+    if form == "dashboard_report":
+        return to_dashboard_report(fig, rng)
     return SERIALIZERS[form](fig, rng)

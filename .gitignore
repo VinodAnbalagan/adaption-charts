@@ -1,13 +1,24 @@
 # Python
 __pycache__/
 *.py[cod]
-.venv/
 *.egg-info/
+.venv/
+venv/
 build/
 dist/
+.pytest_cache/
+.ipynb_checkpoints/
 
-# Generated data (don't commit renders/jsonl; regenerate from seed)
+# Generated data — regenerate from seed; never commit renders / jsonl / parquet
 data/
+data_full/
+data_clean15k/
+data_*/
+*.parquet
+*.tgz
+*.csv
+*.jsonl
+*.json
 
 # OS
 .DS_Store

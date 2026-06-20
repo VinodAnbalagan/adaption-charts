@@ -50,6 +50,67 @@ def norm_num(s: str) -> str:
     return s.replace(",", "").replace("$", "").strip()
 
 
+# --- refusal / compound matching --------------------------------------------
+REFUSAL_CUES = (
+    "not stated", "not in the report", "not available", "cannot be determined",
+    "not shown", "not provided", "does not", "no data", "not mention",
+    "not include", "not listed", "not present", "unable to", "n/a",
+    "no information", "not specify", "not contain", "not appear",
+    "is not", "are not reported", "cannot be", "doesn't", "don't",
+)
+
+
+def is_refusal(text: str) -> bool:
+    """True if the enhanced completion expresses 'this isn't in the report'.
+    Used for unanswerable rows, where the platform legitimately rewords the
+    canonical refusal (e.g. 'the report does not provide this figure')."""
+    tl = (text or "").lower()
+    return any(c in tl for c in REFUSAL_CUES)
+
+
+def compound_label_match(answer: str, text: str) -> bool:
+    """For compound LABEL answers like 'Affiliate, Q3' (a grid cell = category +
+    series). The platform routinely states both parts correctly but not as a
+    comma-joined string ('Affiliate ... in Q3'), so require every comma-part to
+    appear, rather than the exact joined form."""
+    parts = [p.strip() for p in str(answer).split(",") if p.strip()]
+    if len(parts) < 2:
+        return False
+    tl = text.lower()
+    return all(p.lower() in tl for p in parts)
+
+
+EQUAL_CUES = (
+    "equal", "the same", "identical", "no difference", "neither", "a tie",
+    "both are", "are the same", "are identical", "same value", "same conversion",
+    "same rate", "tied",
+)
+
+
+def is_equal_statement(text: str) -> bool:
+    """For compare_values answers whose ground truth is 'equal'. The platform is
+    usually correct but phrases it as 'identical' / 'neither was higher', which a
+    substring match on 'equal' would miss."""
+    tl = (text or "").lower()
+    return any(c in tl for c in EQUAL_CUES)
+
+
+def is_transition_answer(answer: str) -> bool:
+    a = str(answer)
+    return (" to " in a) or ("->" in a) or ("\u2192" in a)
+
+
+def transition_match(answer: str, text: str) -> bool:
+    """For 'X to Y' transition answers (diagnostic bottleneck). The platform
+    writes 'X \u2192 Y' or 'X to Y' with varied spacing; accept if BOTH endpoints
+    appear in the text."""
+    parts = [p.strip() for p in re.split(r"\s*(?:->|\u2192|\bto\b)\s*", str(answer)) if p.strip()]
+    if len(parts) < 2:
+        return False
+    tl = text.lower()
+    return all(p.lower() in tl for p in parts)
+
+
 def answer_in_text(answer: str, text: str, tol: float = 0.0) -> bool:
     """Exact-value containment, tolerant of commas/$ and trailing .0.
     If tol>0 and both answer and a number in text are numeric, accept a match
@@ -129,10 +190,31 @@ def main():
         qa_type = (row.get(k_qa_type) or "unknown") if k_qa_type else "unknown"
 
         enh = str(row.get(k_enh) or "")
-        # percentages get +/-0.1 rounding tolerance (20.07% counts as 20.1%);
-        # everything else requires exact preservation.
-        tol = 0.1 if qa_type == "compute_ratio_percent" else 0.0
-        ok = answer_in_text(str(answer), enh, tol=tol)
+        # Matching strategy depends on the answer's nature:
+        #  - unanswerable: accept any reworded refusal;
+        #  - 'equal' answers: accept any equality phrasing ('identical'/'neither');
+        #  - transition 'X to Y': accept if both endpoints appear (arrow/spacing);
+        #  - compound label 'Category, Series': accept if BOTH parts appear;
+        #  - percentages: +/-0.1 rounding tolerance;
+        #  - everything else: exact-value containment.
+        ans_l = str(answer).strip().lower()
+        if answer_type == "unanswerable" or qa_type == "unanswerable":
+            ok = is_refusal(enh)
+        elif ans_l in ("equal", "the same", "same", "identical", "tie"):
+            ok = is_equal_statement(enh)
+        elif is_transition_answer(answer):
+            ok = transition_match(str(answer), enh) or answer_in_text(str(answer), enh)
+        elif answer_type == "label" and "," in str(answer):
+            ok = compound_label_match(str(answer), enh) or answer_in_text(str(answer), enh)
+        else:
+            # percentages get a rounding tolerance: the platform re-derives from the
+            # exact (preserved) counts and reports MORE precision than our 1-dp
+            # canonical (54.59% vs 54.6%), which is correct, not a miss. Applies to
+            # compute_ratio_percent, funnel_conversion, and any 'NN.N%' answer.
+            is_pct = (qa_type in ("compute_ratio_percent", "funnel_conversion")
+                      or str(answer).strip().endswith("%"))
+            tol = 0.1 if is_pct else 0.0
+            ok = answer_in_text(str(answer), enh, tol=tol)
         stats["preserved" if ok else "MISSING"] += 1
         by_type[answer_type]["preserved" if ok else "MISSING"] += 1
         by_type[f"qa:{qa_type}"]["preserved" if ok else "MISSING"] += 1

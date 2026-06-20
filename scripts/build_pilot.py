@@ -97,7 +97,14 @@ def main():
     ap.add_argument("--funnel", type=int, default=0)
     ap.add_argument("--out", default="data")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--no-render", action="store_true",
+                    help="skip PNG rendering (Part 1 text runs don't need images; "
+                         "makes large generations take seconds, not minutes)")
     args = ap.parse_args()
+
+    if args.no_render:
+        import chartgen.generator as _g
+        _g.RENDER_ENABLED = False
 
     render_dir = os.path.join(args.out, "renders")
     os.makedirs(os.path.join(args.out, "canonical"), exist_ok=True)
@@ -121,13 +128,15 @@ def main():
     export_flattened_jsonl(os.path.join(args.out, "flat", "train.jsonl"), examples)
 
     n_flat = sum(len(ex.flatten_tasks()) for ex in examples)
-    inspect_path = os.path.join(args.out, "inspect.html")
-    make_inspect_html(examples, inspect_path)
-
     print(f"Figures: {len(examples)}  ->  flattened task rows: {n_flat}")
     print(f"  canonical: {os.path.join(args.out, 'canonical', 'train.jsonl')}")
     print(f"  flat:      {os.path.join(args.out, 'flat', 'train.jsonl')}")
-    print(f"  inspect:   {inspect_path}  <- OPEN THIS, eyeball ~20 before scaling")
+    if args.no_render:
+        print("  (--no-render: PNGs skipped; inspect.html not written)")
+    else:
+        inspect_path = os.path.join(args.out, "inspect.html")
+        make_inspect_html(examples, inspect_path)
+        print(f"  inspect:   {inspect_path}  <- OPEN THIS, eyeball ~20 before scaling")
 
 
 if __name__ == "__main__":

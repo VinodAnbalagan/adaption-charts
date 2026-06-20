@@ -24,6 +24,12 @@ import matplotlib
 matplotlib.use("Agg")  # headless
 import matplotlib.pyplot as plt
 
+# When False, every _render_* returns immediately (no matplotlib work, no PNG).
+# Part 1 is TEXT, so a text-only build needs no images; skipping the render makes
+# generating tens of thousands of figures take seconds instead of minutes.
+# build_pilot --no-render flips this off.
+RENDER_ENABLED = True
+
 from .schema import (
     make_id,
     SourceInfo,
@@ -118,6 +124,13 @@ QUARTERS = ["Q1", "Q2", "Q3", "Q4"]
 # -------------------------
 
 METRIC_UNITS = dict(MARKETING_METRICS)  # name -> unit
+
+# Metrics that are ADDITIVE — a sum, total, or share-of-total is meaningful.
+# Rate/average metrics (CPC, CPA, CTR, ROAS, Conversion Rate, CPM, CPL, CAC,
+# ROMI) are per-unit averages: you cannot sum them or take a "percent of total",
+# and a capable model will correctly REFUSE such a question (it did, on the full
+# run). Only these metrics get share-of-total / sum-of-total QA.
+ADDITIVE_METRICS = {"Spend", "Revenue", "Pipeline Value", "Conversions"}
 
 BAR_TEMPLATES = [
     ("Conversions by Channel", "Conversions", CHANNELS),
@@ -288,6 +301,15 @@ def _dpi_for(nuis: NuisanceInfo) -> int:
     return 70 if nuis.low_res else 150
 
 
+def _apply_grid(ax, show: bool, axis: str = "both") -> None:
+    """Light grid, only when requested. Calling ax.grid(False, alpha=...) both
+    emits a matplotlib warning AND still draws the grid, so the show_grid=False
+    style variation was being silently ignored. This respects it and is
+    warning-free."""
+    if show:
+        ax.grid(True, axis=axis, alpha=0.3)
+
+
 def _save(fig, image_path: str, nuis: NuisanceInfo) -> None:
     ensure_dir(os.path.dirname(image_path))
     fig.savefig(image_path, dpi=_dpi_for(nuis))
@@ -324,10 +346,14 @@ def _unanswerable_qa(present: List[str], pool: List[str], metric: str,
         q = f"What is the {metric} for {target}?"
         reason = (f"{target} does not appear in the report; only "
                   f"{', '.join(present)} are listed, so this cannot be answered.")
+    # Evidence is intentionally EMPTY: an unanswerable question points to no
+    # cell in the table (the asked category/period is absent). Claiming a
+    # column_key here is both wrong and fails validation on charts whose column
+    # headers are series/periods (grouped/stacked), not the metric name.
     return make_qa_task(
         "unanswerable", q,
         UNANSWERABLE_ANSWER, "unanswerable",
-        row_keys=[], column_keys=[metric],
+        row_keys=[], column_keys=[],
         aliases=list(UNANSWERABLE_ALIASES),
         reasoning=reason,
     )
@@ -397,8 +423,9 @@ def _qa_bar(spec) -> List:
         reasoning=f"{hi}={fmt_value(max(vals[a],vals[b]),unit,dec)}, {lo}={fmt_value(min(vals[a],vals[b]),unit,dec)}; difference {fmt_value(diff,unit,dec)}.",
     ))
 
-    # share-of-total (only when unit is additive)
-    if unit in ("count", "currency"):
+    # share-of-total — ONLY for additive metrics. "Percent of total CPC/CPA/CTR"
+    # is undefined (averaging rates), so we never ask it; the platform refuses it.
+    if name in ADDITIVE_METRICS:
         total = sum(vals)
         j = random.randrange(len(cats))
         raw_pct = 100.0 * vals[j] / total if total else 0.0
@@ -455,6 +482,8 @@ def _qa_bar(spec) -> List:
 
 
 def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
+    if not RENDER_ENABLED:
+        return
     fig, ax = plt.subplots(figsize=(7, 4))
     if spec.get("color_names"):
         colors = [NAMED_COLORS[c] for c in spec["color_names"]]
@@ -464,7 +493,7 @@ def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
     ax.set_title(spec["title"])
     ax.set_ylabel(spec["metric"])
     ax.tick_params(axis="x", rotation=style.rotation_x)
-    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    _apply_grid(ax, style.show_grid, "y")
     if style.show_values:
         for i, v in enumerate(spec["vals"]):
             ax.text(i, v, fmt_value(v, spec["unit"], spec["dec"]), ha="center", va="bottom", fontsize=8)
@@ -528,15 +557,20 @@ def _qa_grouped(spec) -> List:
         reasoning=f"Find group {cats[ci]}, then the {s} bar: {fmt_value(data[s][ci], unit, dec)}.",
     ))
 
-    # extremum across everything
+    # extremum across everything — the SINGLE highest individual cell. Must be
+    # phrased so the model picks one cell, not the highest ROW TOTAL (on the full
+    # run the platform summed each channel and answered the wrong cell otherwise).
     flat = [(c, s2, data[s2][i]) for i, c in enumerate(cats) for s2 in series]
     bc, bs, bv = max(flat, key=lambda t: t[2])
     tasks.append(make_qa_task(
         "find_extremum",
-        f"Which category and series has the highest {name}?",
+        f"Across all individual values, which single category-and-series "
+        f"combination has the highest {name}? (one specific cell, not a row total)",
         f"{bc}, {bs}", "label",
         row_keys=cats, column_keys=series,
-        reasoning=f"Scan every bar; max is {bc}/{bs} at {fmt_value(bv, unit, dec)}.",
+        aliases=[f"{bc} {bs}", f"{bs} {bc}", f"{bc}, {bs}", f"{bs}, {bc}",
+                 f"{bc} in {bs}", f"{bc} ({bs})"],
+        reasoning=f"Compare every individual value (do not sum rows); the single largest is {bc}/{bs} at {fmt_value(bv, unit, dec)}.",
     ))
 
     # per-group total (stacked-style reasoning over grouped data)
@@ -561,6 +595,8 @@ def _qa_grouped(spec) -> List:
 
 
 def _render_grouped(path, spec, style, nuis):
+    if not RENDER_ENABLED:
+        return
     import numpy as np
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     x = np.arange(len(cats)); w = 0.8 / len(series)
@@ -570,7 +606,7 @@ def _render_grouped(path, spec, style, nuis):
         ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=colors[k])
     ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x)
     ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
-    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    _apply_grid(ax, style.show_grid, "y")
     ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
     fig.tight_layout()
     _save(fig, path, nuis)
@@ -679,6 +715,8 @@ def _qa_stacked(spec) -> List:
 
 
 def _render_stacked(path, spec, style, nuis):
+    if not RENDER_ENABLED:
+        return
     import numpy as np
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     fig, ax = plt.subplots(figsize=(8, 4))
@@ -693,7 +731,7 @@ def _render_stacked(path, spec, style, nuis):
         bottom += vals
     ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
     ax.tick_params(axis="x", rotation=style.rotation_x)
-    ax.grid(style.show_grid, axis="y", alpha=0.3)
+    _apply_grid(ax, style.show_grid, "y")
     ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
     fig.tight_layout()
     _save(fig, path, nuis)
@@ -755,13 +793,31 @@ def _qa_line(spec) -> List:
         x[mx], "label", row_keys=x, column_keys=[name],
         reasoning=f"Peak of the line is at {x[mx]} ({fmt_value(y[mx], unit, dec)}).",
     ))
-    trend = "increase" if y[-1] > y[0] else "decrease" if y[-1] < y[0] else "stay the same"
-    tasks.append(make_qa_task(
-        "trend_direction",
-        f"Did {name} generally increase, decrease, or stay the same over the period?",
-        trend, "label", row_keys=[x[0], x[-1]], column_keys=[name],
-        reasoning=f"Start {fmt_value(y[0], unit, dec)} -> end {fmt_value(y[-1], unit, dec)}, so it tends to {trend}.",
-    ))
+    # trend_direction — ONLY emit when the direction is unambiguous. Endpoint-only
+    # trend is fragile on a non-monotonic path: equal endpoints with a big mid-swing
+    # read as "stay the same" but a model reasonably says increase/decrease (this was
+    # the source of the trend failures). Emit only a clearly directional series, or a
+    # genuinely flat one; skip the ambiguous middle.
+    net = y[-1] - y[0]
+    span = (max(y) - min(y)) or 1.0
+    avg = sum(y) / len(y)
+    diffs = [y[i + 1] - y[i] for i in range(len(y) - 1)]
+    against = sum(d for d in diffs if (d < 0) == (net > 0))  # movement opposite to net
+    trend = None
+    if abs(net) >= 0.30 * span and abs(against) <= 0.5 * abs(net):
+        trend = "increase" if net > 0 else "decrease"
+        t_alias = ["rose", "increased", "went up"] if net > 0 else ["fell", "declined", "decreased"]
+    elif span <= 0.04 * (abs(avg) + 1e-9):
+        trend = "stay the same"
+        t_alias = ["flat", "unchanged", "roughly flat", "stable"]
+    if trend is not None:
+        tasks.append(make_qa_task(
+            "trend_direction",
+            f"Did {name} generally increase, decrease, or stay the same over the period?",
+            trend, "label", row_keys=[x[0], x[-1]], column_keys=[name],
+            aliases=t_alias,
+            reasoning=f"Start {fmt_value(y[0], unit, dec)} -> end {fmt_value(y[-1], unit, dec)}; over the period it {trend}.",
+        ))
 
     # month-over-month delta (forces reading TWO adjacent points + arithmetic)
     j = random.randrange(1, len(x))
@@ -809,11 +865,13 @@ def _qa_line(spec) -> List:
 
 
 def _render_line(path, spec, style, nuis):
+    if not RENDER_ENABLED:
+        return
     fig, ax = plt.subplots(figsize=(7, 4))
     ax.plot(spec["x"], spec["y"], marker="o")
     ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"]); ax.set_xlabel("Time")
     ax.tick_params(axis="x", rotation=style.rotation_x)
-    ax.grid(style.show_grid, alpha=0.3)
+    _apply_grid(ax, style.show_grid)
     fig.tight_layout()
     _save(fig, path, nuis)
 
@@ -886,7 +944,7 @@ def _spec_dashboard() -> Dict[str, Any]:
 
 def _qa_dashboard(spec) -> List:
     name, cats, vals = spec["metric"], spec["cats"], spec["vals"]
-    kpi_total, shown_sum, mode = spec["kpi_total"], spec["shown_sum"], spec["gap_mode"]
+    kpi_total, shown_sum = spec["kpi_total"], spec["shown_sum"]
     tasks = []
 
     i = random.randrange(len(cats))
@@ -907,21 +965,17 @@ def _qa_dashboard(spec) -> List:
         reasoning=f"{cats[mx]} has the tallest bar ({int(vals[mx])}).",
     ))
 
-    # FIXED multi-panel question: legible by construction; answer derived from mode.
-    if mode == "equal":
-        ans, alias = "Equal", ["equal", "the same", "same"]
-        reason = f"KPI total {kpi_total} equals the sum of channel bars {shown_sum}."
-    elif mode == "greater":
-        ans, alias = "Yes", ["yes", "true"]
-        reason = f"KPI total {kpi_total} exceeds the channel sum {shown_sum} by {kpi_total - shown_sum}."
-    else:
-        ans, alias = "No", ["no", "false"]
-        reason = f"KPI total {kpi_total} is less than the channel sum {shown_sum} by {shown_sum - kpi_total}."
+    # multi-panel linked reasoning: reconcile the headline KPI against the sum
+    # of the channel breakdown. NUMERIC (exactly verifiable) rather than yes/no
+    # — a boolean answer is unmatchable by substring and trains an ambiguous
+    # target. The gap is legible by construction (see _spec_dashboard).
+    gap = abs(kpi_total - shown_sum)
     tasks.append(make_qa_task(
         "multi_panel_linked_reasoning",
-        f"Is the KPI card total greater than the sum of {name.lower()} shown in the channel chart?",
-        ans, "boolean" if mode != "equal" else "label",
-        panel_ids=["p1", "p2"], aliases=alias, reasoning=reason,
+        f"What is the difference between the KPI card total and the sum of {name.lower()} in the channel breakdown?",
+        str(int(gap)), "numeric",
+        panel_ids=["p1", "p2"], aliases=[f"{int(gap):,}", str(int(gap))],
+        reasoning=f"KPI total {kpi_total:,} vs channel sum {shown_sum:,}; absolute difference = {gap:,}.",
     ))
 
     # trend-panel question (third panel)
@@ -938,6 +992,8 @@ def _qa_dashboard(spec) -> List:
 
 
 def _render_dashboard(path, spec, style, nuis):
+    if not RENDER_ENABLED:
+        return
     fig = plt.figure(figsize=(11, 6))
     gs = fig.add_gridspec(2, 2, width_ratios=[1, 2], height_ratios=[1, 1])
     ax_kpi = fig.add_subplot(gs[0, 0])
@@ -955,13 +1011,13 @@ def _render_dashboard(path, spec, style, nuis):
     ax_bar.bar(spec["cats"], spec["vals"], color=colors)
     ax_bar.set_title("Conversions by Channel", fontsize=11)
     ax_bar.tick_params(axis="x", rotation=style.rotation_x)
-    ax_bar.grid(style.show_grid, axis="y", alpha=0.3)
+    _apply_grid(ax_bar, style.show_grid, "y")
 
     # spend trend line (third panel)
     ax_trend.plot(spec["months"], spec["spend"], marker="o", linewidth=1.5)
     ax_trend.set_title("Monthly Spend", fontsize=10)
     ax_trend.tick_params(axis="both", labelsize=7)
-    ax_trend.grid(style.show_grid, alpha=0.3)
+    _apply_grid(ax_trend, style.show_grid)
 
     fig.suptitle(spec["title"], fontsize=13)
     fig.tight_layout()
@@ -1094,18 +1150,25 @@ def _qa_funnel(spec) -> List:
     ))
 
     # 5. diagnostic (PM-AGI action-based shape, over our exact numbers):
-    #    find the WORST stage-to-stage conversion -> the bottleneck.
+    #    the bottleneck = the transition with the LOWEST conversion rate (biggest
+    #    PROPORTIONAL leak). Stated explicitly: "largest drop-off" alone is
+    #    ambiguous (absolute count lost vs. rate), and the platform read it as
+    #    absolute on the full run. Conversion-rate framing is the standard
+    #    funnel-bottleneck definition and is unambiguous.
     step_convs = [(stages[s - 1], stages[s], counts[s] / counts[s - 1]) for s in range(1, n)]
     worst = min(step_convs, key=lambda t: t[2])
     worst_pct = round(100.0 * worst[2], 1)
+    a, b = worst[0], worst[1]
     tasks.append(make_qa_task(
         "diagnostic",
-        "Which funnel stage transition has the largest drop-off (the bottleneck)?",
-        f"{worst[0]} to {worst[1]}", "label",
-        row_keys=[worst[0], worst[1]], column_keys=["Count"],
-        aliases=[f"{worst[0]}->{worst[1]}", f"{worst[0]}\u2192{worst[1]}"],
-        reasoning=(f"Compare step conversion rates; {worst[0]}->{worst[1]} is lowest at "
-                   f"{worst_pct}%, the biggest leak in the funnel."),
+        "Which stage-to-stage transition has the LOWEST conversion rate "
+        "(the funnel's biggest proportional leak)?",
+        f"{a} to {b}", "label",
+        row_keys=[a, b], column_keys=["Count"],
+        aliases=[f"{a} to {b}", f"{a}->{b}", f"{a} -> {b}",
+                 f"{a}\u2192{b}", f"{a} \u2192 {b}", f"{a}-{b}"],
+        reasoning=(f"Compare each step's conversion rate; {a}->{b} is lowest at "
+                   f"{worst_pct}%, the biggest proportional leak (the bottleneck)."),
     ))
     return tasks
 
@@ -1114,6 +1177,8 @@ def _render_funnel(path, spec, style, nuis):
     """Horizontal funnel: centered bars, widest at top, narrowing down.
     Labels use white text with a dark outline so they stay legible on any
     bar color (dark continuous palettes like viridis would hide black text)."""
+    if not RENDER_ENABLED:
+        return
     import matplotlib.patheffects as pe
     stages, counts = spec["stages"], spec["counts"]
     n = len(stages)
