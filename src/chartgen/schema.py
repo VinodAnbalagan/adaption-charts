@@ -149,6 +149,7 @@ class NuisanceInfo:
     partial_overlap: bool = False
     similar_colors: bool = False
     crowded_legend: bool = False
+    truncated_axis: bool = False   # y-axis does not start at 0 (deceptive-design stressor)
 
 
 @dataclass

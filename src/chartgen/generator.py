@@ -11,18 +11,43 @@ Notable fixes vs the skeleton:
   * stacked/grouped bars added (the documented frontier-weak chart types).
   * nuisance/realism knobs (rotation, grid, abbrev, palette, similar colors).
   * CSV tables are actually written.
+
+Part 2 image-track upgrades (v2 builders):
+  * ANNOTATED vs UNANNOTATED split (research: ChartMuseum). Unannotated figures
+    snap every value to a nice tick-aligned grid so exact reading off the axis
+    is genuinely possible — no hallucinated-precision training rows. Difficulty
+    controls the annotated fraction (easy 55% / medium 35% / hard 20%).
+  * font_scale is now actually applied (fine-grained text extraction stressor).
+  * jpeg_artifact is now actually applied (PNG->JPEG->PNG round-trip).
+  * truncated_axis (NEW): bar-family y-axis starting above 0 — the classic
+    deceptive-design pattern VLMs fail to notice; table stays exact.
+  * crowded_legend parks a shrunken legend over the plot area (color/legend
+    matching is a top measured VLM error bucket).
+  * value labels across families: bar/grouped tops, in-segment stacked labels,
+    line point labels, dashboard panel bars.
 """
 
 from __future__ import annotations
 
 import os
 import csv
+import math
 import random
 from typing import List, Dict, Any, Tuple, Optional
 
 import matplotlib
 matplotlib.use("Agg")  # headless
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FuncFormatter
+
+# Pillow is required only for the jpeg_artifact nuisance (PNG -> JPEG -> PNG
+# round-trip). If unavailable, the knob silently self-disables per figure so
+# metadata never claims an artifact that wasn't applied.
+try:
+    from PIL import Image as _PILImage
+    _HAS_PIL = True
+except Exception:  # pragma: no cover
+    _HAS_PIL = False
 
 # When False, every _render_* returns immediately (no matplotlib work, no PNG).
 # Part 1 is TEXT, so a text-only build needs no images; skipping the render makes
@@ -223,13 +248,103 @@ def argmin_idx(v: List[float]) -> int:
     return min(range(len(v)), key=lambda i: v[i])
 
 
-def sample_style(difficulty: str) -> Tuple[StyleInfo, NuisanceInfo]:
-    """Harder difficulty => more nuisance factors (realism stress)."""
+# -------------------------
+# NICE-GRID values (unannotated charts)
+#
+# WHY: on an UNANNOTATED chart, a value like 4523.7 is not recoverable from
+# pixels — training completions with that precision teach hallucinated
+# precision. When a figure will carry no value labels, every plotted value is
+# snapped to a "nice" step (1/2/2.5/5 x 10^k) and the y-axis draws ticks on
+# that same step, so exact reading against gridlines is genuinely possible.
+# This mirrors how PlotQA-style synthetic sets stay exactly answerable.
+# -------------------------
+
+def nice_step(low: float, high: float, target_ticks: int = 12) -> float:
+    """Smallest 'nice' step (1/2/2.5/5 x 10^k) giving <= target_ticks intervals."""
+    span = max(high - low, 1e-9)
+    raw = span / target_ticks
+    mag = 10 ** math.floor(math.log10(raw))
+    for m in (1.0, 2.0, 2.5, 5.0, 10.0):
+        step = m * mag
+        if span / step <= target_ticks:
+            return step
+    return 10.0 * mag
+
+
+def _dec_for_step(step: float) -> int:
+    """Decimals needed to represent multiples of the step EXACTLY (2.5 -> 1,
+    0.25 -> 2). Getting this wrong rounds values off their own grid."""
+    for d in (0, 1, 2):
+        scaled = step * (10 ** d)
+        if abs(scaled - round(scaled)) < 1e-9:
+            return d
+    return 2
+
+
+def nice_vals(n: int, low: float, high: float, distinct: bool = True) -> Tuple[List[float], float, int]:
+    """n values on the nice grid in [low, high]. Returns (vals, step, decimals).
+
+    distinct=True samples WITHOUT replacement (extremum QA needs a unique max);
+    if the grid is too small for that, it falls back to unique-max enforcement.
+    """
+    step = nice_step(low, high)
+    dec = _dec_for_step(step)
+    k_lo = math.ceil(low / step)
+    k_hi = math.floor(high / step)
+    grid = [round(k * step, dec) for k in range(k_lo, k_hi + 1)]
+    if not grid:
+        grid = [round(low, dec)]
+    if distinct and len(grid) >= n:
+        vals = random.sample(grid, n)
+    else:
+        vals = [random.choice(grid) for _ in range(n)]
+        vals = ensure_unique_max(vals, step, dec, low)
+    return vals, step, dec
+
+
+def ensure_unique_max(vals: List[float], step: float, dec: int, low: float) -> List[float]:
+    """Demote duplicate maxima by one grid step so find_extremum has ONE answer.
+    Demoted values stay ON the grid: `low` itself may be off-grid, so the floor
+    is the smallest grid multiple >= low, not low."""
+    floor = round(math.ceil(low / step - 1e-9) * step, dec)
+    out = list(vals)
+    guard = 0
+    while out.count(max(out)) > 1 and guard < 50:
+        m = max(out)
+        i = [j for j, v in enumerate(out) if v == m][-1]
+        out[i] = max(floor, round(m - step, dec))
+        guard += 1
+    return out
+
+
+def snap_walk(vals: List[float], step: float, dec: int) -> List[float]:
+    """Snap a random-walk series to the nice grid, keeping a unique max."""
+    snapped = [round(round(v / step) * step, dec) for v in vals]
+    lo = min(snapped)
+    return ensure_unique_max(snapped, step, dec, lo - step)
+
+
+# Fraction of figures that carry printed value labels (annotated), by
+# difficulty. Research basis (ChartMuseum): most chart QA is solvable by text
+# extraction when values are printed; the documented VLM weakness is UNANNOTATED
+# charts, where values must be read visually against the axis. Harder difficulty
+# => mostly unannotated.
+ANNOTATE_RATE = {"easy": 0.55, "medium": 0.35, "hard": 0.20}
+
+
+def sample_style(difficulty: str, allow_truncated: bool = False) -> Tuple[StyleInfo, NuisanceInfo]:
+    """Harder difficulty => more nuisance factors (realism stress).
+
+    allow_truncated: only bar-family charts pass True — a non-zero baseline is
+    the classic deceptive-design pattern for BARS (VLMs fail to notice it);
+    line charts auto-scale by convention, and truncating a stacked bar or
+    funnel would distort segment reading in ways the QA doesn't model.
+    """
     style = StyleInfo(
         font_scale=random.choice(["small", "medium", "large"]),
         rotation_x=random.choice([0, 0, 20, 45]),
         show_grid=random.random() > 0.3,
-        show_values=random.random() > 0.6,
+        show_values=random.random() < ANNOTATE_RATE.get(difficulty, 0.35),
         abbrev_numbers=random.random() > 0.6,
         decimal_places=random.choice([0, 1, 2]),
         palette=random.choice(PALETTES),
@@ -239,12 +354,24 @@ def sample_style(difficulty: str) -> Tuple[StyleInfo, NuisanceInfo]:
     if difficulty in ("medium", "hard"):
         nuis.crowded_legend = random.random() > 0.6
         nuis.similar_colors = random.random() > 0.7
+        if allow_truncated:
+            nuis.truncated_axis = random.random() < (0.30 if difficulty == "hard" else 0.20)
     if difficulty == "hard":
         nuis.low_res = random.random() > 0.6
         nuis.jpeg_artifact = random.random() > 0.6
         nuis.partial_overlap = random.random() > 0.7
         if nuis.similar_colors:
             style.palette = random.choice(SIMILAR_PALETTES)
+
+    # Unannotated charts are read against gridlines — they MUST be present, and
+    # abbreviated tick labels ("12K") would destroy exact readability.
+    if not style.show_values:
+        style.show_grid = True
+        style.abbrev_numbers = False
+    # partial_overlap: force horizontal tick labels so long category names can
+    # genuinely collide (the realistic degradation this knob models).
+    if nuis.partial_overlap:
+        style.rotation_x = 0
     return style, nuis
 
 
@@ -301,6 +428,81 @@ def _dpi_for(nuis: NuisanceInfo) -> int:
     return 70 if nuis.low_res else 150
 
 
+def _fs(style: StyleInfo) -> Dict[str, int]:
+    """Font sizes derived from style.font_scale (previously sampled but never
+    applied — 'small' now genuinely stresses fine-grained text extraction)."""
+    scale = {"small": 0.78, "medium": 1.0, "large": 1.2}.get(style.font_scale, 1.0)
+    return {
+        "title": max(7, round(12 * scale)),
+        "label": max(6, round(10 * scale)),
+        "tick": max(5, round(9 * scale)),
+        "legend": max(5, round(9 * scale)),
+        "annot": max(5, round(8 * scale)),
+    }
+
+
+def _legend(ax, style: StyleInfo, nuis: NuisanceInfo, fs: Dict[str, int]) -> None:
+    """crowded_legend = smaller text AND legend parked over the plot area."""
+    if nuis.crowded_legend:
+        ax.legend(loc="center right", fontsize=max(5, fs["legend"] - 3),
+                  framealpha=0.6, borderpad=0.2, labelspacing=0.2)
+    else:
+        ax.legend(loc=style.legend_loc, fontsize=fs["legend"])
+
+
+def _annotate_bars(ax, xs, vals, unit: str, dec: int, fs: Dict[str, int]) -> None:
+    for x, v in zip(xs, vals):
+        ax.text(x, v, fmt_value(v, unit, dec), ha="center", va="bottom",
+                fontsize=fs["annot"])
+
+
+def _apply_value_ticks(ax, step: Optional[float]) -> None:
+    """Unannotated charts: y ticks on the SAME nice grid the values sit on, so
+    every plotted value falls exactly on a gridline. Coarsen if too dense."""
+    if not step:
+        return
+    lo, hi = ax.get_ylim()
+    s = step
+    while (hi - lo) / s > 16:
+        s *= 2
+    ax.yaxis.set_major_locator(MultipleLocator(s))
+
+
+def _apply_abbrev_axis(ax, style: StyleInfo) -> None:
+    """abbrev_numbers (annotated charts only): 12000 -> 12K on the y axis."""
+    if not style.abbrev_numbers:
+        return
+
+    def _fmt(v, _pos):
+        if abs(v) >= 1e6:
+            return f"{v/1e6:g}M"
+        if abs(v) >= 1e3:
+            return f"{v/1e3:g}K"
+        return f"{v:g}"
+    ax.yaxis.set_major_formatter(FuncFormatter(_fmt))
+
+
+def _maybe_truncate_axis(ax, vals_min: float, nuis: NuisanceInfo,
+                         step: Optional[float] = None) -> None:
+    """truncated_axis: start the y axis well above 0 (bar charts only). The
+    ground-truth table is untouched — the point is that proportional visual
+    shortcuts ('that bar is twice as tall') become WRONG, and only actually
+    reading the axis yields the right answer. Snap the floor onto the tick grid
+    so unannotated charts stay exactly readable."""
+    if not nuis.truncated_axis:
+        return
+    if vals_min <= 0:
+        nuis.truncated_axis = False  # meaningless for non-positive data
+        return
+    bottom = 0.70 * vals_min
+    if step:
+        bottom = step * math.floor(bottom / step)
+    if bottom <= 0:
+        nuis.truncated_axis = False
+        return
+    ax.set_ylim(bottom=bottom)
+
+
 def _apply_grid(ax, show: bool, axis: str = "both") -> None:
     """Light grid, only when requested. Calling ax.grid(False, alpha=...) both
     emits a matplotlib warning AND still draws the grid, so the show_grid=False
@@ -314,6 +516,19 @@ def _save(fig, image_path: str, nuis: NuisanceInfo) -> None:
     ensure_dir(os.path.dirname(image_path))
     fig.savefig(image_path, dpi=_dpi_for(nuis))
     plt.close(fig)
+    # jpeg_artifact (was recorded but never applied): PNG -> lossy JPEG -> PNG
+    # round-trip. Keeps the .png path every downstream script expects, while the
+    # pixels carry genuine compression blocking/ringing.
+    if nuis.jpeg_artifact:
+        if not _HAS_PIL:
+            nuis.jpeg_artifact = False  # never claim an artifact we didn't apply
+            return
+        import io
+        img = _PILImage.open(image_path).convert("RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=random.randint(35, 55))
+        buf.seek(0)
+        _PILImage.open(buf).convert("RGB").save(image_path, format="PNG")
 
 
 # Canonical refusal answer for unanswerable questions. Fixed string so the
@@ -363,14 +578,21 @@ def _unanswerable_qa(present: List[str], pool: List[str], metric: str,
 # SINGLE-SERIES BAR  (Part 2)
 # =========================================================
 
-def _spec_bar() -> Dict[str, Any]:
+def _spec_bar(annotated: bool = True) -> Dict[str, Any]:
     title, name, pool = random.choice(BAR_TEMPLATES)
     unit = METRIC_UNITS[name]
     n = random.randint(3, min(6, len(pool)))
     cats = random.sample(pool, n)
     low, high = metric_range(name)
-    dec = decimals_for(unit)
-    vals = rand_vals(n, low, high, dec)
+    if annotated:
+        dec = decimals_for(unit)
+        vals = rand_vals(n, low, high, dec)
+        vals = ensure_unique_max(vals, 10 ** (-dec), dec, low)  # one tallest bar
+        step = None
+    else:
+        # Unannotated: values must be exactly readable off the axis -> nice grid,
+        # distinct (unique extremum), ticks aligned to the same step at render.
+        vals, step, dec = nice_vals(n, low, high, distinct=True)
     # named-color mode: assign distinct named colors to bars -> enables
     # color-referenced QA with guaranteed-correct ground truth.
     color_names = None
@@ -378,7 +600,7 @@ def _spec_bar() -> Dict[str, Any]:
         color_names = random.sample(list(NAMED_COLORS.keys()), n)
     return {
         "metric": name, "unit": unit, "dec": dec, "cats": cats, "vals": vals,
-        "color_names": color_names, "pool": pool,
+        "step": step, "color_names": color_names, "pool": pool,
         "columns": ["Category", name],
         "rows": [[cats[i], vals[i]] for i in range(n)],
         "units": {"Category": "label", name: unit},
@@ -484,26 +706,31 @@ def _qa_bar(spec) -> List:
 def _render_bar(path, spec, style: StyleInfo, nuis: NuisanceInfo):
     if not RENDER_ENABLED:
         return
+    fs = _fs(style)
     fig, ax = plt.subplots(figsize=(7, 4))
     if spec.get("color_names"):
         colors = [NAMED_COLORS[c] for c in spec["color_names"]]
     else:
         colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
     ax.bar(spec["cats"], spec["vals"], color=colors)
-    ax.set_title(spec["title"])
-    ax.set_ylabel(spec["metric"])
-    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.set_title(spec["title"], fontsize=fs["title"])
+    ax.set_ylabel(spec["metric"], fontsize=fs["label"])
+    ax.tick_params(axis="x", rotation=style.rotation_x, labelsize=fs["tick"])
+    ax.tick_params(axis="y", labelsize=fs["tick"])
     _apply_grid(ax, style.show_grid, "y")
+    _maybe_truncate_axis(ax, min(spec["vals"]), nuis, spec.get("step"))
     if style.show_values:
-        for i, v in enumerate(spec["vals"]):
-            ax.text(i, v, fmt_value(v, spec["unit"], spec["dec"]), ha="center", va="bottom", fontsize=8)
+        _annotate_bars(ax, range(len(spec["vals"])), spec["vals"], spec["unit"], spec["dec"], fs)
+        _apply_abbrev_axis(ax, style)
+    else:
+        _apply_value_ticks(ax, spec.get("step"))
     fig.tight_layout()
     _save(fig, path, nuis)
 
 
 def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExample:
-    spec = _spec_bar()
-    style, nuis = sample_style(difficulty)
+    style, nuis = sample_style(difficulty, allow_truncated=True)
+    spec = _spec_bar(annotated=style.show_values)
     img = os.path.join(render_dir, f"bar_{idx:05d}.png")
     _render_bar(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
@@ -512,7 +739,7 @@ def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExam
     return FigureExample(
         id=make_id("chart"), part="part2_chart", domain="general",
         figure_kind="chart", chart_type="bar", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_bar_v1", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_bar_v2", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Category", spec["metric"], [], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
@@ -525,20 +752,40 @@ def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExam
 # GROUPED BAR  (Part 2 — documented-weak)
 # =========================================================
 
-def _spec_grouped() -> Dict[str, Any]:
+def _spec_grouped(annotated: bool = True) -> Dict[str, Any]:
     title, name, pool, series_pool = random.choice(GROUPED_TEMPLATES)
     unit = METRIC_UNITS[name]
     cats = random.sample(pool, random.randint(3, 4))            # x groups
     series = random.sample(series_pool, random.randint(2, 3))   # bars per group
     series.sort()  # Q1 < Q2 < ... reads naturally
     low, high = metric_range(name)
-    dec = decimals_for(unit)
-    data = {s: rand_vals(len(cats), low, high, dec) for s in series}
+    if annotated:
+        dec = decimals_for(unit)
+        data = {s: rand_vals(len(cats), low, high, dec) for s in series}
+        flat = [data[s][i] for s in series for i in range(len(cats))]
+        flat = ensure_unique_max(flat, 10 ** (-dec), dec, low)  # one highest CELL
+        k = 0
+        for s in series:
+            for i in range(len(cats)):
+                data[s][i] = flat[k]; k += 1
+        step = None
+    else:
+        step = nice_step(low, high)
+        dec = _dec_for_step(step)
+        data = {s: nice_vals(len(cats), low, high, distinct=False)[0] for s in series}
+        # find_extremum asks for the single highest CELL — the global max must
+        # be unique across ALL cells, not just within one series.
+        flat = [data[s][i] for s in series for i in range(len(cats))]
+        flat = ensure_unique_max(flat, step, dec, low)
+        k = 0
+        for s in series:
+            for i in range(len(cats)):
+                data[s][i] = flat[k]; k += 1
     columns = ["Category"] + series
     rows = [[cats[i]] + [data[s][i] for s in series] for i in range(len(cats))]
     units = {"Category": "label", **{s: unit for s in series}}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
-            "data": data, "columns": columns, "rows": rows, "units": units,
+            "step": step, "data": data, "columns": columns, "rows": rows, "units": units,
             "pool": pool, "title": title}
 
 
@@ -598,23 +845,35 @@ def _render_grouped(path, spec, style, nuis):
     if not RENDER_ENABLED:
         return
     import numpy as np
+    fs = _fs(style)
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     x = np.arange(len(cats)); w = 0.8 / len(series)
     fig, ax = plt.subplots(figsize=(8, 4))
     colors = distinct_series_colors(len(series))
     for k, s in enumerate(series):
-        ax.bar(x + k * w - 0.4 + w / 2, data[s], width=w, label=s, color=colors[k])
-    ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x)
-    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
+        xs = x + k * w - 0.4 + w / 2
+        ax.bar(xs, data[s], width=w, label=s, color=colors[k])
+        if style.show_values:
+            _annotate_bars(ax, xs, data[s], spec["unit"], spec["dec"], fs)
+    ax.set_xticks(x); ax.set_xticklabels(cats, rotation=style.rotation_x, fontsize=fs["tick"])
+    ax.tick_params(axis="y", labelsize=fs["tick"])
+    ax.set_title(spec["title"], fontsize=fs["title"])
+    ax.set_ylabel(spec["metric"], fontsize=fs["label"])
     _apply_grid(ax, style.show_grid, "y")
-    ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
+    all_vals = [v for s in series for v in data[s]]
+    _maybe_truncate_axis(ax, min(all_vals), nuis, spec.get("step"))
+    if style.show_values:
+        _apply_abbrev_axis(ax, style)
+    else:
+        _apply_value_ticks(ax, spec.get("step"))
+    _legend(ax, style, nuis, fs)
     fig.tight_layout()
     _save(fig, path, nuis)
 
 
 def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
-    spec = _spec_grouped()
-    style, nuis = sample_style(difficulty)
+    style, nuis = sample_style(difficulty, allow_truncated=True)
+    spec = _spec_grouped(annotated=style.show_values)
     img = os.path.join(render_dir, f"grouped_{idx:05d}.png")
     _render_grouped(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
@@ -623,7 +882,7 @@ def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> Figu
     return FigureExample(
         id=make_id("chart"), part="part2_chart", domain="general",
         figure_kind="chart", chart_type="grouped_bar", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_grouped_v1", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_grouped_v2", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Category", spec["metric"], spec["series"], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
@@ -636,26 +895,46 @@ def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> Figu
 # STACKED BAR  (Part 2 — the most documented-weak type)
 # =========================================================
 
-def _spec_stacked() -> Dict[str, Any]:
+def _spec_stacked(annotated: bool = True) -> Dict[str, Any]:
     title, name, seg_pool = random.choice(STACKED_TEMPLATES)
     unit = METRIC_UNITS[name]
     cats = sorted(random.sample(range(len(MONTHS)), random.randint(3, 5)))
     cats = [MONTHS[i] for i in cats]                          # x axis, in calendar order
-    series = random.sample(seg_pool, random.randint(2, 4))    # stack segments
+    # annotated stacks carry an in-segment label per segment; cap at 3 segments
+    # so labels stay legible. Unannotated stacks can go to 4.
+    series = random.sample(seg_pool, random.randint(2, 3 if annotated else 4))
     series_color_names = None
     if random.random() < NAMED_COLOR_PROB:
         series_color_names = random.sample(list(NAMED_COLORS.keys()), len(series))
     low, high = metric_range(name)
-    dec = decimals_for(unit)
-    # per-segment values; total = stack height
-    data = {s: rand_vals(len(cats), low / max(1, len(series)), high / max(1, len(series)), dec) for s in series}
+    seg_lo, seg_hi = low / max(1, len(series)), high / max(1, len(series))
+    if annotated:
+        dec = decimals_for(unit)
+        # floor segment size: EVERY segment must be thick enough to carry its
+        # printed value (an unlabeled thin segment would make its
+        # multi_series_lookup QA visually unanswerable at rand_vals precision)
+        data = {s: rand_vals(len(cats), max(seg_lo, 0.18 * seg_hi), seg_hi, dec) for s in series}
+        for i in range(len(cats)):  # unique largest segment per period
+            col = ensure_unique_max([data[s][i] for s in series], 10 ** (-dec), dec, seg_lo)
+            for k, s in enumerate(series):
+                data[s][i] = col[k]
+        step = None
+    else:
+        step = nice_step(seg_lo, seg_hi)
+        dec = _dec_for_step(step)
+        data = {s: nice_vals(len(cats), seg_lo, seg_hi, distinct=False)[0] for s in series}
+        # 'largest segment in <period>' needs a unique per-period winner
+        for i in range(len(cats)):
+            col = ensure_unique_max([data[s][i] for s in series], step, dec, seg_lo - step)
+            for k, s in enumerate(series):
+                data[s][i] = col[k]
     totals = [round(sum(data[s][i] for s in series), dec) for i in range(len(cats))]
     columns = ["Period"] + series + ["Total"]
     rows = [[cats[i]] + [data[s][i] for s in series] + [totals[i]] for i in range(len(cats))]
     units = {"Period": "label", **{s: unit for s in series}, "Total": unit}
     return {"metric": name, "unit": unit, "dec": dec, "cats": cats, "series": series,
             "series_color_names": series_color_names,
-            "data": data, "totals": totals, "columns": columns, "rows": rows,
+            "step": step, "data": data, "totals": totals, "columns": columns, "rows": rows,
             "units": units, "title": title}
 
 
@@ -718,6 +997,8 @@ def _render_stacked(path, spec, style, nuis):
     if not RENDER_ENABLED:
         return
     import numpy as np
+    import matplotlib.patheffects as pe
+    fs = _fs(style)
     cats, series, data = spec["cats"], spec["series"], spec["data"]
     fig, ax = plt.subplots(figsize=(8, 4))
     if spec.get("series_color_names"):
@@ -725,21 +1006,38 @@ def _render_stacked(path, spec, style, nuis):
     else:
         colors = distinct_series_colors(len(series))
     bottom = np.zeros(len(cats))
+    max_total = max(spec["totals"]) or 1.0
     for k, s in enumerate(series):
         vals = np.array(data[s])
         ax.bar(cats, vals, bottom=bottom, label=s, color=colors[k])
+        if style.show_values:
+            # per-segment value centered in the segment (outlined text stays
+            # legible on any fill). Every segment is labeled — the spec floors
+            # segment size so labels always fit and every lookup is readable.
+            for i, v in enumerate(vals):
+                txt = ax.text(i, bottom[i] + v / 2,
+                              fmt_value(float(v), spec["unit"], spec["dec"]),
+                              ha="center", va="center", fontsize=fs["annot"],
+                              color="white", weight="bold")
+                txt.set_path_effects([pe.withStroke(linewidth=2.0, foreground="#222222")])
         bottom += vals
-    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"])
-    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.set_title(spec["title"], fontsize=fs["title"])
+    ax.set_ylabel(spec["metric"], fontsize=fs["label"])
+    ax.tick_params(axis="x", rotation=style.rotation_x, labelsize=fs["tick"])
+    ax.tick_params(axis="y", labelsize=fs["tick"])
     _apply_grid(ax, style.show_grid, "y")
-    ax.legend(loc=style.legend_loc, fontsize=7 if nuis.crowded_legend else 9)
+    if style.show_values:
+        _apply_abbrev_axis(ax, style)
+    else:
+        _apply_value_ticks(ax, spec.get("step"))
+    _legend(ax, style, nuis, fs)
     fig.tight_layout()
     _save(fig, path, nuis)
 
 
 def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> FigureExample:
-    spec = _spec_stacked()
-    style, nuis = sample_style(difficulty)
+    style, nuis = sample_style(difficulty)  # no truncation: it distorts stack reading
+    spec = _spec_stacked(annotated=style.show_values)
     img = os.path.join(render_dir, f"stacked_{idx:05d}.png")
     _render_stacked(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
@@ -748,7 +1046,7 @@ def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> Figure
     return FigureExample(
         id=make_id("chart"), part="part2_chart", domain="general",
         figure_kind="chart", chart_type="stacked_bar", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_stacked_v1", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_stacked_v2", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Period", spec["metric"], spec["series"], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
@@ -761,7 +1059,7 @@ def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> Figure
 # LINE  (Part 2)
 # =========================================================
 
-def _spec_line() -> Dict[str, Any]:
+def _spec_line(annotated: bool = True) -> Dict[str, Any]:
     title, name = random.choice(LINE_TEMPLATES)
     unit = METRIC_UNITS[name]
     months = MONTHS[: random.randint(4, 6)]
@@ -770,7 +1068,24 @@ def _spec_line() -> Dict[str, Any]:
     for _ in months:
         cur = max(low, min(high, cur + random.uniform(-(high - low) * 0.08, (high - low) * 0.08)))
         vals.append(round(cur, dec))
-    return {"metric": name, "unit": unit, "dec": dec, "x": months, "y": vals,
+    step = None
+    if not annotated:
+        # Snap the walk onto a readable grid. CRITICAL: the step must come from
+        # the WALK's actual span, not the metric range — a walk moves ±8%/month
+        # and only covers a fraction of the range, so a range-based step
+        # quantizes it to 1-3 flat levels (degenerate charts, '$0 change' QA).
+        # Floor the span so a near-flat walk can't yield a microscopic step.
+        lo_v, hi_v = min(vals), max(vals)
+        span_lo = lo_v
+        span_hi = max(hi_v, lo_v + 0.05 * (high - low))
+        step = nice_step(span_lo, span_hi, target_ticks=8)
+        dec = _dec_for_step(step)
+        vals = snap_walk(vals, step, dec)
+    else:
+        # annotated walks can still tie at the peak (pre-existing bug):
+        # 'which month was highest' must have ONE answer
+        vals = ensure_unique_max(vals, 10 ** (-dec), dec, low)
+    return {"metric": name, "unit": unit, "dec": dec, "x": months, "y": vals, "step": step,
             "columns": ["Month", name], "rows": [[months[i], vals[i]] for i in range(len(months))],
             "units": {"Month": "label", name: unit}, "title": title}
 
@@ -867,18 +1182,32 @@ def _qa_line(spec) -> List:
 def _render_line(path, spec, style, nuis):
     if not RENDER_ENABLED:
         return
+    fs = _fs(style)
     fig, ax = plt.subplots(figsize=(7, 4))
     ax.plot(spec["x"], spec["y"], marker="o")
-    ax.set_title(spec["title"]); ax.set_ylabel(spec["metric"]); ax.set_xlabel("Time")
-    ax.tick_params(axis="x", rotation=style.rotation_x)
+    ax.set_title(spec["title"], fontsize=fs["title"])
+    ax.set_ylabel(spec["metric"], fontsize=fs["label"])
+    ax.set_xlabel("Time", fontsize=fs["label"])
+    ax.tick_params(axis="x", rotation=style.rotation_x, labelsize=fs["tick"])
+    ax.tick_params(axis="y", labelsize=fs["tick"])
     _apply_grid(ax, style.show_grid)
+    if style.show_values:
+        span = (max(spec["y"]) - min(spec["y"])) or 1.0
+        for xi, v in zip(spec["x"], spec["y"]):
+            ax.annotate(fmt_value(v, spec["unit"], spec["dec"]), (xi, v),
+                        textcoords="offset points", xytext=(0, 6),
+                        ha="center", fontsize=fs["annot"])
+        ax.set_ylim(top=max(spec["y"]) + 0.15 * span)  # headroom for labels
+        _apply_abbrev_axis(ax, style)
+    else:
+        _apply_value_ticks(ax, spec.get("step"))
     fig.tight_layout()
     _save(fig, path, nuis)
 
 
 def build_line(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExample:
-    spec = _spec_line()
-    style, nuis = sample_style(difficulty)
+    style, nuis = sample_style(difficulty)  # lines auto-scale; truncation not a knob here
+    spec = _spec_line(annotated=style.show_values)
     img = os.path.join(render_dir, f"line_{idx:05d}.png")
     _render_line(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
@@ -888,7 +1217,7 @@ def build_line(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExa
     return FigureExample(
         id=make_id("chart"), part="part2_chart", domain="general",
         figure_kind="chart", chart_type="line", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_line_v1", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_line_v2", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, series),
         render=RenderInfo(spec["title"], None, "Month", spec["metric"], [spec["metric"]], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
@@ -906,11 +1235,17 @@ def build_line(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExa
 _LEGIBLE_GAP_FRAC = 0.10
 
 
-def _spec_dashboard() -> Dict[str, Any]:
+def _spec_dashboard(annotated: bool = True) -> Dict[str, Any]:
     name, unit = "Conversions", "count"
     n = random.randint(3, 5)
     cats = random.sample(CHANNELS, n)
-    vals = [random.randint(100, 900) for _ in range(n)]
+    if annotated:
+        vals = [random.randint(100, 900) for _ in range(n)]
+    else:
+        # unannotated panel bars: multiples of 25, readable off the grid,
+        # unique max for the extremum QA
+        vals = [float(v) for v in random.sample(range(100, 901, 25), n)]
+        vals = [int(v) for v in ensure_unique_max(vals, 25, 0, 100)]
     shown_sum = sum(vals)
 
     # FIX: choose a KPI total whose relationship to the shown sum is *legible*.
@@ -1007,11 +1342,17 @@ def _render_dashboard(path, spec, style, nuis):
     ax_kpi.set_facecolor("#f5f5f7")
 
     # channel bars
+    fs = _fs(style)
     colors = series_colors(style.palette, len(spec["cats"]), nuis.similar_colors)
     ax_bar.bar(spec["cats"], spec["vals"], color=colors)
     ax_bar.set_title("Conversions by Channel", fontsize=11)
-    ax_bar.tick_params(axis="x", rotation=style.rotation_x)
+    ax_bar.tick_params(axis="x", rotation=style.rotation_x, labelsize=fs["tick"])
+    ax_bar.tick_params(axis="y", labelsize=fs["tick"])
     _apply_grid(ax_bar, style.show_grid, "y")
+    if style.show_values:
+        _annotate_bars(ax_bar, range(len(spec["vals"])), spec["vals"], "count", 0, fs)
+    else:
+        _apply_value_ticks(ax_bar, 25 if len(spec["cats"]) else None)
 
     # spend trend line (third panel)
     ax_trend.plot(spec["months"], spec["spend"], marker="o", linewidth=1.5)
@@ -1025,8 +1366,8 @@ def _render_dashboard(path, spec, style, nuis):
 
 
 def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
-    spec = _spec_dashboard()
     style, nuis = sample_style(difficulty)
+    spec = _spec_dashboard(annotated=style.show_values)
     img = os.path.join(render_dir, f"dashboard_{idx:05d}.png")
     _render_dashboard(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
@@ -1040,7 +1381,7 @@ def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> Fi
     return FigureExample(
         id=make_id("mkt"), part="part1_marketing", domain="marketing",
         figure_kind="dashboard", chart_type="multi_panel", difficulty=difficulty,
-        source=SourceInfo("synthetic", "generator_dashboard_v2", "safe_synthetic"),
+        source=SourceInfo("synthetic", "generator_dashboard_v3", "safe_synthetic"),
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], "Weekly overview", None, None, [], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
@@ -1205,6 +1546,7 @@ def _render_funnel(path, spec, style, nuis):
 def build_funnel(idx: int, render_dir: str, difficulty: str = "medium") -> FigureExample:
     spec = _spec_funnel()
     style, nuis = sample_style(difficulty)
+    style.show_values = True  # funnel bars always print "Stage: count" — inherently annotated
     img = os.path.join(render_dir, f"funnel_{idx:05d}.png")
     _render_funnel(img, spec, style, nuis)
     table = DataTable(spec["columns"], spec["rows"], spec["units"])
