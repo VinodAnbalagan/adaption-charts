@@ -248,6 +248,25 @@ def argmin_idx(v: List[float]) -> int:
     return min(range(len(v)), key=lambda i: v[i])
 
 
+def _p(*variants: str) -> str:
+    """Pick one prompt phrasing. Multimodal data repeats question SEMANTICS
+    across figures constantly; single-template prompts collide textually, which
+    (a) can trip text-style prompt deduplication into discarding valid rows
+    (same prompt + different image = a DIFFERENT example) and (b) trains
+    template overfitting (CharXiv: small phrasing shifts drop VLM accuracy by
+    up to ~34%). Variants are semantically identical; answers are unchanged."""
+    return random.choice(variants)
+
+
+TABLE_PROMPTS = (
+    "Convert this figure into a normalized table.",
+    "Extract the underlying data table from this chart.",
+    "Turn this chart into a structured data table.",
+    "Read this figure and output its data as a normalized table.",
+    "Recover the source table behind this figure.",
+)
+
+
 # -------------------------
 # NICE-GRID values (unannotated charts)
 #
@@ -554,11 +573,15 @@ def _unanswerable_qa(present: List[str], pool: List[str], metric: str,
         return None
     target = random.choice(absent)
     if kind == "period":
-        q = f"What was the {metric} in {target}?"
+        q = _p(f"What was the {metric} in {target}?",
+               f"What is the {metric} shown for {target}?",
+               f"How much {metric} was there in {target}?")
         reason = (f"The report does not include {target}; only "
                   f"{', '.join(present)} are reported, so this cannot be answered.")
     else:
-        q = f"What is the {metric} for {target}?"
+        q = _p(f"What is the {metric} for {target}?",
+               f"What value does the chart show for {target}'s {metric}?",
+               f"Find the {metric} for {target}.")
         reason = (f"{target} does not appear in the report; only "
                   f"{', '.join(present)} are listed, so this cannot be answered.")
     # Evidence is intentionally EMPTY: an unanswerable question points to no
@@ -616,7 +639,11 @@ def _qa_bar(spec) -> List:
     i = random.randrange(len(cats))
     tasks.append(make_qa_task(
         "retrieve_value",
-        f"What is the {name} for {cats[i]}?",
+        _p(f"What is the {name} for {cats[i]}?",
+           f"According to the chart, what is the {name} for {cats[i]}?",
+           f"What {name} value is shown for {cats[i]}?",
+           f"Find the {name} for {cats[i]}.",
+           f"What value does the chart show for {cats[i]}'s {name}?"),
         fmt_value(vals[i], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[i]], column_keys=[name],
@@ -626,7 +653,10 @@ def _qa_bar(spec) -> List:
     mx = argmax_idx(vals)
     tasks.append(make_qa_task(
         "find_extremum",
-        f"Which category has the highest {name}?",
+        _p(f"Which category has the highest {name}?",
+           f"Which category shows the largest {name}?",
+           f"Which category tops the chart for {name}?",
+           f"Identify the category with the greatest {name}."),
         cats[mx], "label",
         row_keys=cats, column_keys=[name],
         reasoning=f"Compare all bars; {cats[mx]} is tallest at {fmt_value(vals[mx], unit, dec)}.",
@@ -637,7 +667,10 @@ def _qa_bar(spec) -> List:
     hi, lo = (cats[a], cats[b]) if vals[a] >= vals[b] else (cats[b], cats[a])
     tasks.append(make_qa_task(
         "compute_difference",
-        f"What is the difference in {name} between {cats[a]} and {cats[b]}?",
+        _p(f"What is the difference in {name} between {cats[a]} and {cats[b]}?",
+           f"By how much does {name} differ between {cats[a]} and {cats[b]}?",
+           f"How much do {cats[a]} and {cats[b]} differ in {name}?",
+           f"Compute the {name} gap between {cats[a]} and {cats[b]}."),
         fmt_value(diff, unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[a], cats[b]], column_keys=[name],
@@ -654,7 +687,10 @@ def _qa_bar(spec) -> List:
         pct = round(raw_pct, 1)
         tasks.append(make_qa_task(
             "compute_ratio_percent",
-            f"What percent of total {name} came from {cats[j]}?",
+            _p(f"What percent of total {name} came from {cats[j]}?",
+               f"What share of the total {name} does {cats[j]} account for?",
+               f"{cats[j]} represents what percentage of the total {name}?",
+               f"Out of the overall {name}, what percent is from {cats[j]}?"),
             f"{pct}%", "numeric_with_unit",
             row_keys=[cats[j]], column_keys=[name],
             aliases=[str(pct), f"{pct}%", f"{round(raw_pct, 2)}%", str(round(raw_pct, 2))],
@@ -667,7 +703,10 @@ def _qa_bar(spec) -> List:
     pi = 0 if pos_kind == "leftmost" else len(cats) - 1
     tasks.append(make_qa_task(
         "visual_reference",
-        f"What is the value of the {pos_kind} bar?",
+        _p(f"What is the value of the {pos_kind} bar?",
+           f"What value does the {pos_kind} bar show?",
+           f"Read the {pos_kind} bar: what value does it reach?",
+           f"How high is the {pos_kind} bar?"),
         fmt_value(vals[pi], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[pi]], column_keys=[name],
@@ -680,7 +719,9 @@ def _qa_bar(spec) -> List:
         if random.random() < 0.5:
             tasks.append(make_qa_task(
                 "visual_reference",
-                f"What is the value of the {color} bar?",
+                _p(f"What is the value of the {color} bar?",
+                   f"What value does the {color} bar show?",
+                   f"Read the {color} bar: what is its value?"),
                 fmt_value(vals[ci], unit, dec),
                 "numeric_with_unit" if unit != "count" else "numeric",
                 row_keys=[cats[ci]], column_keys=[name],
@@ -689,7 +730,9 @@ def _qa_bar(spec) -> List:
         else:
             tasks.append(make_qa_task(
                 "visual_reference",
-                f"Which category is shown by the {color} bar?",
+                _p(f"Which category is shown by the {color} bar?",
+                   f"Which category does the {color} bar represent?",
+                   f"The {color} bar corresponds to which category?"),
                 cats[ci], "label",
                 row_keys=[cats[ci]], column_keys=[name],
                 reasoning=f"The {color} bar corresponds to {cats[ci]}.",
@@ -743,7 +786,7 @@ def build_bar(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExam
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Category", spec["metric"], [], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
-        tasks_table_extraction=make_table_extraction_task("chart", "bar", spec["title"], table),
+        tasks_table_extraction=make_table_extraction_task("chart", "bar", spec["title"], table, prompt=_p(*TABLE_PROMPTS)),
         tasks_qa=_qa_bar(spec),
     )
 
@@ -797,7 +840,10 @@ def _qa_grouped(spec) -> List:
     s = random.choice(series); ci = random.randrange(len(cats))
     tasks.append(make_qa_task(
         "multi_series_lookup",
-        f"For {cats[ci]}, what is the {name} in {s}?",
+        _p(f"For {cats[ci]}, what is the {name} in {s}?",
+           f"What is the {name} for {cats[ci]} in {s}?",
+           f"In {s}, what {name} does {cats[ci]} show?",
+           f"Look at {cats[ci]}: what is its {s} value?"),
         fmt_value(data[s][ci], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[ci]], column_keys=[s],
@@ -811,8 +857,12 @@ def _qa_grouped(spec) -> List:
     bc, bs, bv = max(flat, key=lambda t: t[2])
     tasks.append(make_qa_task(
         "find_extremum",
-        f"Across all individual values, which single category-and-series "
-        f"combination has the highest {name}? (one specific cell, not a row total)",
+        _p(f"Across all individual values, which single category-and-series "
+           f"combination has the highest {name}? (one specific cell, not a row total)",
+           f"Considering every individual bar (not row totals), which "
+           f"category-and-series combination shows the highest {name}?",
+           f"Which single cell — one category in one series — has the highest "
+           f"{name}? (do not sum rows)"),
         f"{bc}, {bs}", "label",
         row_keys=cats, column_keys=series,
         aliases=[f"{bc} {bs}", f"{bs} {bc}", f"{bc}, {bs}", f"{bs}, {bc}",
@@ -826,7 +876,9 @@ def _qa_grouped(spec) -> List:
         tot = sum(data[s2][ci2] for s2 in series)
         tasks.append(make_qa_task(
             "compute_sum",
-            f"What is the total {name} for {cats[ci2]} across all series?",
+            _p(f"What is the total {name} for {cats[ci2]} across all series?",
+               f"Summing all series, what is the total {name} for {cats[ci2]}?",
+               f"Add up every series for {cats[ci2]}: what is the combined {name}?"),
             fmt_value(tot, unit, dec),
             "numeric_with_unit" if unit != "count" else "numeric",
             row_keys=[cats[ci2]], column_keys=series,
@@ -886,7 +938,7 @@ def build_grouped(idx: int, render_dir: str, difficulty: str = "medium") -> Figu
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Category", spec["metric"], spec["series"], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
-        tasks_table_extraction=make_table_extraction_task("chart", "grouped_bar", spec["title"], table),
+        tasks_table_extraction=make_table_extraction_task("chart", "grouped_bar", spec["title"], table, prompt=_p(*TABLE_PROMPTS)),
         tasks_qa=_qa_grouped(spec),
     )
 
@@ -947,7 +999,10 @@ def _qa_stacked(spec) -> List:
     s = random.choice(series); ci = random.randrange(len(cats))
     tasks.append(make_qa_task(
         "multi_series_lookup",
-        f"In {cats[ci]}, what is the {s} portion of {name}?",
+        _p(f"In {cats[ci]}, what is the {s} portion of {name}?",
+           f"What is the {s} segment's {name} in {cats[ci]}?",
+           f"Within the {cats[ci]} stack, how much {name} does {s} contribute?",
+           f"How large is the {s} portion of {name} in {cats[ci]}?"),
         fmt_value(data[s][ci], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[ci]], column_keys=[s],
@@ -958,7 +1013,10 @@ def _qa_stacked(spec) -> List:
     ci2 = random.randrange(len(cats))
     tasks.append(make_qa_task(
         "compute_sum",
-        f"What is the total {name} in {cats[ci2]}?",
+        _p(f"What is the total {name} in {cats[ci2]}?",
+           f"What is the combined {name} for {cats[ci2]}?",
+           f"Summing all segments, what is {cats[ci2]}'s total {name}?",
+           f"What does the full {cats[ci2]} stack total in {name}?"),
         fmt_value(totals[ci2], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[cats[ci2]], column_keys=series,
@@ -971,7 +1029,10 @@ def _qa_stacked(spec) -> List:
     top_seg = max(seg_vals, key=lambda t: t[1])[0]
     tasks.append(make_qa_task(
         "find_extremum",
-        f"Which segment is largest in {cats[ci3]}?",
+        _p(f"Which segment is largest in {cats[ci3]}?",
+           f"In {cats[ci3]}, which segment is biggest?",
+           f"Which segment dominates the {cats[ci3]} stack?",
+           f"What is the largest segment in {cats[ci3]}?"),
         top_seg, "label",
         row_keys=[cats[ci3]], column_keys=series,
         reasoning=f"Compare segment heights within {cats[ci3]}; {top_seg} is largest.",
@@ -984,7 +1045,9 @@ def _qa_stacked(spec) -> List:
         ci4 = random.randrange(len(cats))
         tasks.append(make_qa_task(
             "visual_reference",
-            f"In {cats[ci4]}, what is the value of the {color} segment?",
+            _p(f"In {cats[ci4]}, what is the value of the {color} segment?",
+               f"What value does the {color} segment show in {cats[ci4]}?",
+               f"Read the {color} segment in {cats[ci4]}: what is its value?"),
             fmt_value(data[series[si]][ci4], unit, dec),
             "numeric_with_unit" if unit != "count" else "numeric",
             row_keys=[cats[ci4]], column_keys=[series[si]],
@@ -1050,7 +1113,7 @@ def build_stacked(idx: int, render_dir: str, difficulty: str = "hard") -> Figure
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Period", spec["metric"], spec["series"], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
-        tasks_table_extraction=make_table_extraction_task("chart", "stacked_bar", spec["title"], table),
+        tasks_table_extraction=make_table_extraction_task("chart", "stacked_bar", spec["title"], table, prompt=_p(*TABLE_PROMPTS)),
         tasks_qa=_qa_stacked(spec),
     )
 
@@ -1096,7 +1159,11 @@ def _qa_line(spec) -> List:
     tasks = []
     i = random.randrange(len(x))
     tasks.append(make_qa_task(
-        "retrieve_value", f"What was the {name} in {x[i]}?",
+        "retrieve_value",
+        _p(f"What was the {name} in {x[i]}?",
+           f"What is the {name} value at {x[i]}?",
+           f"What does the line show for {name} in {x[i]}?",
+           f"Read the {x[i]} point: what is the {name}?"),
         fmt_value(y[i], unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[x[i]], column_keys=[name],
@@ -1104,7 +1171,11 @@ def _qa_line(spec) -> List:
     ))
     mx = argmax_idx(y)
     tasks.append(make_qa_task(
-        "find_extremum", f"In which month was {name} highest?",
+        "find_extremum",
+        _p(f"In which month was {name} highest?",
+           f"Which month shows the peak {name}?",
+           f"When did {name} reach its highest point?",
+           f"Which month had the highest {name}?"),
         x[mx], "label", row_keys=x, column_keys=[name],
         reasoning=f"Peak of the line is at {x[mx]} ({fmt_value(y[mx], unit, dec)}).",
     ))
@@ -1128,7 +1199,9 @@ def _qa_line(spec) -> List:
     if trend is not None:
         tasks.append(make_qa_task(
             "trend_direction",
-            f"Did {name} generally increase, decrease, or stay the same over the period?",
+            _p(f"Did {name} generally increase, decrease, or stay the same over the period?",
+               f"Over the period shown, did {name} increase, decrease, or stay the same?",
+               f"What is the overall trend in {name}: increase, decrease, or stay the same?"),
             trend, "label", row_keys=[x[0], x[-1]], column_keys=[name],
             aliases=t_alias,
             reasoning=f"Start {fmt_value(y[0], unit, dec)} -> end {fmt_value(y[-1], unit, dec)}; over the period it {trend}.",
@@ -1146,7 +1219,9 @@ def _qa_line(spec) -> List:
         chg_aliases = [str(abs(delta)), f"{direction} by {fmt_value(abs(delta), unit, dec)}"]
     tasks.append(make_qa_task(
         "compute_difference",
-        f"By how much did {name} change from {x[j-1]} to {x[j]}?",
+        _p(f"By how much did {name} change from {x[j-1]} to {x[j]}?",
+           f"What was the change in {name} between {x[j-1]} and {x[j]}?",
+           f"How much did {name} move from {x[j-1]} to {x[j]}?"),
         fmt_value(abs(delta), unit, dec),
         "numeric_with_unit" if unit != "count" else "numeric",
         row_keys=[x[j-1], x[j]], column_keys=[name],
@@ -1165,7 +1240,9 @@ def _qa_line(spec) -> List:
         cmp_reason = f"{x[a]}={fmt_value(y[a], unit, dec)} vs {x[b]}={fmt_value(y[b], unit, dec)}; {x[hi]} is higher."
     tasks.append(make_qa_task(
         "compare_values",
-        f"Which month had higher {name}: {x[a]} or {x[b]}?",
+        _p(f"Which month had higher {name}: {x[a]} or {x[b]}?",
+           f"Between {x[a]} and {x[b]}, which month had the higher {name}?",
+           f"Compare {x[a]} and {x[b]}: which month had more {name}?"),
         cmp_ans, "label",
         row_keys=[x[a], x[b]], column_keys=[name],
         reasoning=cmp_reason,
@@ -1221,7 +1298,7 @@ def build_line(idx: int, render_dir: str, difficulty: str = "easy") -> FigureExa
         data=FigureData(SCHEMA_VERSION, table, series),
         render=RenderInfo(spec["title"], None, "Month", spec["metric"], [spec["metric"]], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
-        tasks_table_extraction=make_table_extraction_task("chart", "line", spec["title"], table),
+        tasks_table_extraction=make_table_extraction_task("chart", "line", spec["title"], table, prompt=_p(*TABLE_PROMPTS)),
         tasks_qa=_qa_line(spec),
     )
 
@@ -1285,7 +1362,10 @@ def _qa_dashboard(spec) -> List:
     i = random.randrange(len(cats))
     tasks.append(make_qa_task(
         "retrieve_value",
-        f"How many {name.lower()} came from {cats[i]}?",
+        _p(f"How many {name.lower()} came from {cats[i]}?",
+           f"How many {name.lower()} did {cats[i]} generate?",
+           f"What is the {name.lower()} count for {cats[i]} in the channel panel?",
+           f"From {cats[i]}, how many {name.lower()} were there?"),
         str(int(vals[i])), "numeric",
         row_keys=[cats[i]], column_keys=[name], panel_ids=["p2"],
         reasoning=f"Read the {cats[i]} bar in the channel panel: {int(vals[i])}.",
@@ -1294,7 +1374,10 @@ def _qa_dashboard(spec) -> List:
     mx = argmax_idx(vals)
     tasks.append(make_qa_task(
         "find_extremum",
-        f"Which channel had the most {name.lower()}?",
+        _p(f"Which channel had the most {name.lower()}?",
+           f"Which channel generated the most {name.lower()}?",
+           f"Which channel leads on {name.lower()}?",
+           f"Which channel's bar is highest for {name.lower()}?"),
         cats[mx], "label",
         row_keys=cats, column_keys=[name], panel_ids=["p2"],
         reasoning=f"{cats[mx]} has the tallest bar ({int(vals[mx])}).",
@@ -1307,7 +1390,9 @@ def _qa_dashboard(spec) -> List:
     gap = abs(kpi_total - shown_sum)
     tasks.append(make_qa_task(
         "multi_panel_linked_reasoning",
-        f"What is the difference between the KPI card total and the sum of {name.lower()} in the channel breakdown?",
+        _p(f"What is the difference between the KPI card total and the sum of {name.lower()} in the channel breakdown?",
+           f"By how much does the KPI card total differ from the sum of the channel breakdown's {name.lower()}?",
+           f"Compare the headline KPI total with the channel panel's summed {name.lower()}: what is the absolute difference?"),
         str(int(gap)), "numeric",
         panel_ids=["p1", "p2"], aliases=[f"{int(gap):,}", str(int(gap))],
         reasoning=f"KPI total {kpi_total:,} vs channel sum {shown_sum:,}; absolute difference = {gap:,}.",
@@ -1318,7 +1403,9 @@ def _qa_dashboard(spec) -> List:
     mxs = argmax_idx(spend)
     tasks.append(make_qa_task(
         "find_extremum",
-        "In which month was Spend highest?",
+        _p("In which month was Spend highest?",
+           "Which month shows peak Spend in the trend panel?",
+           "When was Spend at its highest?"),
         months[mxs], "label",
         panel_ids=["p3"],
         reasoning=f"Peak of the spend trend line is at {months[mxs]} (${int(spend[mxs]):,}).",
@@ -1392,7 +1479,11 @@ def build_dashboard(idx: int, render_dir: str, difficulty: str = "medium") -> Fi
         ],
         tasks_table_extraction=make_table_extraction_task(
             "dashboard", "multi_panel", spec["title"], table,
-            prompt="Extract ALL quantitative data from this dashboard: every KPI card and every panel's table.",
+            prompt=_p(
+                "Extract ALL quantitative data from this dashboard: every KPI card and every panel's table.",
+                "Convert this dashboard into structured data: include every KPI card and each panel's table.",
+                "Read out all quantitative data on this dashboard — the KPI cards and every panel's table.",
+            ),
             kpis=[KPIItem("Total Conversions", spec["kpi_total"], "count")],
             extra_tables=[PanelTable("p3", "Monthly Spend", spend_table)],
         ),
@@ -1447,7 +1538,10 @@ def _qa_funnel(spec) -> List:
     i = random.randrange(n)
     tasks.append(make_qa_task(
         "retrieve_value",
-        f"How many {stages[i]} were there?",
+        _p(f"How many {stages[i]} were there?",
+           f"What is the {stages[i]} count?",
+           f"How many {stages[i]} does the funnel show?",
+           f"Read the {stages[i]} stage: what is its count?"),
         str(counts[i]), "numeric",
         row_keys=[stages[i]], column_keys=["Count"],
         reasoning=f"Read the {stages[i]} stage of the funnel: {counts[i]:,}.",
@@ -1459,7 +1553,9 @@ def _qa_funnel(spec) -> List:
     conv = round(raw_conv, 1)
     tasks.append(make_qa_task(
         "funnel_conversion",
-        f"What is the conversion rate from {stages[j-1]} to {stages[j]}?",
+        _p(f"What is the conversion rate from {stages[j-1]} to {stages[j]}?",
+           f"What percentage of {stages[j-1]} converted to {stages[j]}?",
+           f"What share of {stages[j-1]} became {stages[j]}?"),
         f"{conv}%", "numeric_with_unit",
         row_keys=[stages[j - 1], stages[j]], column_keys=["Count"],
         aliases=[str(conv), f"{conv}%", f"{round(raw_conv, 2)}%"],
@@ -1471,7 +1567,9 @@ def _qa_funnel(spec) -> List:
     drop = counts[k - 1] - counts[k]
     tasks.append(make_qa_task(
         "compute_difference",
-        f"How many were lost between {stages[k-1]} and {stages[k]}?",
+        _p(f"How many were lost between {stages[k-1]} and {stages[k]}?",
+           f"What is the drop-off in count between {stages[k-1]} and {stages[k]}?",
+           f"How many did the funnel lose from {stages[k-1]} to {stages[k]}?"),
         str(drop), "numeric",
         row_keys=[stages[k - 1], stages[k]], column_keys=["Count"],
         aliases=[f"{drop:,}"],
@@ -1483,7 +1581,9 @@ def _qa_funnel(spec) -> List:
     e2e = round(raw_e2e, 2)
     tasks.append(make_qa_task(
         "funnel_conversion",
-        f"What is the overall conversion rate from {stages[0]} to {stages[-1]}?",
+        _p(f"What is the overall conversion rate from {stages[0]} to {stages[-1]}?",
+           f"End to end, what percentage of {stages[0]} became {stages[-1]}?",
+           f"What is the full-funnel conversion rate, from {stages[0]} to {stages[-1]}?"),
         f"{e2e}%", "numeric_with_unit",
         row_keys=[stages[0], stages[-1]], column_keys=["Count"],
         aliases=[str(e2e), f"{e2e}%", f"{round(raw_e2e, 1)}%"],
@@ -1502,8 +1602,12 @@ def _qa_funnel(spec) -> List:
     a, b = worst[0], worst[1]
     tasks.append(make_qa_task(
         "diagnostic",
-        "Which stage-to-stage transition has the LOWEST conversion rate "
-        "(the funnel's biggest proportional leak)?",
+        _p("Which stage-to-stage transition has the LOWEST conversion rate "
+           "(the funnel's biggest proportional leak)?",
+           "Identify the funnel's bottleneck: the transition with the LOWEST "
+           "stage-to-stage conversion rate.",
+           "Which adjacent-stage transition converts worst (lowest conversion "
+           "rate between consecutive stages)?"),
         f"{a} to {b}", "label",
         row_keys=[a, b], column_keys=["Count"],
         aliases=[f"{a} to {b}", f"{a}->{b}", f"{a} -> {b}",
@@ -1559,7 +1663,7 @@ def build_funnel(idx: int, render_dir: str, difficulty: str = "medium") -> Figur
         data=FigureData(SCHEMA_VERSION, table, []),
         render=RenderInfo(spec["title"], None, "Stage", "Count", spec["stages"], style, nuis),
         artifacts=Artifacts(img, table_csv_path=csv_path),
-        tasks_table_extraction=make_table_extraction_task("chart", "funnel", spec["title"], table),
+        tasks_table_extraction=make_table_extraction_task("chart", "funnel", spec["title"], table, prompt=_p(*TABLE_PROMPTS)),
         tasks_qa=_qa_funnel(spec),
         metadata={"stage_count": len(spec["stages"])},
     )
