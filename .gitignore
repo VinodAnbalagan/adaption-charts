@@ -25,3 +25,8 @@ data_*/
 
 # Secrets — never commit
 .env
+
+# Gold dataset — DO track these
+!gold/
+!gold/**
+

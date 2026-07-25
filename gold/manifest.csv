@@ -1,0 +1,62 @@
+id,source,image_path,question,answer,chart_type,task_type,difficulty,verified,split,notes
+syn_bar_0001__q1,synthetic,gold/images/syn_bar_0001.png,What was Enterprise's revenue?,$8600,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0001__q2,synthetic,gold/images/syn_bar_0001.png,Which segment had the highest revenue?,Enterprise,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0001__q3,synthetic,gold/images/syn_bar_0001.png,How much more revenue did Consumer generate than Education?,$2400,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0001__q4,synthetic,gold/images/syn_bar_0001.png,Rank the top 3 segments by revenue.,"Enterprise, Consumer, SMB",bar,rank_order,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0001__q5,synthetic,gold/images/syn_bar_0001.png,Would Consumer and SMB combined exceed Enterprise's revenue?,No,bar,hard_multi_step,hard,true,train,annotated bars; correct-by-construction
+syn_bar_0002__q1,synthetic,gold/images/syn_bar_0002.png,Revenue for Standard?,$3800,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0002__q2,synthetic,gold/images/syn_bar_0002.png,Which product line made the least revenue?,Basic,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0002__q3,synthetic,gold/images/syn_bar_0002.png,What was the revenue difference between Ultimate and Standard?,$1300,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0002__q5,synthetic,gold/images/syn_bar_0002.png,Do the combined revenues of Standard and Pro exceed Premium's?,Yes,bar,hard_multi_step,hard,true,train,annotated bars; correct-by-construction
+syn_bar_0003__q1,synthetic,gold/images/syn_bar_0003.png,How much revenue did APAC generate?,$4400,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0003__q2,synthetic,gold/images/syn_bar_0003.png,Which region led in revenue?,EMEA,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0003__q3,synthetic,gold/images/syn_bar_0003.png,By how much does NA's revenue exceed APAC's?,$800,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0003__q4,synthetic,gold/images/syn_bar_0003.png,Name the bottom 3 regions in revenue.,"MEA, LATAM, APAC",bar,rank_order,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0004__q1,synthetic,gold/images/syn_bar_0004.png,What was Retail's revenue?,$5100,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0004__q2,synthetic,gold/images/syn_bar_0004.png,Which vertical had the lowest revenue?,Healthcare,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0004__q3,synthetic,gold/images/syn_bar_0004.png,How much more revenue did Finance generate than Manufacturing?,$2400,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0005__q1,synthetic,gold/images/syn_bar_0005.png,How many units did Widget C sell?,2100,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0005__q2,synthetic,gold/images/syn_bar_0005.png,Which product sold the most units?,Widget D,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0005__q3,synthetic,gold/images/syn_bar_0005.png,How many more units did Widget B sell than Widget A?,2200,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0005__q4,synthetic,gold/images/syn_bar_0005.png,Rank the top 3 products by units sold.,"Widget D, Widget B, Widget C",bar,rank_order,medium,true,train,annotated bars; correct-by-construction
+syn_bar_0006__q1,synthetic,gold/images/syn_bar_0006.png,Units sold by SKU-102?,720,bar,lookup_value,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0006__q2,synthetic,gold/images/syn_bar_0006.png,Which SKU had the lowest unit sales?,SKU-103,bar,max_min,easy,true,train,annotated bars; correct-by-construction
+syn_bar_0006__q3,synthetic,gold/images/syn_bar_0006.png,What was the unit sales difference between SKU-105 and SKU-102?,530,bar,delta_absolute,medium,true,train,annotated bars; correct-by-construction
+syn_line_0001__q1,synthetic,gold/images/syn_line_0001.png,What was the revenue in Mar?,$6963,line,lookup_value,easy,true,train,annotated line; correct-by-construction
+syn_line_0001__q2,synthetic,gold/images/syn_line_0001.png,In which month was revenue highest?,Jun,line,max_min,easy,true,train,annotated line; correct-by-construction
+syn_line_0001__q3,synthetic,gold/images/syn_line_0001.png,Did revenue increase or decrease from Feb to Mar?,Increased,line,trend_direction,easy,true,train,annotated line; correct-by-construction
+syn_line_0001__q4,synthetic,gold/images/syn_line_0001.png,What was the percent change in revenue from Jan to Jun?,24.2%,line,percent_change_ratio,medium,true,train,annotated line; correct-by-construction
+syn_line_0001__q5,synthetic,gold/images/syn_line_0001.png,Was the increase from Jan to Mar larger than the increase from Apr to Jun?,Yes,line,hard_multi_step,hard,true,train,annotated line; correct-by-construction
+syn_line_0002__q1,synthetic,gold/images/syn_line_0002.png,Revenue in Sep?,$7420,line,lookup_value,easy,true,train,annotated line; correct-by-construction
+syn_line_0002__q2,synthetic,gold/images/syn_line_0002.png,Which month had the lowest revenue?,Oct,line,max_min,easy,true,train,annotated line; correct-by-construction
+syn_line_0002__q3,synthetic,gold/images/syn_line_0002.png,"From Sep to Oct, did revenue increase or decrease?",Decreased,line,trend_direction,easy,true,train,annotated line; correct-by-construction
+syn_line_0002__q4,synthetic,gold/images/syn_line_0002.png,By what percent did revenue change from Jul to Dec?,13.3%,line,percent_change_ratio,medium,true,train,annotated line; correct-by-construction
+syn_line_0003__q1,synthetic,gold/images/syn_line_0003.png,How many users were there in Apr?,15800,line,lookup_value,easy,true,train,annotated line; correct-by-construction
+syn_line_0003__q2,synthetic,gold/images/syn_line_0003.png,In which month were users highest?,Jun,line,max_min,easy,true,train,annotated line; correct-by-construction
+syn_line_0003__q3,synthetic,gold/images/syn_line_0003.png,Did users increase or decrease from Mar to Apr?,Increased,line,trend_direction,easy,true,train,annotated line; correct-by-construction
+syn_line_0003__q4,synthetic,gold/images/syn_line_0003.png,What was the percent change in users from Jan to Jun?,49.2%,line,percent_change_ratio,medium,true,train,annotated line; correct-by-construction
+syn_line_0003__q5,synthetic,gold/images/syn_line_0003.png,Was the increase from Jan to Mar larger than the increase from Apr to Jun?,Yes,line,hard_multi_step,hard,true,train,annotated line; correct-by-construction
+syn_grouped_0001__q1,synthetic,gold/images/syn_grouped_0001.png,What was Enterprise's revenue in 2024?,$8100,grouped_bar,lookup_value,easy,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0001__q2,synthetic,gold/images/syn_grouped_0001.png,"In 2025, which segment had the highest revenue?",Enterprise,grouped_bar,max_min,easy,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0001__q3,synthetic,gold/images/syn_grouped_0001.png,"For SMB, which year had higher revenue, 2024 or 2025?",2025,grouped_bar,multi_series_compare,medium,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0001__q4,synthetic,gold/images/syn_grouped_0001.png,Was Enterprise's revenue in 2024 higher than SMB's in 2025?,Yes,grouped_bar,hard_multi_step,hard,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0002__q1,synthetic,gold/images/syn_grouped_0002.png,APAC revenue in H2?,$4700,grouped_bar,lookup_value,easy,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0002__q2,synthetic,gold/images/syn_grouped_0002.png,Which region led in revenue in H1?,EMEA,grouped_bar,max_min,easy,true,train,annotated grouped bars; correct-by-construction
+syn_grouped_0002__q3,synthetic,gold/images/syn_grouped_0002.png,Was NA's revenue higher in H1 or H2?,H2,grouped_bar,multi_series_compare,medium,true,train,annotated grouped bars; correct-by-construction
+syn_stacked_0001__q1,synthetic,gold/images/syn_stacked_0001.png,What was the Pro revenue for Enterprise?,$2900,stacked_bar,lookup_value,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0001__q2,synthetic,gold/images/syn_stacked_0001.png,Which segment had the highest total revenue?,Enterprise,stacked_bar,max_min,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0001__q3,synthetic,gold/images/syn_stacked_0001.png,What was Consumer's total revenue?,$4100,stacked_bar,aggregation_sum_avg,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0001__q4,synthetic,gold/images/syn_stacked_0001.png,Rank the top 3 segments by total revenue.,"Enterprise, Consumer, SMB",stacked_bar,rank_order,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0002__q1,synthetic,gold/images/syn_stacked_0002.png,Paid revenue for Q3?,$2400,stacked_bar,lookup_value,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0002__q2,synthetic,gold/images/syn_stacked_0002.png,Which quarter recorded the lowest total revenue?,Q1,stacked_bar,max_min,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_stacked_0002__q3,synthetic,gold/images/syn_stacked_0002.png,How much total revenue did Q2 generate?,$7000,stacked_bar,aggregation_sum_avg,medium,true,train,annotated stacked bars; segments >8% of max total labeled
+syn_pie_0001__q1,synthetic,gold/images/syn_pie_0001.png,What percentage of spend came from Social?,24.6%,pie,lookup_value,easy,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0001__q2,synthetic,gold/images/syn_pie_0001.png,Which channel had the largest share of spend?,Paid Search,pie,max_min,easy,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0001__q3,synthetic,gold/images/syn_pie_0001.png,Was Email's share of spend larger than SEO's?,No,pie,compare_categories,medium,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0001__q4,synthetic,gold/images/syn_pie_0001.png,Rank the top 3 channels by share of spend.,"Paid Search, Social, SEO",pie,rank_order,medium,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0002__q1,synthetic,gold/images/syn_pie_0002.png,What share of budget did Marketing represent?,14.3%,pie,lookup_value,easy,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0002__q2,synthetic,gold/images/syn_pie_0002.png,Which department had the smallest slice of budget?,Support,pie,max_min,easy,true,train,annotated pie; slice labels show category + percentage
+syn_pie_0002__q3,synthetic,gold/images/syn_pie_0002.png,Did Operations have a bigger share of budget than Support?,Yes,pie,compare_categories,medium,true,train,annotated pie; slice labels show category + percentage
+syn_donut_0001__q1,synthetic,gold/images/syn_donut_0001.png,Services' share of total sales?,29.2%,donut,lookup_value,easy,true,train,annotated donut; slice labels show category + percentage
+syn_donut_0001__q2,synthetic,gold/images/syn_donut_0001.png,Which category accounted for the least sales?,Hardware,donut,max_min,easy,true,train,annotated donut; slice labels show category + percentage
+syn_donut_0001__q3,synthetic,gold/images/syn_donut_0001.png,Was Subscriptions' sales share greater than Services'?,No,donut,compare_categories,medium,true,train,annotated donut; slice labels show category + percentage
