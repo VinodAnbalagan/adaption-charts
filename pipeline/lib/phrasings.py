@@ -10,8 +10,9 @@ category names / entity terms.
 Domains covered so far:
   - REVENUE_BAR         : bar charts of $-denominated revenue
   - UNITS_BAR           : bar charts of unit counts
-  - MONTHLY_REVENUE_LINE: line charts of monthly $ revenue
-  - MONTHLY_USERS_LINE  : line charts of monthly user counts
+  - REVENUE_LINE        : line charts of revenue (any period)
+  - USERS_LINE          : line charts of active users (any period)
+  - SIGNUPS_LINE        : line charts of new signups (any period)
   - REVENUE_GROUPED     : grouped bars, revenue split across a series axis
   - REVENUE_STACKED     : stacked bars, revenue composed from stack components
   - SHARE_CIRCLE        : pie/donut, generic share-of-{noun} phrasings
@@ -103,7 +104,7 @@ UNITS_BAR: dict[str, list[str]] = {
 
 # --- LINE -------------------------------------------------------------------
 
-MONTHLY_REVENUE_LINE: dict[str, list[str]] = {
+REVENUE_LINE: dict[str, list[str]] = {
     "lookup_value": [
         "What was the revenue in {category}?",
         "Revenue in {category}?",
@@ -137,7 +138,7 @@ MONTHLY_REVENUE_LINE: dict[str, list[str]] = {
 }
 
 
-MONTHLY_USERS_LINE: dict[str, list[str]] = {
+USERS_LINE: dict[str, list[str]] = {
     "lookup_value": [
         "How many users were there in {category}?",
         "Users in {category}?",
@@ -167,6 +168,40 @@ MONTHLY_USERS_LINE: dict[str, list[str]] = {
         "Was the increase from {a1} to {b1} larger than the increase from {a2} to {b2}?",
         "Did the {a1}-to-{b1} change exceed the {a2}-to-{b2} change?",
         "Was user growth from {a1} to {b1} bigger than from {a2} to {b2}?",
+    ],
+}
+
+
+SIGNUPS_LINE: dict[str, list[str]] = {
+    "lookup_value": [
+        "How many signups were there in {category}?",
+        "Signups in {category}?",
+        "What was the signup count in {category}?",
+    ],
+    "max_min_highest": [
+        "In which {entity} were signups highest?",
+        "Which {entity} had the most signups?",
+        "Which {entity} peaked in signups?",
+    ],
+    "max_min_lowest": [
+        "In which {entity} were signups lowest?",
+        "Which {entity} had the fewest signups?",
+        "Which {entity} recorded the lowest signup count?",
+    ],
+    "trend_direction": [
+        "Did signups increase or decrease from {a} to {b}?",
+        "From {a} to {b}, did signups increase or decrease?",
+        "Between {a} and {b}, did signups increase or decrease?",
+    ],
+    "percent_change_ratio": [
+        "What was the percent change in signups from {a} to {b}?",
+        "By what percent did signups change from {a} to {b}?",
+        "What was the percentage change in signups between {a} and {b}?",
+    ],
+    "hard_multi_step": [
+        "Was the increase from {a1} to {b1} larger than the increase from {a2} to {b2}?",
+        "Did the {a1}-to-{b1} change exceed the {a2}-to-{b2} change?",
+        "Was signup growth from {a1} to {b1} bigger than from {a2} to {b2}?",
     ],
 }
 

@@ -1,0 +1,32 @@
+{
+  "chart_type": "pie",
+  "title": "Regional Revenue Share",
+  "categories": [
+    "LATAM",
+    "APAC",
+    "EMEA",
+    "NA",
+    "MEA"
+  ],
+  "values": [
+    1500,
+    5500,
+    7400,
+    7900,
+    7100
+  ],
+  "percents": [
+    5.102,
+    18.7075,
+    25.1701,
+    26.8707,
+    24.1497
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0107",
+  "domain": "share_circle",
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 84,
+  "domain_index": 10
+}

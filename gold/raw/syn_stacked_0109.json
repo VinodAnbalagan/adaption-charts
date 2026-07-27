@@ -1,0 +1,47 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Revenue by Segment: Product Tier Breakdown",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Education",
+    "Consumer",
+    "Enterprise",
+    "Government",
+    "SMB"
+  ],
+  "series_labels": [
+    "Basic",
+    "Pro",
+    "Premium"
+  ],
+  "series_values": [
+    [
+      2300,
+      2700,
+      2000,
+      2600,
+      1500
+    ],
+    [
+      1600,
+      1500,
+      1400,
+      3300,
+      3100
+    ],
+    [
+      2100,
+      600,
+      3300,
+      2900,
+      2400
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0109",
+  "domain": "revenue_stacked",
+  "entity": "segment",
+  "overall_index": 72,
+  "domain_index": 11
+}

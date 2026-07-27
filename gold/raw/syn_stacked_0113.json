@@ -1,0 +1,43 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Revenue by Quarter and Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Q4",
+    "Q3",
+    "Q1",
+    "Q2"
+  ],
+  "series_labels": [
+    "Direct",
+    "Partner",
+    "Marketplace"
+  ],
+  "series_values": [
+    [
+      1500,
+      1700,
+      3700,
+      2000
+    ],
+    [
+      500,
+      3200,
+      4400,
+      1200
+    ],
+    [
+      2400,
+      600,
+      1300,
+      3200
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0113",
+  "domain": "revenue_stacked",
+  "entity": "quarter",
+  "overall_index": 76,
+  "domain_index": 15
+}

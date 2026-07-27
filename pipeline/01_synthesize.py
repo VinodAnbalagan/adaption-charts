@@ -15,6 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 import csv
 import json
+import random
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -29,12 +30,17 @@ from lib.render import (  # noqa: E402
 from lib.phrasings import (  # noqa: E402
     REVENUE_BAR,
     UNITS_BAR,
-    MONTHLY_REVENUE_LINE,
-    MONTHLY_USERS_LINE,
+    REVENUE_LINE,
+    USERS_LINE,
+    SIGNUPS_LINE,
     REVENUE_GROUPED,
     REVENUE_STACKED,
     SHARE_CIRCLE,
     pick,
+)
+from lib.pools import (  # noqa: E402
+    BAR_POOLS, LINE_POOLS,
+    GROUPED_POOLS, STACKED_POOLS, CIRCLE_POOLS,
 )
 
 
@@ -63,13 +69,18 @@ DOMAIN_META: dict[str, dict] = {
         "value_fmt": "{:.0f}",
         "answer_fmt": "{:.0f}",
     },
-    "monthly_revenue": {
-        "phrasings": MONTHLY_REVENUE_LINE,
+    "revenue_line": {
+        "phrasings": REVENUE_LINE,
         "value_fmt": "${:.0f}",
         "answer_fmt": "${:.0f}",
     },
-    "monthly_users": {
-        "phrasings": MONTHLY_USERS_LINE,
+    "users_line": {
+        "phrasings": USERS_LINE,
+        "value_fmt": "{:.0f}",
+        "answer_fmt": "{:.0f}",
+    },
+    "signups_line": {
+        "phrasings": SIGNUPS_LINE,
         "value_fmt": "{:.0f}",
         "answer_fmt": "{:.0f}",
     },
@@ -166,7 +177,7 @@ CHART_SPECS: list[dict] = [
     # --- LINE: monthly_revenue ---------------------------------------------
     {
         "chart_id": "syn_line_0001", "chart_type": "line",
-        "domain": "monthly_revenue", "entity": "month",
+        "domain": "revenue_line", "entity": "month",
         "title": "Monthly Revenue — H1 2025", "y_label": "Revenue ($)",
         "x_labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
         "values": [5860, 6415, 6963, 6633, 6705, 7280],
@@ -178,7 +189,7 @@ CHART_SPECS: list[dict] = [
     },
     {
         "chart_id": "syn_line_0002", "chart_type": "line",
-        "domain": "monthly_revenue", "entity": "month",
+        "domain": "revenue_line", "entity": "month",
         "title": "Monthly Revenue — H2 2025", "y_label": "Revenue ($)",
         "x_labels": ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         "values": [7150, 7890, 7420, 6980, 7260, 8100],
@@ -191,7 +202,7 @@ CHART_SPECS: list[dict] = [
     # --- LINE: monthly_users ------------------------------------------------
     {
         "chart_id": "syn_line_0003", "chart_type": "line",
-        "domain": "monthly_users", "entity": "month",
+        "domain": "users_line", "entity": "month",
         "title": "Monthly Active Users — H1 2025", "y_label": "Active users",
         "x_labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
         "values": [12000, 13500, 14200, 15800, 16400, 17900],
@@ -315,6 +326,353 @@ CHART_SPECS: list[dict] = [
         "notes": "annotated donut; slice labels show category + percentage",
     },
 ]
+
+
+def _gen_bar_values(rng, n, low, high, round_to=100, max_tries=40):
+    """Seeded random bar values with distinct max and min."""
+    for _ in range(max_tries):
+        vals = [round(rng.uniform(low, high) / round_to) * round_to for _ in range(n)]
+        if vals.count(max(vals)) == 1 and vals.count(min(vals)) == 1:
+            return vals
+    return vals  # accept whatever the last try produced
+
+
+def generate_bar_specs(n=12, seed=42, start_id=100):
+    """Produce n programmatic bar specs.
+      - Pool picked round-robin.
+      - 4-6 categories sampled from cat_pool.
+      - Values seeded random, unique extremes.
+      - delta_pair chosen so answer is positive.
+      - Every 2nd chart gets rank_order (alternating top/bottom).
+      - Every 3rd chart gets hard_multi_step.
+    """
+    rng = random.Random(seed)
+    specs = []
+    for i in range(n):
+        pool = BAR_POOLS[i % len(BAR_POOLS)]
+        cat_pool = pool["cat_pool"]
+        n_cats = min(rng.randint(4, 6), len(cat_pool))
+        cats = rng.sample(cat_pool, k=n_cats)
+        vals = _gen_bar_values(rng, n_cats, *pool["value_range"])
+
+        title = rng.choice(pool["title_templates"]).format(
+            q=rng.randint(1, 4),
+            h=rng.randint(1, 2),
+            y=rng.randint(21, 25),
+        )
+
+        lookup_target = rng.choice(cats)
+        extreme = rng.choice(["max", "min"])
+
+        # delta_pair with positive answer: put higher-valued category first
+        a, b = rng.sample(cats, k=2)
+        if vals[cats.index(a)] < vals[cats.index(b)]:
+            a, b = b, a
+
+        spec = {
+            "chart_id": f"syn_bar_{start_id + i:04d}",
+            "chart_type": "bar",
+            "domain": pool["domain"],
+            "entity": pool["entity"],
+            "title": title,
+            "y_label": pool["y_label"],
+            "categories": cats,
+            "values": vals,
+            "lookup_target": lookup_target,
+            "extreme": extreme,
+            "delta_pair": (a, b),
+            "notes": f"annotated bars; procedural gen (seed={seed}, idx={i})",
+        }
+
+        # rank_order rotation
+        if i % 2 == 0:
+            spec["rank_direction"] = "top" if (i // 2) % 2 == 0 else "bottom"
+
+        # hard_multi_step on every 3rd chart if we have 3+ categories
+        if i % 3 == 0 and n_cats >= 3:
+            triple = rng.sample(cats, k=3)
+            spec["hard_triple"] = tuple(triple)
+
+        specs.append(spec)
+    return specs
+
+
+# Extend hand-authored specs with programmatic ones
+CHART_SPECS.extend(generate_bar_specs(n=12, seed=42, start_id=100))
+
+
+def _gen_line_values(rng, n, low, high, trend="up", round_to=100, max_tries=40):
+    """Seeded walk-with-drift line values. Unique max and min."""
+    drift_map = {"up": 0.05, "down": -0.05, "flat": 0.0}
+    drift = drift_map[trend]
+    span = high - low
+    for _ in range(max_tries):
+        if trend == "up":
+            start = rng.uniform(low, low + span * 0.4)
+        elif trend == "down":
+            start = rng.uniform(low + span * 0.6, high)
+        else:
+            start = rng.uniform(low + span * 0.3, low + span * 0.7)
+        vals = [start]
+        for _ in range(n - 1):
+            step = rng.uniform(-0.15, 0.15) * span + drift * span
+            new_val = max(low, min(high, vals[-1] + step))
+            vals.append(new_val)
+        vals = [round(v / round_to) * round_to for v in vals]
+        if vals.count(max(vals)) == 1 and vals.count(min(vals)) == 1:
+            return vals
+    return vals
+
+
+def generate_line_specs(n=12, seed=43, start_id=100):
+    """Produce n programmatic line specs. Pool picked round-robin."""
+    rng = random.Random(seed)
+    specs = []
+    for i in range(n):
+        pool = LINE_POOLS[i % len(LINE_POOLS)]
+        xs = rng.choice(pool["x_pool"])
+        trend = rng.choice(["up", "down", "flat"])
+        vals = _gen_line_values(rng, len(xs), *pool["value_range"], trend=trend)
+
+        # Build title
+        period_fill = {"period": None, "y": rng.randint(21, 25)}
+        if pool.get("period_pool"):
+            period_fill["period"] = rng.choice(pool["period_pool"])
+        title_tpl = rng.choice(pool["title_templates"])
+        try:
+            title = title_tpl.format(**period_fill)
+        except KeyError:
+            # template didn't use one of our placeholders; ignore
+            title = title_tpl
+
+        lookup_target = rng.choice(xs)
+        extreme = rng.choice(["max", "min"])
+
+        # trend_pair: adjacent points, so the answer follows the local walk
+        i_a = rng.randint(0, len(xs) - 2)
+        trend_pair = (xs[i_a], xs[i_a + 1])
+
+        # pct_pair: span from a to a-few-later
+        pi_a = rng.randint(0, len(xs) - 3)
+        pi_b = rng.randint(pi_a + 2, len(xs) - 1)
+        pct_pair = (xs[pi_a], xs[pi_b])
+
+        spec = {
+            "chart_id": f"syn_line_{start_id + i:04d}",
+            "chart_type": "line",
+            "domain": pool["domain"],
+            "entity": pool["entity"],
+            "title": title,
+            "y_label": pool["y_label"],
+            "x_labels": xs,
+            "values": vals,
+            "lookup_target": lookup_target,
+            "extreme": extreme,
+            "trend_pair": trend_pair,
+            "pct_pair": pct_pair,
+            "notes": f"annotated line; procedural gen (seed={seed}, idx={i}, trend={trend})",
+        }
+
+        # hard_multi_step: compare two deltas within the same series
+        if i % 3 == 0 and len(xs) >= 4:
+            # pick two non-overlapping (a, b) pairs
+            i1a = rng.randint(0, len(xs) // 2 - 1)
+            i1b = rng.randint(i1a + 1, len(xs) // 2)
+            i2a = rng.randint(len(xs) // 2, len(xs) - 2)
+            i2b = rng.randint(i2a + 1, len(xs) - 1)
+            spec["hard_delta_pairs"] = (
+                (xs[i1a], xs[i1b]),
+                (xs[i2a], xs[i2b]),
+            )
+        specs.append(spec)
+    return specs
+
+
+CHART_SPECS.extend(generate_line_specs(n=15, seed=43, start_id=100))
+
+
+def generate_grouped_specs(n=10, seed=44, start_id=100):
+    """Programmatic grouped_bar specs. Always 2 series."""
+    rng = random.Random(seed)
+    specs = []
+    for i in range(n):
+        pool = GROUPED_POOLS[i % len(GROUPED_POOLS)]
+        cat_pool = pool["cat_pool"]
+        n_cats = min(rng.randint(4, 5), len(cat_pool))
+        cats = rng.sample(cat_pool, k=n_cats)
+        series_labels = list(rng.choice(pool["series_pool"]))
+        series_values = [
+            _gen_bar_values(rng, n_cats, *pool["value_range"])
+            for _ in series_labels
+        ]
+        title = rng.choice(pool["title_templates"]).format(
+            series_a=series_labels[0], series_b=series_labels[1],
+        )
+        lookup_cat = rng.choice(cats)
+        lookup_series = rng.choice(series_labels)
+        ex_series = rng.choice(series_labels)
+        extreme = rng.choice(["max", "min"])
+        cmp_cat = rng.choice(cats)
+
+        spec = {
+            "chart_id": f"syn_grouped_{start_id + i:04d}",
+            "chart_type": "grouped_bar",
+            "domain": pool["domain"],
+            "entity": pool["entity"],
+            "series_axis": pool["series_axis"],
+            "title": title,
+            "y_label": pool["y_label"],
+            "categories": cats,
+            "series_labels": series_labels,
+            "series_values": series_values,
+            "lookup_target": (lookup_cat, lookup_series),
+            "extreme_series": ex_series,
+            "extreme": extreme,
+            "compare_category": cmp_cat,
+            "notes": f"annotated grouped bars; procedural gen (seed={seed}, idx={i})",
+        }
+        # hard_multi_step on every 3rd chart
+        if i % 3 == 0 and n_cats >= 2:
+            c1, c2 = rng.sample(cats, k=2)
+            s1, s2 = series_labels[0], series_labels[1]
+            spec["hard_compare_pair"] = ((c1, s1), (c2, s2))
+        specs.append(spec)
+    return specs
+
+
+CHART_SPECS.extend(generate_grouped_specs(n=20, seed=44, start_id=100))
+
+
+def generate_stacked_specs(n=8, seed=45, start_id=100):
+    """Programmatic stacked_bar specs. 3 stack series per bar."""
+    rng = random.Random(seed)
+    specs = []
+    for i in range(n):
+        pool = STACKED_POOLS[i % len(STACKED_POOLS)]
+        cat_pool = pool["cat_pool"]
+        n_cats = min(rng.randint(4, 5), len(cat_pool))
+        cats = rng.sample(cat_pool, k=n_cats)
+        series_labels = list(rng.choice(pool["series_pool"]))
+        series_values = [
+            _gen_bar_values(rng, n_cats, *pool["value_range"])
+            for _ in series_labels
+        ]
+        title = rng.choice(pool["title_templates"])
+        lookup_cat = rng.choice(cats)
+        lookup_series = rng.choice(series_labels)
+        extreme = rng.choice(["max", "min"])
+        sum_cat = rng.choice(cats)
+
+        spec = {
+            "chart_id": f"syn_stacked_{start_id + i:04d}",
+            "chart_type": "stacked_bar",
+            "domain": pool["domain"],
+            "entity": pool["entity"],
+            "title": title,
+            "y_label": pool["y_label"],
+            "categories": cats,
+            "series_labels": series_labels,
+            "series_values": series_values,
+            "lookup_target": (lookup_cat, lookup_series),
+            "extreme": extreme,
+            "sum_target": sum_cat,
+            "notes": f"annotated stacked bars; procedural gen (seed={seed}, idx={i})",
+        }
+        # rank_order on every 2nd chart
+        if i % 2 == 0:
+            spec["rank_direction"] = "top" if i % 4 == 0 else "bottom"
+        specs.append(spec)
+    return specs
+
+
+CHART_SPECS.extend(generate_stacked_specs(n=14, seed=45, start_id=100))
+
+
+def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
+    """Programmatic pie + donut specs. First pie_n are pie, then donut_n donuts."""
+    rng = random.Random(seed)
+    specs = []
+    pie_ct = donut_ct = 0
+    total = pie_n + donut_n
+    for i in range(total):
+        pool = CIRCLE_POOLS[i % len(CIRCLE_POOLS)]
+        cat_pool = pool["cat_pool"]
+        n_cats = min(rng.randint(4, 6), len(cat_pool))
+        cats = rng.sample(cat_pool, k=n_cats)
+        vals = _gen_bar_values(rng, n_cats, *pool["value_range"])
+
+        if i < pie_n:
+            chart_type = "pie"
+            chart_id = f"syn_pie_{start_id + pie_ct:04d}"
+            pie_ct += 1
+        else:
+            chart_type = "donut"
+            chart_id = f"syn_donut_{start_id + donut_ct:04d}"
+            donut_ct += 1
+
+        title = rng.choice(pool["title_templates"])
+        lookup_target = rng.choice(cats)
+        extreme = rng.choice(["max", "min"])
+        cmp_pair = tuple(rng.sample(cats, k=2))
+
+        spec = {
+            "chart_id": chart_id,
+            "chart_type": chart_type,
+            "domain": pool["domain"],
+            "entity": pool["entity"],
+            "noun": pool["noun"],
+            "title": title,
+            "categories": cats,
+            "values": vals,
+            "lookup_target": lookup_target,
+            "extreme": extreme,
+            "compare_pair": cmp_pair,
+            "notes": f"annotated {chart_type}; procedural gen (seed={seed}, idx={i})",
+        }
+        # rank_order on every 2nd chart
+        if i % 2 == 0:
+            spec["rank_direction"] = "top" if i % 4 == 0 else "bottom"
+        specs.append(spec)
+    return specs
+
+
+CHART_SPECS.extend(generate_circle_specs(pie_n=10, donut_n=6, seed=46, start_id=100))
+
+
+# Balance targets are for the final ~250-row synthetic core. If a task_type
+# is over target, we randomly drop excess (seeded). Under-target types get
+# filled by adding more charts in later slices.
+BALANCE_TARGETS: dict[str, int] = {
+    "lookup_value": 45,
+    "max_min": 35,
+    "delta_absolute": 25,
+    "trend_direction": 25,
+    "percent_change_ratio": 12,
+    "hard_multi_step": 8,
+    "rank_order": 25,
+    "compare_categories": 30,
+    "multi_series_compare": 25,
+    "aggregation_sum_avg": 20,
+}
+
+
+def balance_rows(rows: list[dict], seed: int = 99) -> list[dict]:
+    """Drop excess rows per task_type against BALANCE_TARGETS. Seeded."""
+    rng = random.Random(seed)
+    by_type: dict[str, list[dict]] = {}
+    for r in rows:
+        by_type.setdefault(r["task_type"], []).append(r)
+
+    kept: list[dict] = []
+    for tt, tt_rows in by_type.items():
+        target = BALANCE_TARGETS.get(tt, len(tt_rows))
+        if len(tt_rows) > target:
+            kept.extend(rng.sample(tt_rows, k=target))
+        else:
+            kept.extend(tt_rows)
+
+    kept.sort(key=lambda r: r["id"])
+    return kept
 
 
 def ensure_dirs() -> None:
@@ -758,26 +1116,31 @@ def build_rows_for_chart(spec, domain_index, overall_index):
 
 def main() -> None:
     ensure_dirs()
-    with MANIFEST.open("w", newline="") as f:
-        csv.writer(f).writerow(MANIFEST_COLS)
 
+    all_rows: list[dict] = []
     domain_counters: dict[str, int] = {d: 0 for d in DOMAIN_META}
     per_chart_type: dict[str, int] = {}
-    total_rows = 0
     for overall_index, spec in enumerate(CHART_SPECS):
         dom = spec["domain"]
         domain_index = domain_counters[dom]
         rows, prov = build_rows_for_chart(spec, domain_index, overall_index)
         (RAW / f"{spec['chart_id']}.json").write_text(json.dumps(prov, indent=2))
-        with MANIFEST.open("a", newline="") as f:
-            w = csv.writer(f)
-            for r in rows:
-                w.writerow([r.get(c, "") for c in MANIFEST_COLS])
+        all_rows.extend(rows)
         domain_counters[dom] += 1
         per_chart_type[spec["chart_type"]] = per_chart_type.get(spec["chart_type"], 0) + 1
-        total_rows += len(rows)
 
-    print(f"generated {total_rows} rows across {len(CHART_SPECS)} charts")
+    raw_total = len(all_rows)
+    balanced = balance_rows(all_rows, seed=99)
+    dropped = raw_total - len(balanced)
+
+    with MANIFEST.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(MANIFEST_COLS)
+        for r in balanced:
+            w.writerow([r.get(c, "") for c in MANIFEST_COLS])
+
+    print(f"generated {raw_total} raw rows across {len(CHART_SPECS)} charts")
+    print(f"balanced -> {len(balanced)} rows (dropped {dropped})")
     print("  by chart_type:")
     for ct, n in per_chart_type.items():
         print(f"    {ct}: {n}")

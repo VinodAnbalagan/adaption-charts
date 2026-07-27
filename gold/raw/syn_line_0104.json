@@ -11,18 +11,18 @@
     "Dec"
   ],
   "values": [
-    7150,
-    7890,
-    7420,
-    6980,
-    7260,
-    8100
+    5500,
+    6500,
+    7200,
+    7700,
+    7600,
+    8300
   ],
   "annotated": true,
   "value_fmt": "${:.0f}",
-  "chart_id": "syn_line_0002",
+  "chart_id": "syn_line_0104",
   "domain": "revenue_line",
   "entity": "month",
-  "overall_index": 7,
-  "domain_index": 1
+  "overall_index": 32,
+  "domain_index": 4
 }

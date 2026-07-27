@@ -3,26 +3,26 @@
   "title": "Monthly Revenue \u2014 H2 2025",
   "y_label": "Revenue ($)",
   "x_labels": [
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
   ],
   "values": [
-    7150,
-    7890,
-    7420,
-    6980,
-    7260,
-    8100
+    7000,
+    6400,
+    7000,
+    6600,
+    7100,
+    6700
   ],
   "annotated": true,
   "value_fmt": "${:.0f}",
-  "chart_id": "syn_line_0002",
+  "chart_id": "syn_line_0112",
   "domain": "revenue_line",
   "entity": "month",
-  "overall_index": 7,
-  "domain_index": 1
+  "overall_index": 40,
+  "domain_index": 8
 }

@@ -1,6 +1,6 @@
 {
   "chart_type": "line",
-  "title": "Monthly Active Users \u2014 H1 2025",
+  "title": "Monthly Active Users \u2014 H1 2024",
   "y_label": "Active users",
   "x_labels": [
     "Jan",
@@ -11,18 +11,18 @@
     "Jun"
   ],
   "values": [
-    12000,
-    13500,
-    14200,
-    15800,
-    16400,
-    17900
+    13400,
+    13100,
+    17300,
+    18700,
+    17000,
+    20900
   ],
   "annotated": true,
   "value_fmt": "{:.0f}",
-  "chart_id": "syn_line_0003",
+  "chart_id": "syn_line_0102",
   "domain": "users_line",
   "entity": "month",
-  "overall_index": 8,
-  "domain_index": 0
+  "overall_index": 30,
+  "domain_index": 1
 }
