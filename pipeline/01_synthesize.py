@@ -398,7 +398,7 @@ def generate_bar_specs(n=12, seed=42, start_id=100):
 
 
 # Extend hand-authored specs with programmatic ones
-CHART_SPECS.extend(generate_bar_specs(n=12, seed=42, start_id=100))
+CHART_SPECS.extend(generate_bar_specs(n=16, seed=42, start_id=100))
 
 
 def _gen_line_values(rng, n, low, high, trend="up", round_to=100, max_tries=40):
@@ -488,7 +488,7 @@ def generate_line_specs(n=12, seed=43, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_line_specs(n=15, seed=43, start_id=100))
+CHART_SPECS.extend(generate_line_specs(n=23, seed=43, start_id=100))
 
 
 def generate_grouped_specs(n=10, seed=44, start_id=100):
@@ -540,7 +540,7 @@ def generate_grouped_specs(n=10, seed=44, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_grouped_specs(n=20, seed=44, start_id=100))
+CHART_SPECS.extend(generate_grouped_specs(n=32, seed=44, start_id=100))
 
 
 def generate_stacked_specs(n=8, seed=45, start_id=100):
@@ -585,7 +585,7 @@ def generate_stacked_specs(n=8, seed=45, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_stacked_specs(n=14, seed=45, start_id=100))
+CHART_SPECS.extend(generate_stacked_specs(n=22, seed=45, start_id=100))
 
 
 def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
@@ -636,23 +636,25 @@ def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_circle_specs(pie_n=10, donut_n=6, seed=46, start_id=100))
+CHART_SPECS.extend(generate_circle_specs(pie_n=20, donut_n=12, seed=46, start_id=100))
 
 
-# Balance targets are for the final ~250-row synthetic core. If a task_type
-# is over target, we randomly drop excess (seeded). Under-target types get
-# filled by adding more charts in later slices.
+# Balance targets are for the final ~400-row synthetic core (grown from 250
+# after we dropped the external-benchmark ChartQA/ChartX training slot).
+# If a task_type is over target, we randomly drop excess (seeded). Under-
+# target types get filled by adding more charts in later slices or by
+# hardset (task 5).
 BALANCE_TARGETS: dict[str, int] = {
-    "lookup_value": 45,
-    "max_min": 35,
-    "delta_absolute": 25,
-    "trend_direction": 25,
-    "percent_change_ratio": 12,
-    "hard_multi_step": 8,
-    "rank_order": 25,
-    "compare_categories": 30,
-    "multi_series_compare": 25,
-    "aggregation_sum_avg": 20,
+    "lookup_value": 72,
+    "max_min": 56,
+    "delta_absolute": 40,
+    "trend_direction": 40,
+    "percent_change_ratio": 20,
+    "hard_multi_step": 12,
+    "rank_order": 40,
+    "compare_categories": 48,
+    "multi_series_compare": 40,
+    "aggregation_sum_avg": 32,
 }
 
 

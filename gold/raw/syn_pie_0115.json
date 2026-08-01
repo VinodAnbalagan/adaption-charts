@@ -1,0 +1,29 @@
+{
+  "chart_type": "pie",
+  "title": "Ad Spend by Channel",
+  "categories": [
+    "Email",
+    "SEO",
+    "Affiliate",
+    "Social"
+  ],
+  "values": [
+    3900,
+    3300,
+    3000,
+    2200
+  ],
+  "percents": [
+    31.4516,
+    26.6129,
+    24.1935,
+    17.7419
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0115",
+  "domain": "share_circle",
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 124,
+  "domain_index": 18
+}

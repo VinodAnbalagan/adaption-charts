@@ -1,0 +1,32 @@
+{
+  "chart_type": "donut",
+  "title": "Sales by Product Category",
+  "categories": [
+    "Software",
+    "Services",
+    "Subscriptions",
+    "Hardware",
+    "Consulting"
+  ],
+  "values": [
+    1400,
+    2500,
+    1900,
+    5500,
+    5300
+  ],
+  "percents": [
+    8.4337,
+    15.0602,
+    11.4458,
+    33.1325,
+    31.9277
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0106",
+  "domain": "share_circle",
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 135,
+  "domain_index": 29
+}
