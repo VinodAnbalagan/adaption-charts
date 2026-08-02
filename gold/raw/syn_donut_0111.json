@@ -1,32 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Regional Revenue Share",
+  "title": "FY25 Budget Allocation",
   "categories": [
-    "LATAM",
-    "NA",
-    "MEA",
-    "EMEA",
-    "APAC"
+    "Engineering",
+    "Sales",
+    "HR",
+    "Operations",
+    "Support"
   ],
   "values": [
-    7900,
-    5400,
-    4000,
-    2000,
-    2300
+    3800,
+    4400,
+    1300,
+    3700,
+    2900
   ],
   "percents": [
-    36.5741,
-    25.0,
-    18.5185,
-    9.2593,
-    10.6481
+    23.6025,
+    27.3292,
+    8.0745,
+    22.9814,
+    18.0124
   ],
   "annotated": true,
   "chart_id": "syn_donut_0111",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 213,
-  "domain_index": 40
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 478,
+  "domain_index": 92
 }

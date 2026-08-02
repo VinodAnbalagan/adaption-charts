@@ -4,9 +4,10 @@ Stages a clean, upload-friendly layout in a temp dir, then pushes it as a
 single upload. Repo defaults to PRIVATE (competitors won't be able to
 download it during the challenge). Change with --public when ready.
 
-Uploads:
+Uploads (HF imagefolder layout — required for the platform to resolve
+image paths on ingest):
   README.md           dataset card (from gold/README.md)
-  train.csv           full manifest with columns AutoScientist needs
+  metadata.csv        manifest with file_name column pointing at images/*
   images/*.png        all chart images referenced by the manifest
 
 Does NOT upload:
@@ -41,11 +42,12 @@ CARD = GOLD / "README.md"
 DEFAULT_USER = "vinod-anbalagan"
 DEFAULT_REPO_NAME = "adaption-charts-p2-gold"
 
-# Columns kept in the exported train.csv. All original manifest columns,
-# but 'image_path' will be rewritten from "gold/images/..." to "images/..."
-# to match the HF-side folder layout.
+# Columns in the exported metadata.csv. HF imagefolder convention requires
+# a 'file_name' column that points at images relative to the metadata.csv's
+# directory. We keep the rest of the schema alongside as extra metadata.
 EXPORT_COLS = [
-    "id", "source", "image_path", "question", "answer",
+    "file_name",       # HF imagefolder convention (was 'image_path')
+    "id", "source", "question", "answer",
     "chart_type", "task_type", "difficulty", "verified", "split", "notes",
 ]
 
@@ -75,10 +77,12 @@ def stage(tmp: Path) -> tuple[int, int]:
                 sys.exit(f"missing image on disk: {src_abs}")
             shutil.copyfile(src_abs, stage_images / fname)
             copied.add(fname)
-        r["image_path"] = f"images/{fname}"
+        # HF imagefolder convention: file_name is relative to the
+        # metadata.csv's directory.
+        r["file_name"] = f"images/{fname}"
 
-    train_csv = tmp / "train.csv"
-    with train_csv.open("w", newline="") as f:
+    metadata_csv = tmp / "metadata.csv"
+    with metadata_csv.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=EXPORT_COLS, extrasaction="ignore")
         w.writeheader()
         for r in rows:
@@ -136,7 +140,10 @@ def main() -> None:
             folder_path=str(tmp),
             repo_id=repo_id,
             repo_type="dataset",
-            commit_message="upload adaption-charts-p2-gold (task 9)",
+            commit_message="upload adaption-charts-p2-gold (imagefolder layout)",
+            # Remove the previous non-imagefolder layout from the repo
+            # so HF and Adaption see a clean imagefolder dataset.
+            delete_patterns=["train.csv"],
         )
         print(f"\ndone. https://huggingface.co/datasets/{repo_id}")
 

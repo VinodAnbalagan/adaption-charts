@@ -1,32 +1,35 @@
 {
   "chart_type": "donut",
-  "title": "Sales Mix",
+  "title": "Website Traffic Sources",
   "categories": [
-    "Subscriptions",
-    "Hardware",
-    "Software",
-    "Services",
-    "Consulting"
+    "Paid",
+    "Social",
+    "Email",
+    "Organic",
+    "Direct",
+    "Referral"
   ],
   "values": [
-    4500,
-    3500,
-    1900,
-    3300,
-    3300
+    9700,
+    12400,
+    14000,
+    5700,
+    4000,
+    12200
   ],
   "percents": [
-    27.2727,
-    21.2121,
-    11.5152,
-    20.0,
-    20.0
+    16.7241,
+    21.3793,
+    24.1379,
+    9.8276,
+    6.8966,
+    21.0345
   ],
   "annotated": true,
   "chart_id": "syn_donut_0110",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 212,
-  "domain_index": 39
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 477,
+  "domain_index": 91
 }

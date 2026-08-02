@@ -1,0 +1,29 @@
+{
+  "chart_type": "pie",
+  "title": "FY25 Budget Allocation",
+  "categories": [
+    "Sales",
+    "Support",
+    "Marketing",
+    "Operations"
+  ],
+  "values": [
+    2800,
+    800,
+    3700,
+    500
+  ],
+  "percents": [
+    35.8974,
+    10.2564,
+    47.4359,
+    6.4103
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0169",
+  "domain": "share_circle",
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 458,
+  "domain_index": 72
+}

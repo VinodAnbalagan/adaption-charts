@@ -1,0 +1,28 @@
+{
+  "chart_type": "bar",
+  "title": "Q3 Revenue by Team",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Zeta",
+    "Beta",
+    "Omega",
+    "Theta",
+    "Gamma",
+    "Delta"
+  ],
+  "values": [
+    7900,
+    8000,
+    7300,
+    2700,
+    2300,
+    6800
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0151",
+  "domain": "revenue_bar",
+  "entity": "team",
+  "overall_index": 67,
+  "domain_index": 39
+}

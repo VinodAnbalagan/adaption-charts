@@ -1,32 +1,35 @@
 {
   "chart_type": "donut",
-  "title": "Sales Mix",
+  "title": "Traffic by Source",
   "categories": [
-    "Software",
-    "Hardware",
-    "Consulting",
-    "Subscriptions",
-    "Services"
+    "Organic",
+    "Referral",
+    "Social",
+    "Paid",
+    "Direct",
+    "Email"
   ],
   "values": [
-    4900,
-    1600,
-    1400,
-    1000,
-    4500
+    9200,
+    5000,
+    12800,
+    3700,
+    12100,
+    13300
   ],
   "percents": [
-    36.5672,
-    11.9403,
-    10.4478,
-    7.4627,
-    33.5821
+    16.3993,
+    8.9127,
+    22.8164,
+    6.5954,
+    21.5686,
+    23.7077
   ],
   "annotated": true,
   "chart_id": "syn_donut_0105",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 207,
-  "domain_index": 34
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 472,
+  "domain_index": 86
 }

@@ -1,32 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Regional Revenue Share",
+  "title": "Budget by Department",
   "categories": [
-    "MEA",
-    "APAC",
-    "NA",
-    "EMEA",
-    "LATAM"
+    "Engineering",
+    "Support",
+    "Marketing",
+    "Operations"
   ],
   "values": [
-    6800,
-    2600,
-    5800,
-    5500,
+    700,
+    4300,
+    1100,
     4000
   ],
   "percents": [
-    27.5304,
-    10.5263,
-    23.4818,
-    22.2672,
-    16.1943
+    6.9307,
+    42.5743,
+    10.8911,
+    39.604
   ],
   "annotated": true,
   "chart_id": "syn_donut_0106",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 208,
-  "domain_index": 35
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 473,
+  "domain_index": 87
 }

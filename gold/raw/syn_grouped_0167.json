@@ -1,0 +1,37 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Channel: Plan vs Actual",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Online",
+    "Reseller",
+    "Retail",
+    "Marketplace"
+  ],
+  "series_labels": [
+    "Plan",
+    "Actual"
+  ],
+  "series_values": [
+    [
+      11200,
+      10400,
+      6100,
+      9300
+    ],
+    [
+      6600,
+      7900,
+      10500,
+      8000
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0167",
+  "domain": "revenue_grouped",
+  "entity": "channel",
+  "series_axis": "period",
+  "overall_index": 268,
+  "domain_index": 69
+}

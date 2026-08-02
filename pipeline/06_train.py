@@ -4,7 +4,28 @@ Every step is a separate command so you can review before spending credits
 on the next stage. Prints all IDs; you pass them into subsequent commands
 (nothing is persisted to disk except the packed CSV and the checkpoint).
 
-Full flow:
+RECOMMENDED HYBRID FLOW (UI for dataset, API for training):
+  In the web UI:
+    - Import from Hugging Face -> vinod-anbalagan/adaption-charts-p2-gold
+    - Column mapping: question -> prompt, answer -> completion, image -> image
+    - Recipe toggles (ON: Prompt Rephrase, Metadata Injection;
+                      OFF: Dedup, Reasoning traces, Hallucination mitigation,
+                           House Special)
+    - Trigger adaptation, watch View tab for quality spot-check
+    - Note the DATASET_ID from the URL bar
+
+  Then here via API:
+    - inspect       : see adapted column names for variant B mapping
+    - recommend     : free hyperparam suggestion for our data size
+    - train         : autoscientist.create with variant a / b
+    - wait-train    : poll the search loop
+    - download      : stream best checkpoint
+
+The pack / upload / adapt / wait-adapt subcommands are the FULL-API
+alternative if you'd rather script the ingestion too. Not recommended
+for a first submission — UI gives better visual control there.
+
+Full flow (if not using UI):
 
     # 1. Pack the manifest + images into a bytes-embedded CSV (local, free)
     python pipeline/06_train.py pack --out /tmp/adapt_upload.csv

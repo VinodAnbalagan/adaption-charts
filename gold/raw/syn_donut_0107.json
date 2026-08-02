@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Traffic by Source",
+  "title": "Ad Spend by Channel",
   "categories": [
-    "Social",
-    "Referral",
+    "Paid Search",
     "Direct",
-    "Organic"
+    "Email",
+    "SEO"
   ],
   "values": [
-    13200,
-    7400,
-    13900,
-    13300
+    3900,
+    1800,
+    3500,
+    4500
   ],
   "percents": [
-    27.6151,
-    15.4812,
-    29.0795,
-    27.8243
+    28.4672,
+    13.1387,
+    25.5474,
+    32.8467
   ],
   "annotated": true,
   "chart_id": "syn_donut_0107",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 209,
-  "domain_index": 36
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 474,
+  "domain_index": 88
 }

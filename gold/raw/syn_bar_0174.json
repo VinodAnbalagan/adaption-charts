@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "title": "FY2025 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "Enterprise",
+    "Startup",
+    "Nonprofit",
+    "Consumer"
+  ],
+  "values": [
+    4600,
+    9800,
+    6800,
+    7200,
+    9300
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0174",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 90,
+  "domain_index": 54
+}

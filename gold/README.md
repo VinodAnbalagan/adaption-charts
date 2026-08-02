@@ -37,9 +37,9 @@ Each row:
 
 | column | type | description |
 |---|---|---|
+| `file_name` | string | HF imagefolder path to the chart PNG (`images/...`) |
 | `id` | string | unique row id, e.g. `syn_bar_0001__q1` or `hs_0007__q3` |
 | `source` | enum | `synthetic` \| `hardset` |
-| `image_path` | string | relative path to the chart PNG (`images/...`) |
 | `question` | string | short flat-register question |
 | `answer` | string | short exact answer, e.g. `47`, `Enterprise`, `-$1440.81`, `11.3%`, `Yes` |
 | `chart_type` | enum | `bar` \| `line` \| `grouped_bar` \| `stacked_bar` \| `pie` \| `donut` \| `mixed` |
