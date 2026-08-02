@@ -52,14 +52,69 @@ EXPORT_COLS = [
 ]
 
 
+def _md_table(counter, label: str, total: int | None = None) -> str:
+    """Render a Counter as a markdown table sorted by count desc."""
+    lines = [f"| {label} | rows |" + (" share |" if total else ""),
+             "|---|---:|" + ("---:|" if total else "")]
+    for k, v in sorted(counter.items(), key=lambda x: -x[1]):
+        share = f" {v / total * 100:.1f}% |" if total else ""
+        lines.append(f"| {k} | {v} |{share}")
+    return "\n".join(lines)
+
+
+def _render_composition(rows: list[dict]) -> str:
+    """Build the Composition section from live manifest data."""
+    from collections import Counter
+    n = len(rows)
+    src = Counter(r["source"] for r in rows)
+    ct = Counter(r["chart_type"] for r in rows)
+    tt = Counter(r["task_type"] for r in rows)
+    df = Counter(r["difficulty"] for r in rows)
+    return "\n\n".join([
+        "**By source**\n\n" + _md_table(src, "source", n),
+        "**By chart_type**\n\n" + _md_table(ct, "chart_type"),
+        "**By task_type**\n\n" + _md_table(tt, "task_type"),
+        "**By difficulty**\n\n" + _md_table(df, "difficulty"),
+    ])
+
+
+def _sync_card(card_text: str, rows: list[dict]) -> str:
+    """Replace the auto-generated regions of the dataset card.
+
+    Uses HTML-comment markers so the hand-written prose stays untouched:
+      <!-- AUTOGEN:counts -->   ... <!-- /AUTOGEN:counts -->
+      <!-- AUTOGEN:composition --> ... <!-- /AUTOGEN:composition -->
+    Falls back to leaving the card as-is if markers are missing.
+    """
+    import re
+    from collections import Counter
+    n = len(rows)
+    src = Counter(r["source"] for r in rows)
+    counts_block = (
+        f"- **{n} rows total** — "
+        + " + ".join(f"{v} {k}" for k, v in sorted(src.items(), key=lambda x: -x[1]))
+    )
+
+    def sub_region(text, name, replacement):
+        pat = re.compile(
+            rf"(<!-- AUTOGEN:{name} -->)(.*?)(<!-- /AUTOGEN:{name} -->)",
+            re.DOTALL,
+        )
+        if not pat.search(text):
+            return text
+        return pat.sub(rf"\1\n{replacement}\n\3", text)
+
+    text = sub_region(card_text, "counts", counts_block)
+    text = sub_region(text, "composition", _render_composition(rows))
+    return text
+
+
 def stage(tmp: Path) -> tuple[int, int]:
     """Copy README, rewrite manifest paths, copy images. Returns (rows, images)."""
     if not MANIFEST.exists():
         sys.exit(f"manifest not found: {MANIFEST} — run 01/03/04 first")
     if not CARD.exists():
         sys.exit(f"dataset card not found: {CARD}")
-
-    shutil.copyfile(CARD, tmp / "README.md")
 
     stage_images = tmp / "images"
     stage_images.mkdir()
@@ -87,6 +142,13 @@ def stage(tmp: Path) -> tuple[int, int]:
         w.writeheader()
         for r in rows:
             w.writerow(r)
+
+    # Dataset card: sync auto-generated count/composition regions from the
+    # live manifest so it can never go stale, then write both to the staging
+    # dir and back to gold/README.md so git tracks the current numbers.
+    synced = _sync_card(CARD.read_text(), rows)
+    (tmp / "README.md").write_text(synced)
+    CARD.write_text(synced)
 
     return len(rows), len(copied)
 

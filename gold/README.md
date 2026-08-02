@@ -6,7 +6,7 @@ task_categories:
 language:
   - en
 size_categories:
-  - n<1K
+  - 1K<n<10K
 tags:
   - chart-qa
   - multimodal
@@ -19,13 +19,15 @@ pretty_name: Adaption Charts P2 — Gold Chart-QA
 
 A verified, quality-first chart question-answering dataset built for the
 Adaption Labs AutoScientist Challenge (Part 2, Data Visualization track).
-1000 rows across two sources: a programmatically generated synthetic core
+Two sources: a programmatically generated synthetic core
 (correct-by-construction) and a hand-authored hardset built from real
 public dashboards and reports.
 
 ## At a glance
 
-- **1000 rows total** — 902 synthetic + 98 hardset
+<!-- AUTOGEN:counts -->
+- **1100 rows total** — 1002 synthetic + 98 hardset
+<!-- /AUTOGEN:counts -->
 - **7 chart types** — bar, line, grouped_bar, stacked_bar, pie, donut, mixed
 - **10 task types** — every allowed task_type populated at target
 - **English only**, real-world business/finance/health/policy domains
@@ -51,60 +53,62 @@ Each row:
 
 ## Composition
 
+<!-- AUTOGEN:composition -->
 **By source**
 
 | source | rows | share |
 |---|---:|---:|
-| synthetic | 902 | 90.2% |
-| hardset | 98 | 9.8% |
+| synthetic | 1002 | 91.1% |
+| hardset | 98 | 8.9% |
 
 **By chart_type**
 
 | chart_type | rows |
 |---|---:|
-| bar | 219 |
-| line | 192 |
-| stacked_bar | 168 |
-| grouped_bar | 156 |
-| pie | 142 |
-| donut | 64 |
+| bar | 237 |
+| line | 228 |
+| stacked_bar | 184 |
+| grouped_bar | 171 |
+| pie | 155 |
+| donut | 66 |
 | mixed | 59 |
 
 **By task_type**
 
 | task_type | rows |
 |---|---:|
-| lookup_value | 180 |
-| max_min | 140 |
-| compare_categories | 120 |
-| rank_order | 100 |
-| delta_absolute | 100 |
-| trend_direction | 100 |
-| multi_series_compare | 100 |
-| aggregation_sum_avg | 80 |
-| percent_change_ratio | 50 |
-| hard_multi_step | 30 |
+| lookup_value | 198 |
+| max_min | 151 |
+| compare_categories | 131 |
+| delta_absolute | 111 |
+| rank_order | 111 |
+| multi_series_compare | 111 |
+| trend_direction | 109 |
+| aggregation_sum_avg | 89 |
+| percent_change_ratio | 56 |
+| hard_multi_step | 33 |
 
 **By difficulty**
 
 | difficulty | rows |
 |---|---:|
-| medium | 658 |
-| easy | 302 |
-| hard | 40 |
+| medium | 726 |
+| easy | 331 |
+| hard | 43 |
+<!-- /AUTOGEN:composition -->
 
 ## Verification protocol
 
 Every row is `verified=true`, but the mechanism differs by source:
 
-**Synthetic (902 rows) — correct-by-construction.**
+**Synthetic — correct-by-construction.**
 Each chart is rendered from a seeded pseudorandom value distribution. The
 answer to every question is computed from those underlying values
 *before* the chart image is drawn. There is no visual estimation involved.
 The full generation pipeline lives in the companion repo alongside this
 dataset. Seeds are deterministic.
 
-**Hardset (98 rows) — hand-authored, human-reviewed.**
+**Hardset — hand-authored, human-reviewed.**
 Every hardset row was authored one at a time from a real chart screenshot.
 Each row was reviewed row-by-row against the source image during
 authoring, with the answer recorded only after cross-checking what the
@@ -145,9 +149,9 @@ targets *reasoning about charts*, not exact digit extraction.
 ## Known limitations
 
 - **English only.**
-- **Synthetic aesthetic is uniform.** All 402 synthetic rows use the same
+- **Synthetic aesthetic is uniform.** All synthetic rows use the same
   matplotlib renderer with a consistent style. Real-world visual
-  diversity comes entirely from the 98 hardset rows.
+  diversity comes entirely from the hardset rows.
 - **Hardset skews toward `max_min` and `lookup_value`.** Real dashboards
   naturally support these tasks; the balance step trims synthetic
   `max_min` heavily to compensate, but hardset structural bias remains.
