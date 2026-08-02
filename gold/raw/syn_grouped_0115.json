@@ -32,6 +32,6 @@
   "domain": "revenue_grouped",
   "entity": "channel",
   "series_axis": "period",
-  "overall_index": 70,
+  "overall_index": 105,
   "domain_index": 17
 }

@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Website Traffic Sources",
+  "title": "FY25 Budget Allocation",
   "categories": [
-    "Social",
-    "Paid",
-    "Direct",
-    "Referral"
+    "HR",
+    "Support",
+    "Engineering",
+    "Sales"
   ],
   "values": [
-    14300,
-    12000,
-    4100,
-    14500
+    600,
+    3900,
+    3100,
+    2500
   ],
   "percents": [
-    31.8486,
-    26.7261,
-    9.1314,
-    32.294
+    5.9406,
+    38.6139,
+    30.6931,
+    24.7525
   ],
   "annotated": true,
   "chart_id": "syn_donut_0103",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 132,
-  "domain_index": 26
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 205,
+  "domain_index": 32
 }

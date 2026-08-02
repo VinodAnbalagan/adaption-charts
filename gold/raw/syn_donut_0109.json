@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "FY25 Budget Allocation",
+  "title": "Ad Spend by Channel",
   "categories": [
-    "HR",
-    "Support",
-    "Engineering",
-    "Sales"
+    "Email",
+    "Direct",
+    "Paid Search",
+    "SEO"
   ],
   "values": [
-    600,
-    3900,
-    3100,
-    2500
+    4000,
+    2200,
+    3600,
+    4800
   ],
   "percents": [
-    5.9406,
-    38.6139,
-    30.6931,
-    24.7525
+    27.3973,
+    15.0685,
+    24.6575,
+    32.8767
   ],
   "annotated": true,
   "chart_id": "syn_donut_0109",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 138,
-  "domain_index": 32
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 211,
+  "domain_index": 38
 }

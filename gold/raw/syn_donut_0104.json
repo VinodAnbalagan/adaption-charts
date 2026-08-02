@@ -1,32 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Budget by Department",
+  "title": "Ad Spend by Channel",
   "categories": [
-    "Marketing",
-    "Sales",
-    "IT",
-    "Support",
-    "Operations"
+    "Social",
+    "SEO",
+    "Affiliate",
+    "Paid Search",
+    "Direct"
   ],
   "values": [
-    900,
-    1600,
-    4400,
-    3600,
-    3500
+    2900,
+    1100,
+    4900,
+    1200,
+    1300
   ],
   "percents": [
-    6.4286,
-    11.4286,
-    31.4286,
-    25.7143,
-    25.0
+    25.4386,
+    9.6491,
+    42.9825,
+    10.5263,
+    11.4035
   ],
   "annotated": true,
   "chart_id": "syn_donut_0104",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 133,
-  "domain_index": 27
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 206,
+  "domain_index": 33
 }

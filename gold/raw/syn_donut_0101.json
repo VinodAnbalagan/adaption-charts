@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Sales Mix",
+  "title": "Revenue by Region",
   "categories": [
-    "Subscriptions",
-    "Consulting",
-    "Hardware",
-    "Services"
+    "MEA",
+    "APAC",
+    "LATAM",
+    "EMEA"
   ],
   "values": [
-    5600,
-    3800,
-    2400,
-    5000
+    3400,
+    7200,
+    5000,
+    4200
   ],
   "percents": [
-    33.3333,
-    22.619,
-    14.2857,
-    29.7619
+    17.1717,
+    36.3636,
+    25.2525,
+    21.2121
   ],
   "annotated": true,
   "chart_id": "syn_donut_0101",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 130,
-  "domain_index": 24
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 203,
+  "domain_index": 30
 }

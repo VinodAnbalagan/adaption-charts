@@ -398,7 +398,7 @@ def generate_bar_specs(n=12, seed=42, start_id=100):
 
 
 # Extend hand-authored specs with programmatic ones
-CHART_SPECS.extend(generate_bar_specs(n=16, seed=42, start_id=100))
+CHART_SPECS.extend(generate_bar_specs(n=44, seed=42, start_id=100))
 
 
 def _gen_line_values(rng, n, low, high, trend="up", round_to=100, max_tries=40):
@@ -488,7 +488,7 @@ def generate_line_specs(n=12, seed=43, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_line_specs(n=23, seed=43, start_id=100))
+CHART_SPECS.extend(generate_line_specs(n=30, seed=43, start_id=100))
 
 
 def generate_grouped_specs(n=10, seed=44, start_id=100):
@@ -540,7 +540,7 @@ def generate_grouped_specs(n=10, seed=44, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_grouped_specs(n=32, seed=44, start_id=100))
+CHART_SPECS.extend(generate_grouped_specs(n=48, seed=44, start_id=100))
 
 
 def generate_stacked_specs(n=8, seed=45, start_id=100):
@@ -585,7 +585,7 @@ def generate_stacked_specs(n=8, seed=45, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_stacked_specs(n=22, seed=45, start_id=100))
+CHART_SPECS.extend(generate_stacked_specs(n=38, seed=45, start_id=100))
 
 
 def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
@@ -636,25 +636,38 @@ def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_circle_specs(pie_n=20, donut_n=12, seed=46, start_id=100))
+CHART_SPECS.extend(generate_circle_specs(pie_n=26, donut_n=12, seed=46, start_id=100))
 
 
-# Balance targets are for the final ~400-row synthetic core (grown from 250
-# after we dropped the external-benchmark ChartQA/ChartX training slot).
-# If a task_type is over target, we randomly drop excess (seeded). Under-
-# target types get filled by adding more charts in later slices or by
-# hardset (task 5).
+# Balance targets are the synthetic contribution toward a 500-row combined
+# dataset (synthetic + hardset). Each target = (500-row plan target for that
+# task_type) - (actual hardset contribution). Trimming max_min hard here
+# since hardset over-contributes to it. Under-target types get filled by
+# larger generator counts in this same file.
+#
+# Full 500-row target vs synthetic quota (hardset actual in parens):
+#   lookup_value          90 -> 71  (hardset 19)
+#   max_min               70 -> 28  (hardset 42, big contributor)
+#   delta_absolute        50 -> 50  (hardset 0)
+#   trend_direction       50 -> 33  (hardset 17)
+#   percent_change_ratio  25 -> 25  (hardset 0)
+#   hard_multi_step       15 -> 14  (hardset 1)
+#   rank_order            50 -> 50  (hardset 0)
+#   compare_categories    60 -> 41  (hardset 19)
+#   multi_series_compare  50 -> 50  (hardset 0)
+#   aggregation_sum_avg   40 -> 40  (hardset 0)
+# Sum: 402 synthetic + 98 hardset = 500
 BALANCE_TARGETS: dict[str, int] = {
-    "lookup_value": 72,
-    "max_min": 56,
-    "delta_absolute": 40,
-    "trend_direction": 40,
-    "percent_change_ratio": 20,
-    "hard_multi_step": 12,
-    "rank_order": 40,
-    "compare_categories": 48,
-    "multi_series_compare": 40,
-    "aggregation_sum_avg": 32,
+    "lookup_value": 71,
+    "max_min": 28,
+    "delta_absolute": 50,
+    "trend_direction": 33,
+    "percent_change_ratio": 25,
+    "hard_multi_step": 14,
+    "rank_order": 50,
+    "compare_categories": 41,
+    "multi_series_compare": 50,
+    "aggregation_sum_avg": 40,
 }
 
 
