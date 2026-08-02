@@ -401,101 +401,101 @@ syn_stacked_0136__q4,synthetic,gold/images/syn_stacked_0136.png,Name the top 3 s
 syn_stacked_0137__q1,synthetic,gold/images/syn_stacked_0137.png,What was the Direct revenue for Q4?,$2400,stacked_bar,lookup_value,medium,true,train,"annotated stacked bars; procedural gen (seed=45, idx=37)"
 syn_stacked_0137__q2,synthetic,gold/images/syn_stacked_0137.png,Which quarter had the lowest total revenue?,Q3,stacked_bar,max_min,medium,true,train,"annotated stacked bars; procedural gen (seed=45, idx=37)"
 syn_stacked_0137__q3,synthetic,gold/images/syn_stacked_0137.png,What was Q3's total revenue?,$5000,stacked_bar,aggregation_sum_avg,medium,true,train,"annotated stacked bars; procedural gen (seed=45, idx=37)"
-hs_0001__q1,hardset,gold/images/hs_0001.png,Was the largest mode of transportation Land?,Yes,mixed,compare_categories,medium,false,train,hardset; StatCan; charts1.png
-hs_0001__q2,hardset,gold/images/hs_0001.png,"Combining Air and Water shares of transportation, was that greater than Land alone?",No,mixed,hard_multi_step,hard,false,train,hardset; StatCan; charts1.png
-hs_0001__q3,hardset,gold/images/hs_0001.png,Which country was the largest source of overseas visitors?,United Kingdom,mixed,max_min,medium,false,train,hardset; StatCan; charts1.png
-hs_0002__q1,hardset,gold/images/hs_0002.png,What was the month-over-month change in land arrivals?,10.1%,mixed,lookup_value,easy,false,train,hardset; StatCan; charts2.png
-hs_0002__q2,hardset,gold/images/hs_0002.png,Was the share of same-day trips greater than overnight?,Yes,mixed,compare_categories,medium,false,train,hardset; StatCan; charts2.png
-hs_0002__q3,hardset,gold/images/hs_0002.png,Which province was the top port of entry for arrivals?,Ontario,mixed,max_min,medium,false,train,hardset; StatCan; charts2.png
-hs_0003__q1,hardset,gold/images/hs_0003.png,"In panel (a), did Inflation-protected fund flows increase or decrease after the start of the Middle East war?",Increased,mixed,trend_direction,medium,false,train,hardset; ECB; charts15.png
-hs_0003__q2,hardset,gold/images/hs_0003.png,"In panel (b), in which quarter were Redemption requests highest?",Q1 2026,mixed,max_min,hard,false,train,hardset; ECB; charts15.png
-hs_0003__q3,hardset,gold/images/hs_0003.png,"In panel (c), did Investment fund cash holdings trend upward or downward from 2015 to 2025?",Downward,mixed,trend_direction,hard,false,train,hardset; ECB; charts15.png
-hs_0004__q1,hardset,gold/images/hs_0004.png,Which industry had the largest positive productivity change in 2024?,Travel arrangement and reservation services,bar,max_min,medium,false,train,hardset; BLS; charts30.png
-hs_0004__q2,hardset,gold/images/hs_0004.png,Which industry had the largest negative productivity change in 2024?,Amusement parks and arcades,bar,max_min,medium,false,train,hardset; BLS; charts30.png
-hs_0004__q3,hardset,gold/images/hs_0004.png,Did Publishing have a positive productivity change in 2024?,Yes,bar,compare_categories,medium,false,train,hardset; BLS; charts30.png
-hs_0005__q1,hardset,gold/images/hs_0005.png,What was the total number of air arrivals?,"2,508,098",mixed,lookup_value,easy,false,train,hardset; StatCan; charts3.png
-hs_0005__q2,hardset,gold/images/hs_0005.png,Which airport had the highest number of arrivals?,Toronto Pearson,mixed,max_min,medium,false,train,hardset; StatCan; charts3.png
-hs_0005__q3,hardset,gold/images/hs_0005.png,Was the year-over-year change in air arrivals positive?,Yes,mixed,compare_categories,medium,false,train,hardset; StatCan; charts3.png
-hs_0006__q1,hardset,gold/images/hs_0006.png,What was the fasting glucose for Ages 60 to 79 in 2024?,6.0,grouped_bar,lookup_value,medium,false,train,hardset; StatCan; charts4.png
-hs_0006__q2,hardset,gold/images/hs_0006.png,"From 2009 to 2024, did fasting glucose for Ages 60 to 79 increase or decrease?",Increased,grouped_bar,trend_direction,medium,false,train,hardset; StatCan; charts4.png
-hs_0006__q3,hardset,gold/images/hs_0006.png,"In 2024, which age group had the highest fasting glucose?",Ages 60 to 79,grouped_bar,max_min,easy,false,train,hardset; StatCan; charts4.png
-hs_0007__q1,hardset,gold/images/hs_0007.png,What percentage of Japanese new entrants were women?,73%,mixed,lookup_value,medium,false,train,hardset; StatCan; charts5.png
-hs_0007__q2,hardset,gold/images/hs_0007.png,"Among racialized groups, which had the highest STEM percentage in field of study?",Chinese,mixed,max_min,medium,false,train,hardset; StatCan; charts5.png
-hs_0007__q3,hardset,gold/images/hs_0007.png,Was the count of Not-a-visible-minority new entrants in 2020/2021 greater than in 2016/2017?,Yes,mixed,compare_categories,medium,false,train,hardset; StatCan; charts5.png
-hs_0008__q1,hardset,gold/images/hs_0008.png,What was the count of Not-a-visible-minority graduates in 2023?,272K,mixed,lookup_value,medium,false,train,hardset; StatCan; charts6.png
-hs_0008__q2,hardset,gold/images/hs_0008.png,Did the count of Visible minority graduates increase or decrease from 2016 to 2023?,Increased,mixed,trend_direction,medium,false,train,hardset; StatCan; charts6.png
-hs_0008__q3,hardset,gold/images/hs_0008.png,Which racialized group had the highest STEM percentage in field of study?,Chinese,mixed,max_min,medium,false,train,hardset; StatCan; charts6.png
-hs_0009__q1,hardset,gold/images/hs_0009.png,Which city had the largest year-over-year decline in condo prices in 2026 Q2?,Toronto,mixed,max_min,medium,false,train,hardset; StatCan; charts7.png
-hs_0009__q2,hardset,gold/images/hs_0009.png,Which city had the largest positive year-over-year change in condo prices?,Québec,mixed,max_min,medium,false,train,hardset; StatCan; charts7.png
-hs_0009__q3,hardset,gold/images/hs_0009.png,Was Vancouver's year-over-year change greater than Ottawa's?,No,mixed,compare_categories,medium,false,train,hardset; StatCan; charts7.png
-hs_0010__q1,hardset,gold/images/hs_0010.png,Which city had the largest quarter-over-quarter decline in condo prices in 2026 Q2?,Vancouver,mixed,max_min,medium,false,train,hardset; StatCan; charts8.png
-hs_0010__q2,hardset,gold/images/hs_0010.png,Did Québec have a positive quarter-over-quarter change in 2026 Q2?,No,mixed,compare_categories,medium,false,train,hardset; StatCan; charts8.png
-hs_0010__q3,hardset,gold/images/hs_0010.png,What was Vancouver's quarter-over-quarter percent change?,-2.6%,mixed,lookup_value,medium,false,train,hardset; StatCan; charts8.png
-hs_0011__q1,hardset,gold/images/hs_0011.png,"For US jet fuel, was the color intensity above or below average during May 2026?",Above average,mixed,trend_direction,medium,false,train,hardset; BoC; charts9.png
-hs_0011__q2,hardset,gold/images/hs_0011.png,Which commodity in the non-energy commodity section showed the most intense above-average pricing by May 2026?,UK primary aluminum,mixed,max_min,hard,false,train,hardset; BoC; charts9.png
-hs_0012__q1,hardset,gold/images/hs_0012.png,"In panel (b), what is the highest crisis frequency shown in the grid?",15%,mixed,max_min,medium,false,train,hardset; ECB; charts10.png
-hs_0012__q2,hardset,gold/images/hs_0012.png,"In panel (a), did EA HY Tech spreads rise around the start of the Middle East war?",Yes,mixed,trend_direction,hard,false,train,hardset; ECB; charts10.png
-hs_0013__q1,hardset,gold/images/hs_0013.png,"In panel (a), from 2022 to 2026 did the 30-year yield trend upward or downward?",Upward,mixed,trend_direction,medium,false,train,hardset; ECB; charts11.png
-hs_0013__q2,hardset,gold/images/hs_0013.png,"In panel (b), was Greece's (GR) change in debt-to-GDP negative?",Yes,mixed,compare_categories,hard,false,train,hardset; ECB; charts11.png
-hs_0014__q1,hardset,gold/images/hs_0014.png,"In panel (b), which country had the highest peak in net sovereign debt issuance during 2020–2021?",Germany,mixed,max_min,medium,false,train,hardset; ECB; charts12.png
-hs_0014__q2,hardset,gold/images/hs_0014.png,"In panel (a), was Belgium's (BE) planned 2026 government balance negative?",Yes,mixed,compare_categories,medium,false,train,hardset; ECB; charts12.png
-hs_0015__q1,hardset,gold/images/hs_0015.png,"In panel (b), which year is represented by the blue solid line?",2024,mixed,lookup_value,easy,false,train,hardset; ECB; charts13.png
-hs_0015__q2,hardset,gold/images/hs_0015.png,"In panel (c), from Q1 2023 to Q1 2026, did headline inflation increase or decrease?",Decreased,mixed,trend_direction,hard,false,train,hardset; ECB; charts13.png
-hs_0016__q1,hardset,gold/images/hs_0016.png,"In panel (b), what percentage of euro area banks' assets is Non-EU exposure?",25%,mixed,lookup_value,medium,false,train,hardset; ECB; charts14.png
-hs_0016__q2,hardset,gold/images/hs_0016.png,"In panel (b), which non-EU region had the largest exposure?",United States,mixed,max_min,medium,false,train,hardset; ECB; charts14.png
-hs_0016__q3,hardset,gold/images/hs_0016.png,"In panel (b), was Middle East exposure the smallest of the non-EU regions shown?",Yes,mixed,compare_categories,medium,false,train,hardset; ECB; charts14.png
-hs_0017__q1,hardset,gold/images/hs_0017.png,"In panel (a), which index reached the highest value by May 2026?",MSCI World Energy Sector Index,mixed,max_min,medium,false,train,hardset; ECB; charts16.png
-hs_0017__q2,hardset,gold/images/hs_0017.png,"In panel (a), did the MSCI World Software Index rise or fall between December 2025 and February 2026?",Fell,mixed,trend_direction,medium,false,train,hardset; ECB; charts16.png
-hs_0018__q1,hardset,gold/images/hs_0018.png,"In panel (c), did Financial Times cyberattack mentions increase or decrease from 2006 to 2026?",Increased,mixed,trend_direction,medium,false,train,hardset; ECB; charts17.png
-hs_0018__q2,hardset,gold/images/hs_0018.png,"In panel (b), which distribution has the highest peak density?",HICP inflation Feb. forecast,mixed,max_min,hard,false,train,hardset; ECB; charts17.png
-hs_0019__q1,hardset,gold/images/hs_0019.png,"For the Education dimension in Low-income countries, what was the median difference in DTP zero-dose prevalence?",16.2,bar,lookup_value,medium,false,train,hardset; WHO; charts18.png
-hs_0019__q2,hardset,gold/images/hs_0019.png,"In the Education dimension, which income group had the largest median difference?",Low-income,bar,max_min,medium,false,train,hardset; WHO; charts18.png
-hs_0019__q3,hardset,gold/images/hs_0019.png,Was the Place-of-residence median difference for All countries less than the Economic-status median difference for All countries?,Yes,bar,compare_categories,medium,false,train,hardset; WHO; charts18.png
-hs_0020__q1,hardset,gold/images/hs_0020.png,"In the Health emergencies protection panel, which region requires the most progress in 2030?",Region of the Americas,mixed,max_min,medium,false,train,hardset; WHO; charts19.png
-hs_0020__q2,hardset,gold/images/hs_0020.png,"In the Healthier populations panel, which region requires the most progress in 2030?",African Region,mixed,max_min,medium,false,train,hardset; WHO; charts19.png
-hs_0021__q1,hardset,gold/images/hs_0021.png,Which pillar requires the most overall progress?,Healthier populations,stacked_bar,max_min,medium,false,train,hardset; WHO; charts20.png
-hs_0021__q2,hardset,gold/images/hs_0021.png,How many billion additional persons are needed for Healthier populations to meet 2030 expectations?,1.5B,stacked_bar,lookup_value,medium,false,train,hardset; WHO; charts20.png
-hs_0022__q1,hardset,gold/images/hs_0022.png,"In the WHO region panel, which region had the highest risk of premature mortality from NCDs in 2000?",Eastern Mediterranean Region,mixed,max_min,medium,false,train,hardset; WHO; charts21.png
-hs_0022__q2,hardset,gold/images/hs_0022.png,"In the World Bank income groups panel, did the High-income group's risk trend upward or downward from 2000 to 2020?",Downward,mixed,trend_direction,medium,false,train,hardset; WHO; charts21.png
-hs_0022__q3,hardset,gold/images/hs_0022.png,"In the WHO region panel, was the Region of the Americas line consistently lower than the Global line?",Yes,mixed,compare_categories,medium,false,train,hardset; WHO; charts21.png
-hs_0023__q1,hardset,gold/images/hs_0023.png,What was the neonatal mortality rate in the South-East Asia Region in 1990?,53,mixed,lookup_value,medium,false,train,hardset; WHO; charts22.png
-hs_0023__q2,hardset,gold/images/hs_0023.png,"In 1990, which WHO region had the highest under-5 mortality rate?",African Region,mixed,max_min,medium,false,train,hardset; WHO; charts22.png
-hs_0023__q3,hardset,gold/images/hs_0023.png,"From 1990 to 2023, did the African Region's under-5 mortality rate decrease?",Yes,mixed,trend_direction,medium,false,train,hardset; WHO; charts22.png
-hs_0024__q1,hardset,gold/images/hs_0024.png,"In the WHO region panel, what is the approximate value of the rightmost data point on the x-axis?",4.5,mixed,max_min,hard,false,train,hardset; WHO; charts23.png
-hs_0025__q1,hardset,gold/images/hs_0025.png,"In the African Region panel, did Noncommunicable diseases become a larger share of causes from 2000 to 2021?",Yes,stacked_bar,trend_direction,medium,false,train,hardset; WHO; charts24.png
-hs_0025__q2,hardset,gold/images/hs_0025.png,"In the European Region in 2000, which cause group had the largest share?",Noncommunicable diseases,stacked_bar,max_min,medium,false,train,hardset; WHO; charts24.png
-hs_0026__q1,hardset,gold/images/hs_0026.png,"In the Mortality panel, what was the All Causes value for the All ages column?",5.17,mixed,lookup_value,medium,false,train,hardset; WHO; charts26.png
-hs_0026__q2,hardset,gold/images/hs_0026.png,"Among noncommunicable diseases in the Mortality panel All ages column, which cause has the highest value?",Stroke,mixed,max_min,hard,false,train,hardset; WHO; charts26.png
-hs_0027__q1,hardset,gold/images/hs_0027.png,"In the Female Region of the Americas panel, what was the HALE value in 2019?",67,stacked_bar,lookup_value,medium,false,train,hardset; WHO; charts27.png
-hs_0027__q2,hardset,gold/images/hs_0027.png,"In 2000 across all WHO regions for Both sexes, which region had the lowest HALE?",African Region,stacked_bar,max_min,medium,false,train,hardset; WHO; charts27.png
-hs_0027__q3,hardset,gold/images/hs_0027.png,"In the African Region Male panel, did HALE increase from 2000 to 2021?",Yes,stacked_bar,trend_direction,medium,false,train,hardset; WHO; charts27.png
-hs_0028__q1,hardset,gold/images/hs_0028.png,Which policy instrument covers the most sectors?,Tax,mixed,max_min,medium,false,train,hardset; ClimatePolicyDB; charts28.png
-hs_0028__q2,hardset,gold/images/hs_0028.png,Does Comparative energy efficiency label cover the Waste sector?,No,mixed,compare_categories,medium,false,train,hardset; ClimatePolicyDB; charts28.png
-hs_0029__q1,hardset,gold/images/hs_0029.png,Which emission sector has the largest number of policy approaches?,Buildings,bar,max_min,easy,false,train,hardset; ClimatePolicyDB; charts29.png
-hs_0029__q2,hardset,gold/images/hs_0029.png,Does Cross-sectoral have more policy approaches than Energy industries?,Yes,bar,compare_categories,medium,false,train,hardset; ClimatePolicyDB; charts29.png
-hs_0030__q1,hardset,gold/images/hs_0030.png,What is the highest productivity growth category shown in the legend?,3.4% and above,mixed,lookup_value,easy,false,train,hardset; BLS; charts31.png
-hs_0031__q1,hardset,gold/images/hs_0031.png,In which year was the total number of fatal work injuries highest?,2022,stacked_bar,max_min,medium,false,train,hardset; BLS; charts32.png
-hs_0031__q2,hardset,gold/images/hs_0031.png,Did total fatal work injuries increase or decrease from 2023 to 2024?,Decreased,stacked_bar,trend_direction,medium,false,train,hardset; BLS; charts32.png
-hs_0032__q1,hardset,gold/images/hs_0032.png,Did the total recordable cases rate decrease from 2022 to 2024?,Yes,stacked_bar,trend_direction,medium,false,train,hardset; BLS; charts33.png
-hs_0032__q2,hardset,gold/images/hs_0032.png,Were the total recordable rates in 2020 and 2021 the same?,Yes,stacked_bar,compare_categories,medium,false,train,hardset; BLS; charts33.png
-hs_0033__q1,hardset,gold/images/hs_0033.png,Which activity did people spend the most hours per day on?,"Personal care, including sleep",bar,max_min,easy,false,train,hardset; BLS; charts34.png
-hs_0033__q2,hardset,gold/images/hs_0033.png,Which activity was the second-longest average time per day?,Leisure and sports,bar,max_min,medium,false,train,hardset; BLS; charts34.png
-hs_0033__q3,hardset,gold/images/hs_0033.png,Do people spend more time on Household activities than on Working and work-related activities?,No,bar,compare_categories,medium,false,train,hardset; BLS; charts34.png
-hs_0034__q1,hardset,gold/images/hs_0034.png,"For Part-time workers, which benefit has the highest access rate?",Sick leave,grouped_bar,max_min,medium,false,train,hardset; BLS; charts35.png
-hs_0034__q2,hardset,gold/images/hs_0034.png,Is childcare access higher for Full-time workers than Part-time workers?,Yes,grouped_bar,compare_categories,medium,false,train,hardset; BLS; charts35.png
-hs_0035__q1,hardset,gold/images/hs_0035.png,What was the approximate peak percent change of All imports around 2008?,22,line,max_min,medium,false,train,hardset; BLS; charts36.png
-hs_0035__q2,hardset,gold/images/hs_0035.png,During which year did All imports show the deepest negative percent change?,2009,line,max_min,medium,false,train,hardset; BLS; charts36.png
-hs_0036__q1,hardset,gold/images/hs_0036.png,What was the largest positive spike in the Total PPI 1-month change during 2020–2022?,1.7,line,max_min,hard,false,train,hardset; BLS; charts37.png
-hs_0036__q2,hardset,gold/images/hs_0036.png,What was the largest negative dip in the Total PPI during 2020?,-1.2,line,max_min,medium,false,train,hardset; BLS; charts37.png
-hs_0037__q1,hardset,gold/images/hs_0037.png,Which CPI category had the highest 12-month percentage change in June 2026?,Energy,bar,max_min,easy,false,train,hardset; BLS; charts38.png
-hs_0037__q2,hardset,gold/images/hs_0037.png,Was the All items CPI change greater than the Food CPI change?,Yes,bar,compare_categories,medium,false,train,hardset; BLS; charts38.png
-hs_0038__q1,hardset,gold/images/hs_0038.png,What is the highest metropolitan area unemployment rate category shown in the legend?,5.3% and above,mixed,lookup_value,medium,false,train,hardset; BLS; charts39.png
-hs_0038__q2,hardset,gold/images/hs_0038.png,What is the lowest metropolitan area unemployment rate category shown?,3.5% and below,mixed,lookup_value,medium,false,train,hardset; BLS; charts39.png
-hs_0039__q1,hardset,gold/images/hs_0039.png,In what approximate year did the civilian unemployment rate peak?,2020,line,max_min,medium,false,train,hardset; BLS; charts40.png
-hs_0039__q2,hardset,gold/images/hs_0039.png,What was the approximate peak civilian unemployment rate during 2020?,14.8,line,lookup_value,medium,false,train,hardset; BLS; charts40.png
-hs_0039__q3,hardset,gold/images/hs_0039.png,"From 2010 to 2019, did the civilian unemployment rate generally trend downward?",Yes,line,trend_direction,medium,false,train,hardset; BLS; charts40.png
-hs_0040__q1,hardset,gold/images/hs_0040.png,What is the highest wage-change category shown in the legend?,5.0% and above,mixed,lookup_value,medium,false,train,hardset; BLS; charts41.png
-hs_0040__q2,hardset,gold/images/hs_0040.png,What is the lowest wage-change category shown in the legend?,3.2% and below,mixed,lookup_value,medium,false,train,hardset; BLS; charts41.png
-hs_0041__q1,hardset,gold/images/hs_0041.png,Which category had the largest number of jobs in Q4 2025?,Gross job gains,bar,max_min,easy,false,train,hardset; BLS; charts42.png
-hs_0041__q2,hardset,gold/images/hs_0041.png,Were gross job gains greater than gross job losses in Q4 2025?,Yes,bar,compare_categories,medium,false,train,hardset; BLS; charts42.png
-hs_0041__q3,hardset,gold/images/hs_0041.png,Which category had the smallest number of jobs in Q4 2025?,Losses at closing establishments,bar,max_min,medium,false,train,hardset; BLS; charts42.png
+hs_0001__q1,hardset,gold/images/hs_0001.png,Was the largest mode of transportation Land?,Yes,mixed,compare_categories,medium,true,train,hardset; StatCan; charts1.png
+hs_0001__q2,hardset,gold/images/hs_0001.png,"Combining Air and Water shares of transportation, was that greater than Land alone?",No,mixed,hard_multi_step,hard,true,train,hardset; StatCan; charts1.png
+hs_0001__q3,hardset,gold/images/hs_0001.png,Which country was the largest source of overseas visitors?,United Kingdom,mixed,max_min,medium,true,train,hardset; StatCan; charts1.png
+hs_0002__q1,hardset,gold/images/hs_0002.png,What was the month-over-month change in land arrivals?,10.1%,mixed,lookup_value,easy,true,train,hardset; StatCan; charts2.png
+hs_0002__q2,hardset,gold/images/hs_0002.png,Was the share of same-day trips greater than overnight?,Yes,mixed,compare_categories,medium,true,train,hardset; StatCan; charts2.png
+hs_0002__q3,hardset,gold/images/hs_0002.png,Which province was the top port of entry for arrivals?,Ontario,mixed,max_min,medium,true,train,hardset; StatCan; charts2.png
+hs_0003__q1,hardset,gold/images/hs_0003.png,"In panel (a), did Inflation-protected fund flows increase or decrease after the start of the Middle East war?",Increased,mixed,trend_direction,medium,true,train,hardset; ECB; charts15.png
+hs_0003__q2,hardset,gold/images/hs_0003.png,"In panel (b), in which quarter were Redemption requests highest?",Q1 2026,mixed,max_min,hard,true,train,hardset; ECB; charts15.png
+hs_0003__q3,hardset,gold/images/hs_0003.png,"In panel (c), did Investment fund cash holdings trend upward or downward from 2015 to 2025?",Downward,mixed,trend_direction,hard,true,train,hardset; ECB; charts15.png
+hs_0004__q1,hardset,gold/images/hs_0004.png,Which industry had the largest positive productivity change in 2024?,Travel arrangement and reservation services,bar,max_min,medium,true,train,hardset; BLS; charts30.png
+hs_0004__q2,hardset,gold/images/hs_0004.png,Which industry had the largest negative productivity change in 2024?,Amusement parks and arcades,bar,max_min,medium,true,train,hardset; BLS; charts30.png
+hs_0004__q3,hardset,gold/images/hs_0004.png,Did Publishing have a positive productivity change in 2024?,Yes,bar,compare_categories,medium,true,train,hardset; BLS; charts30.png
+hs_0005__q1,hardset,gold/images/hs_0005.png,What was the total number of air arrivals?,"2,508,098",mixed,lookup_value,easy,true,train,hardset; StatCan; charts3.png
+hs_0005__q2,hardset,gold/images/hs_0005.png,Which airport had the highest number of arrivals?,Toronto Pearson,mixed,max_min,medium,true,train,hardset; StatCan; charts3.png
+hs_0005__q3,hardset,gold/images/hs_0005.png,Was the year-over-year change in air arrivals positive?,Yes,mixed,compare_categories,medium,true,train,hardset; StatCan; charts3.png
+hs_0006__q1,hardset,gold/images/hs_0006.png,What was the fasting glucose for Ages 60 to 79 in 2024?,6.0,grouped_bar,lookup_value,medium,true,train,hardset; StatCan; charts4.png
+hs_0006__q2,hardset,gold/images/hs_0006.png,"From 2009 to 2024, did fasting glucose for Ages 60 to 79 increase or decrease?",Increased,grouped_bar,trend_direction,medium,true,train,hardset; StatCan; charts4.png
+hs_0006__q3,hardset,gold/images/hs_0006.png,"In 2024, which age group had the highest fasting glucose?",Ages 60 to 79,grouped_bar,max_min,easy,true,train,hardset; StatCan; charts4.png
+hs_0007__q1,hardset,gold/images/hs_0007.png,What percentage of Japanese new entrants were women?,73%,mixed,lookup_value,medium,true,train,hardset; StatCan; charts5.png
+hs_0007__q2,hardset,gold/images/hs_0007.png,"Among racialized groups, which had the highest STEM percentage in field of study?",Chinese,mixed,max_min,medium,true,train,hardset; StatCan; charts5.png
+hs_0007__q3,hardset,gold/images/hs_0007.png,Was the count of Not-a-visible-minority new entrants in 2020/2021 greater than in 2016/2017?,Yes,mixed,compare_categories,medium,true,train,hardset; StatCan; charts5.png
+hs_0008__q1,hardset,gold/images/hs_0008.png,What was the count of Not-a-visible-minority graduates in 2023?,272K,mixed,lookup_value,medium,true,train,hardset; StatCan; charts6.png
+hs_0008__q2,hardset,gold/images/hs_0008.png,Did the count of Visible minority graduates increase or decrease from 2016 to 2023?,Increased,mixed,trend_direction,medium,true,train,hardset; StatCan; charts6.png
+hs_0008__q3,hardset,gold/images/hs_0008.png,Which racialized group had the highest STEM percentage in field of study?,Chinese,mixed,max_min,medium,true,train,hardset; StatCan; charts6.png
+hs_0009__q1,hardset,gold/images/hs_0009.png,Which city had the largest year-over-year decline in condo prices in 2026 Q2?,Toronto,mixed,max_min,medium,true,train,hardset; StatCan; charts7.png
+hs_0009__q2,hardset,gold/images/hs_0009.png,Which city had the largest positive year-over-year change in condo prices?,Québec,mixed,max_min,medium,true,train,hardset; StatCan; charts7.png
+hs_0009__q3,hardset,gold/images/hs_0009.png,Was Vancouver's year-over-year change greater than Ottawa's?,No,mixed,compare_categories,medium,true,train,hardset; StatCan; charts7.png
+hs_0010__q1,hardset,gold/images/hs_0010.png,Which city had the largest quarter-over-quarter decline in condo prices in 2026 Q2?,Vancouver,mixed,max_min,medium,true,train,hardset; StatCan; charts8.png
+hs_0010__q2,hardset,gold/images/hs_0010.png,Did Québec have a positive quarter-over-quarter change in 2026 Q2?,No,mixed,compare_categories,medium,true,train,hardset; StatCan; charts8.png
+hs_0010__q3,hardset,gold/images/hs_0010.png,What was Vancouver's quarter-over-quarter percent change?,-2.6%,mixed,lookup_value,medium,true,train,hardset; StatCan; charts8.png
+hs_0011__q1,hardset,gold/images/hs_0011.png,"For US jet fuel, was the color intensity above or below average during May 2026?",Above average,mixed,trend_direction,medium,true,train,hardset; BoC; charts9.png
+hs_0011__q2,hardset,gold/images/hs_0011.png,Which commodity in the non-energy commodity section showed the most intense above-average pricing by May 2026?,UK primary aluminum,mixed,max_min,hard,true,train,hardset; BoC; charts9.png
+hs_0012__q1,hardset,gold/images/hs_0012.png,"In panel (b), what is the highest crisis frequency shown in the grid?",15%,mixed,max_min,medium,true,train,hardset; ECB; charts10.png
+hs_0012__q2,hardset,gold/images/hs_0012.png,"In panel (a), did EA HY Tech spreads rise around the start of the Middle East war?",Yes,mixed,trend_direction,hard,true,train,hardset; ECB; charts10.png
+hs_0013__q1,hardset,gold/images/hs_0013.png,"In panel (a), from 2022 to 2026 did the 30-year yield trend upward or downward?",Upward,mixed,trend_direction,medium,true,train,hardset; ECB; charts11.png
+hs_0013__q2,hardset,gold/images/hs_0013.png,"In panel (b), was Greece's (GR) change in debt-to-GDP negative?",Yes,mixed,compare_categories,hard,true,train,hardset; ECB; charts11.png
+hs_0014__q1,hardset,gold/images/hs_0014.png,"In panel (b), which country had the highest peak in net sovereign debt issuance during 2020–2021?",Germany,mixed,max_min,medium,true,train,hardset; ECB; charts12.png
+hs_0014__q2,hardset,gold/images/hs_0014.png,"In panel (a), was Belgium's (BE) planned 2026 government balance negative?",Yes,mixed,compare_categories,medium,true,train,hardset; ECB; charts12.png
+hs_0015__q1,hardset,gold/images/hs_0015.png,"In panel (b), which year is represented by the blue solid line?",2024,mixed,lookup_value,easy,true,train,hardset; ECB; charts13.png
+hs_0015__q2,hardset,gold/images/hs_0015.png,"In panel (c), from Q1 2023 to Q1 2026, did headline inflation increase or decrease?",Decreased,mixed,trend_direction,hard,true,train,hardset; ECB; charts13.png
+hs_0016__q1,hardset,gold/images/hs_0016.png,"In panel (b), what percentage of euro area banks' assets is Non-EU exposure?",25%,mixed,lookup_value,medium,true,train,hardset; ECB; charts14.png
+hs_0016__q2,hardset,gold/images/hs_0016.png,"In panel (b), which non-EU region had the largest exposure?",United States,mixed,max_min,medium,true,train,hardset; ECB; charts14.png
+hs_0016__q3,hardset,gold/images/hs_0016.png,"In panel (b), was Middle East exposure the smallest of the non-EU regions shown?",Yes,mixed,compare_categories,medium,true,train,hardset; ECB; charts14.png
+hs_0017__q1,hardset,gold/images/hs_0017.png,"In panel (a), which index reached the highest value by May 2026?",MSCI World Energy Sector Index,mixed,max_min,medium,true,train,hardset; ECB; charts16.png
+hs_0017__q2,hardset,gold/images/hs_0017.png,"In panel (a), did the MSCI World Software Index rise or fall between December 2025 and February 2026?",Fell,mixed,trend_direction,medium,true,train,hardset; ECB; charts16.png
+hs_0018__q1,hardset,gold/images/hs_0018.png,"In panel (c), did Financial Times cyberattack mentions increase or decrease from 2006 to 2026?",Increased,mixed,trend_direction,medium,true,train,hardset; ECB; charts17.png
+hs_0018__q2,hardset,gold/images/hs_0018.png,"In panel (b), which distribution has the highest peak density?",HICP inflation Feb. forecast,mixed,max_min,hard,true,train,hardset; ECB; charts17.png
+hs_0019__q1,hardset,gold/images/hs_0019.png,"For the Education dimension in Low-income countries, what was the median difference in DTP zero-dose prevalence?",16.2,bar,lookup_value,medium,true,train,hardset; WHO; charts18.png
+hs_0019__q2,hardset,gold/images/hs_0019.png,"In the Education dimension, which income group had the largest median difference?",Low-income,bar,max_min,medium,true,train,hardset; WHO; charts18.png
+hs_0019__q3,hardset,gold/images/hs_0019.png,Was the Place-of-residence median difference for All countries less than the Economic-status median difference for All countries?,Yes,bar,compare_categories,medium,true,train,hardset; WHO; charts18.png
+hs_0020__q1,hardset,gold/images/hs_0020.png,"In the Health emergencies protection panel, which region requires the most progress in 2030?",Region of the Americas,mixed,max_min,medium,true,train,hardset; WHO; charts19.png
+hs_0020__q2,hardset,gold/images/hs_0020.png,"In the Healthier populations panel, which region requires the most progress in 2030?",African Region,mixed,max_min,medium,true,train,hardset; WHO; charts19.png
+hs_0021__q1,hardset,gold/images/hs_0021.png,Which pillar requires the most overall progress?,Healthier populations,stacked_bar,max_min,medium,true,train,hardset; WHO; charts20.png
+hs_0021__q2,hardset,gold/images/hs_0021.png,How many billion additional persons are needed for Healthier populations to meet 2030 expectations?,1.5B,stacked_bar,lookup_value,medium,true,train,hardset; WHO; charts20.png
+hs_0022__q1,hardset,gold/images/hs_0022.png,"In the WHO region panel, which region had the highest risk of premature mortality from NCDs in 2000?",Eastern Mediterranean Region,mixed,max_min,medium,true,train,hardset; WHO; charts21.png
+hs_0022__q2,hardset,gold/images/hs_0022.png,"In the World Bank income groups panel, did the High-income group's risk trend upward or downward from 2000 to 2020?",Downward,mixed,trend_direction,medium,true,train,hardset; WHO; charts21.png
+hs_0022__q3,hardset,gold/images/hs_0022.png,"In the WHO region panel, was the Region of the Americas line consistently lower than the Global line?",Yes,mixed,compare_categories,medium,true,train,hardset; WHO; charts21.png
+hs_0023__q1,hardset,gold/images/hs_0023.png,What was the neonatal mortality rate in the South-East Asia Region in 1990?,53,mixed,lookup_value,medium,true,train,hardset; WHO; charts22.png
+hs_0023__q2,hardset,gold/images/hs_0023.png,"In 1990, which WHO region had the highest under-5 mortality rate?",African Region,mixed,max_min,medium,true,train,hardset; WHO; charts22.png
+hs_0023__q3,hardset,gold/images/hs_0023.png,"From 1990 to 2023, did the African Region's under-5 mortality rate decrease?",Yes,mixed,trend_direction,medium,true,train,hardset; WHO; charts22.png
+hs_0024__q1,hardset,gold/images/hs_0024.png,"In the WHO region panel, what is the approximate value of the rightmost data point on the x-axis?",4.5,mixed,max_min,hard,true,train,hardset; WHO; charts23.png
+hs_0025__q1,hardset,gold/images/hs_0025.png,"In the African Region panel, did Noncommunicable diseases become a larger share of causes from 2000 to 2021?",Yes,stacked_bar,trend_direction,medium,true,train,hardset; WHO; charts24.png
+hs_0025__q2,hardset,gold/images/hs_0025.png,"In the European Region in 2000, which cause group had the largest share?",Noncommunicable diseases,stacked_bar,max_min,medium,true,train,hardset; WHO; charts24.png
+hs_0026__q1,hardset,gold/images/hs_0026.png,"In the Mortality panel, what was the All Causes value for the All ages column?",5.17,mixed,lookup_value,medium,true,train,hardset; WHO; charts26.png
+hs_0026__q2,hardset,gold/images/hs_0026.png,"Among noncommunicable diseases in the Mortality panel All ages column, which cause has the highest value?",Stroke,mixed,max_min,hard,true,train,hardset; WHO; charts26.png
+hs_0027__q1,hardset,gold/images/hs_0027.png,"In the Female Region of the Americas panel, what was the HALE value in 2019?",67,stacked_bar,lookup_value,medium,true,train,hardset; WHO; charts27.png
+hs_0027__q2,hardset,gold/images/hs_0027.png,"In 2000 across all WHO regions for Both sexes, which region had the lowest HALE?",African Region,stacked_bar,max_min,medium,true,train,hardset; WHO; charts27.png
+hs_0027__q3,hardset,gold/images/hs_0027.png,"In the African Region Male panel, did HALE increase from 2000 to 2021?",Yes,stacked_bar,trend_direction,medium,true,train,hardset; WHO; charts27.png
+hs_0028__q1,hardset,gold/images/hs_0028.png,Which policy instrument covers the most sectors?,Tax,mixed,max_min,medium,true,train,hardset; ClimatePolicyDB; charts28.png
+hs_0028__q2,hardset,gold/images/hs_0028.png,Does Comparative energy efficiency label cover the Waste sector?,No,mixed,compare_categories,medium,true,train,hardset; ClimatePolicyDB; charts28.png
+hs_0029__q1,hardset,gold/images/hs_0029.png,Which emission sector has the largest number of policy approaches?,Buildings,bar,max_min,easy,true,train,hardset; ClimatePolicyDB; charts29.png
+hs_0029__q2,hardset,gold/images/hs_0029.png,Does Cross-sectoral have more policy approaches than Energy industries?,Yes,bar,compare_categories,medium,true,train,hardset; ClimatePolicyDB; charts29.png
+hs_0030__q1,hardset,gold/images/hs_0030.png,What is the highest productivity growth category shown in the legend?,3.4% and above,mixed,lookup_value,easy,true,train,hardset; BLS; charts31.png
+hs_0031__q1,hardset,gold/images/hs_0031.png,In which year was the total number of fatal work injuries highest?,2022,stacked_bar,max_min,medium,true,train,hardset; BLS; charts32.png
+hs_0031__q2,hardset,gold/images/hs_0031.png,Did total fatal work injuries increase or decrease from 2023 to 2024?,Decreased,stacked_bar,trend_direction,medium,true,train,hardset; BLS; charts32.png
+hs_0032__q1,hardset,gold/images/hs_0032.png,Did the total recordable cases rate decrease from 2022 to 2024?,Yes,stacked_bar,trend_direction,medium,true,train,hardset; BLS; charts33.png
+hs_0032__q2,hardset,gold/images/hs_0032.png,Were the total recordable rates in 2020 and 2021 the same?,Yes,stacked_bar,compare_categories,medium,true,train,hardset; BLS; charts33.png
+hs_0033__q1,hardset,gold/images/hs_0033.png,Which activity did people spend the most hours per day on?,"Personal care, including sleep",bar,max_min,easy,true,train,hardset; BLS; charts34.png
+hs_0033__q2,hardset,gold/images/hs_0033.png,Which activity was the second-longest average time per day?,Leisure and sports,bar,max_min,medium,true,train,hardset; BLS; charts34.png
+hs_0033__q3,hardset,gold/images/hs_0033.png,Do people spend more time on Household activities than on Working and work-related activities?,No,bar,compare_categories,medium,true,train,hardset; BLS; charts34.png
+hs_0034__q1,hardset,gold/images/hs_0034.png,"For Part-time workers, which benefit has the highest access rate?",Sick leave,grouped_bar,max_min,medium,true,train,hardset; BLS; charts35.png
+hs_0034__q2,hardset,gold/images/hs_0034.png,Is childcare access higher for Full-time workers than Part-time workers?,Yes,grouped_bar,compare_categories,medium,true,train,hardset; BLS; charts35.png
+hs_0035__q1,hardset,gold/images/hs_0035.png,What was the approximate peak percent change of All imports around 2008?,22,line,max_min,medium,true,train,hardset; BLS; charts36.png
+hs_0035__q2,hardset,gold/images/hs_0035.png,During which year did All imports show the deepest negative percent change?,2009,line,max_min,medium,true,train,hardset; BLS; charts36.png
+hs_0036__q1,hardset,gold/images/hs_0036.png,What was the largest positive spike in the Total PPI 1-month change during 2020–2022?,1.7,line,max_min,hard,true,train,hardset; BLS; charts37.png
+hs_0036__q2,hardset,gold/images/hs_0036.png,What was the largest negative dip in the Total PPI during 2020?,-1.2,line,max_min,medium,true,train,hardset; BLS; charts37.png
+hs_0037__q1,hardset,gold/images/hs_0037.png,Which CPI category had the highest 12-month percentage change in June 2026?,Energy,bar,max_min,easy,true,train,hardset; BLS; charts38.png
+hs_0037__q2,hardset,gold/images/hs_0037.png,Was the All items CPI change greater than the Food CPI change?,Yes,bar,compare_categories,medium,true,train,hardset; BLS; charts38.png
+hs_0038__q1,hardset,gold/images/hs_0038.png,What is the highest metropolitan area unemployment rate category shown in the legend?,5.3% and above,mixed,lookup_value,medium,true,train,hardset; BLS; charts39.png
+hs_0038__q2,hardset,gold/images/hs_0038.png,What is the lowest metropolitan area unemployment rate category shown?,3.5% and below,mixed,lookup_value,medium,true,train,hardset; BLS; charts39.png
+hs_0039__q1,hardset,gold/images/hs_0039.png,In what approximate year did the civilian unemployment rate peak?,2020,line,max_min,medium,true,train,hardset; BLS; charts40.png
+hs_0039__q2,hardset,gold/images/hs_0039.png,What was the approximate peak civilian unemployment rate during 2020?,14.8,line,lookup_value,medium,true,train,hardset; BLS; charts40.png
+hs_0039__q3,hardset,gold/images/hs_0039.png,"From 2010 to 2019, did the civilian unemployment rate generally trend downward?",Yes,line,trend_direction,medium,true,train,hardset; BLS; charts40.png
+hs_0040__q1,hardset,gold/images/hs_0040.png,What is the highest wage-change category shown in the legend?,5.0% and above,mixed,lookup_value,medium,true,train,hardset; BLS; charts41.png
+hs_0040__q2,hardset,gold/images/hs_0040.png,What is the lowest wage-change category shown in the legend?,3.2% and below,mixed,lookup_value,medium,true,train,hardset; BLS; charts41.png
+hs_0041__q1,hardset,gold/images/hs_0041.png,Which category had the largest number of jobs in Q4 2025?,Gross job gains,bar,max_min,easy,true,train,hardset; BLS; charts42.png
+hs_0041__q2,hardset,gold/images/hs_0041.png,Were gross job gains greater than gross job losses in Q4 2025?,Yes,bar,compare_categories,medium,true,train,hardset; BLS; charts42.png
+hs_0041__q3,hardset,gold/images/hs_0041.png,Which category had the smallest number of jobs in Q4 2025?,Losses at closing establishments,bar,max_min,medium,true,train,hardset; BLS; charts42.png
