@@ -398,7 +398,7 @@ def generate_bar_specs(n=12, seed=42, start_id=100):
 
 
 # Extend hand-authored specs with programmatic ones
-CHART_SPECS.extend(generate_bar_specs(n=100, seed=42, start_id=100))
+CHART_SPECS.extend(generate_bar_specs(n=120, seed=42, start_id=100))
 
 
 def _gen_line_values(rng, n, low, high, trend="up", round_to=100, max_tries=40):
@@ -488,7 +488,7 @@ def generate_line_specs(n=12, seed=43, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_line_specs(n=85, seed=43, start_id=100))
+CHART_SPECS.extend(generate_line_specs(n=102, seed=43, start_id=100))
 
 
 def generate_grouped_specs(n=10, seed=44, start_id=100):
@@ -540,7 +540,7 @@ def generate_grouped_specs(n=10, seed=44, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_grouped_specs(n=104, seed=44, start_id=100))
+CHART_SPECS.extend(generate_grouped_specs(n=125, seed=44, start_id=100))
 
 
 def generate_stacked_specs(n=8, seed=45, start_id=100):
@@ -585,7 +585,7 @@ def generate_stacked_specs(n=8, seed=45, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_stacked_specs(n=84, seed=45, start_id=100))
+CHART_SPECS.extend(generate_stacked_specs(n=101, seed=45, start_id=100))
 
 
 def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
@@ -636,7 +636,7 @@ def generate_circle_specs(pie_n=5, donut_n=3, seed=46, start_id=100):
     return specs
 
 
-CHART_SPECS.extend(generate_circle_specs(pie_n=78, donut_n=36, seed=46, start_id=100))
+CHART_SPECS.extend(generate_circle_specs(pie_n=94, donut_n=43, seed=46, start_id=100))
 
 
 # Balance targets doubled to reach a 1000-row combined dataset (synthetic +
@@ -656,17 +656,20 @@ CHART_SPECS.extend(generate_circle_specs(pie_n=78, donut_n=36, seed=46, start_id
 #   multi_series_compare 100 -> 100  (hardset 0)
 #   aggregation_sum_avg   80 ->  80  (hardset 0)
 # Sum: 902 synthetic + 98 hardset = 1000
+# Bumped ~11% over the 1000 floor: Adaption dropped 9 rows on ingest
+# (1000 uploaded -> 991 ingested), so we build in buffer.
+# 1002 synthetic + 98 hardset = 1100 uploaded, ~1090 after ingest loss.
 BALANCE_TARGETS: dict[str, int] = {
-    "lookup_value": 161,
-    "max_min": 98,
-    "delta_absolute": 100,
-    "trend_direction": 83,
-    "percent_change_ratio": 50,
-    "hard_multi_step": 29,
-    "rank_order": 100,
-    "compare_categories": 101,
-    "multi_series_compare": 100,
-    "aggregation_sum_avg": 80,
+    "lookup_value": 179,
+    "max_min": 109,
+    "delta_absolute": 111,
+    "trend_direction": 92,
+    "percent_change_ratio": 56,
+    "hard_multi_step": 32,
+    "rank_order": 111,
+    "compare_categories": 112,
+    "multi_series_compare": 111,
+    "aggregation_sum_avg": 89,
 }
 
 

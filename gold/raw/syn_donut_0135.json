@@ -1,35 +1,35 @@
 {
   "chart_type": "donut",
-  "title": "Website Traffic Sources",
+  "title": "Budget by Department",
   "categories": [
-    "Email",
-    "Referral",
-    "Social",
-    "Paid",
-    "Direct",
-    "Organic"
+    "HR",
+    "Sales",
+    "Operations",
+    "Support",
+    "Engineering",
+    "Marketing"
   ],
   "values": [
-    2600,
-    10200,
-    14400,
-    14100,
-    11700,
-    8300
+    2900,
+    2200,
+    2700,
+    600,
+    2100,
+    1400
   ],
   "percents": [
-    4.2414,
-    16.6395,
-    23.491,
-    23.0016,
-    19.0865,
-    13.54
+    24.3697,
+    18.4874,
+    22.6891,
+    5.042,
+    17.6471,
+    11.7647
   ],
   "annotated": true,
   "chart_id": "syn_donut_0135",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 502,
-  "domain_index": 116
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 593,
+  "domain_index": 132
 }

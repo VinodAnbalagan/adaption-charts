@@ -1,29 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Marketing Spend by Channel",
+  "title": "Sales by Product Category",
   "categories": [
-    "Direct",
-    "Social",
-    "SEO",
-    "Display"
+    "Services",
+    "Consulting",
+    "Software",
+    "Hardware",
+    "Subscriptions"
   ],
   "values": [
-    4700,
+    2200,
+    2700,
+    3400,
     4500,
-    4100,
-    1300
+    3400
   ],
   "percents": [
-    32.1918,
-    30.8219,
-    28.0822,
-    8.9041
+    13.5802,
+    16.6667,
+    20.9877,
+    27.7778,
+    20.9877
   ],
   "annotated": true,
   "chart_id": "syn_donut_0117",
   "domain": "share_circle",
-  "entity": "channel",
-  "noun": "spend",
-  "overall_index": 484,
-  "domain_index": 98
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 575,
+  "domain_index": 114
 }

@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Budget by Department",
+  "title": "Marketing Spend by Channel",
   "categories": [
-    "Engineering",
-    "Support",
-    "Marketing",
-    "Operations"
+    "Affiliate",
+    "Display",
+    "Direct",
+    "Email"
   ],
   "values": [
-    700,
-    4300,
-    1100,
-    4000
+    2000,
+    1600,
+    4600,
+    3700
   ],
   "percents": [
-    6.9307,
-    42.5743,
-    10.8911,
-    39.604
+    16.8067,
+    13.4454,
+    38.6555,
+    31.0924
   ],
   "annotated": true,
   "chart_id": "syn_donut_0106",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 473,
-  "domain_index": 87
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 564,
+  "domain_index": 103
 }

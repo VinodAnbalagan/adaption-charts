@@ -1,32 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "FY25 Budget Allocation",
+  "title": "Marketing Spend by Channel",
   "categories": [
-    "Engineering",
-    "Sales",
-    "HR",
-    "Operations",
-    "Support"
+    "Affiliate",
+    "Paid Search",
+    "Social",
+    "Email",
+    "SEO"
   ],
   "values": [
-    3800,
-    4400,
-    1300,
-    3700,
-    2900
+    4900,
+    3500,
+    2000,
+    1000,
+    3500
   ],
   "percents": [
-    23.6025,
-    27.3292,
-    8.0745,
-    22.9814,
-    18.0124
+    32.8859,
+    23.4899,
+    13.4228,
+    6.7114,
+    23.4899
   ],
   "annotated": true,
   "chart_id": "syn_donut_0111",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 478,
-  "domain_index": 92
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 569,
+  "domain_index": 108
 }

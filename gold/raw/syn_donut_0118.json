@@ -1,32 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Sales by Product Category",
+  "title": "Regional Revenue Share",
   "categories": [
-    "Services",
-    "Software",
-    "Subscriptions",
-    "Hardware",
-    "Consulting"
+    "EMEA",
+    "NA",
+    "LATAM",
+    "APAC"
   ],
   "values": [
-    2500,
-    2700,
-    5600,
+    2600,
+    5400,
     5200,
-    4400
+    6200
   ],
   "percents": [
-    12.2549,
-    13.2353,
-    27.451,
-    25.4902,
-    21.5686
+    13.4021,
+    27.8351,
+    26.8041,
+    31.9588
   ],
   "annotated": true,
   "chart_id": "syn_donut_0118",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 485,
-  "domain_index": 99
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 576,
+  "domain_index": 115
 }

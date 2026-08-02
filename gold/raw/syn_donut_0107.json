@@ -1,29 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Ad Spend by Channel",
+  "title": "Sales by Product Category",
   "categories": [
-    "Paid Search",
-    "Direct",
-    "Email",
-    "SEO"
+    "Services",
+    "Hardware",
+    "Consulting",
+    "Subscriptions",
+    "Software"
   ],
   "values": [
-    3900,
-    1800,
-    3500,
-    4500
+    1300,
+    2900,
+    4800,
+    2300,
+    1100
   ],
   "percents": [
-    28.4672,
-    13.1387,
-    25.5474,
-    32.8467
+    10.4839,
+    23.3871,
+    38.7097,
+    18.5484,
+    8.871
   ],
   "annotated": true,
   "chart_id": "syn_donut_0107",
   "domain": "share_circle",
-  "entity": "channel",
-  "noun": "spend",
-  "overall_index": 474,
-  "domain_index": 88
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 565,
+  "domain_index": 104
 }

@@ -1,32 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Revenue by Region",
+  "title": "Traffic by Source",
   "categories": [
-    "APAC",
-    "LATAM",
-    "NA",
-    "EMEA",
-    "MEA"
+    "Organic",
+    "Social",
+    "Referral",
+    "Direct"
   ],
   "values": [
-    2400,
-    6300,
-    3100,
-    7600,
-    2600
+    2500,
+    4100,
+    11500,
+    8900
   ],
   "percents": [
-    10.9091,
-    28.6364,
-    14.0909,
-    34.5455,
-    11.8182
+    9.2593,
+    15.1852,
+    42.5926,
+    32.963
   ],
   "annotated": true,
   "chart_id": "syn_donut_0124",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 491,
-  "domain_index": 105
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 582,
+  "domain_index": 121
 }

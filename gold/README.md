@@ -17,15 +17,15 @@ pretty_name: Adaption Charts P2 — Gold Chart-QA
 
 # Adaption Charts P2 — Gold Chart-QA Dataset
 
-A small, verified, quality-first chart question-answering dataset built for
-the Adaption Labs AutoScientist Challenge (Part 2, Data Visualization
-track). 500 rows across two sources: a programmatically generated synthetic
-core (correct-by-construction) and a hand-authored hardset built from real
+A verified, quality-first chart question-answering dataset built for the
+Adaption Labs AutoScientist Challenge (Part 2, Data Visualization track).
+1000 rows across two sources: a programmatically generated synthetic core
+(correct-by-construction) and a hand-authored hardset built from real
 public dashboards and reports.
 
 ## At a glance
 
-- **500 rows total** — 402 synthetic + 98 hardset
+- **1000 rows total** — 902 synthetic + 98 hardset
 - **7 chart types** — bar, line, grouped_bar, stacked_bar, pie, donut, mixed
 - **10 task types** — every allowed task_type populated at target
 - **English only**, real-world business/finance/health/policy domains
@@ -55,49 +55,49 @@ Each row:
 
 | source | rows | share |
 |---|---:|---:|
-| synthetic | 402 | 80.4% |
-| hardset | 98 | 19.6% |
+| synthetic | 902 | 90.2% |
+| hardset | 98 | 9.8% |
 
 **By chart_type**
 
 | chart_type | rows |
 |---|---:|
-| bar | 120 |
-| grouped_bar | 88 |
-| stacked_bar | 80 |
-| line | 76 |
+| bar | 219 |
+| line | 192 |
+| stacked_bar | 168 |
+| grouped_bar | 156 |
+| pie | 142 |
+| donut | 64 |
 | mixed | 59 |
-| pie | 55 |
-| donut | 22 |
 
 **By task_type**
 
 | task_type | rows |
 |---|---:|
-| lookup_value | 90 |
-| max_min | 70 |
-| compare_categories | 60 |
-| rank_order | 50 |
-| delta_absolute | 50 |
-| trend_direction | 50 |
-| multi_series_compare | 50 |
-| aggregation_sum_avg | 40 |
-| percent_change_ratio | 25 |
-| hard_multi_step | 15 |
+| lookup_value | 180 |
+| max_min | 140 |
+| compare_categories | 120 |
+| rank_order | 100 |
+| delta_absolute | 100 |
+| trend_direction | 100 |
+| multi_series_compare | 100 |
+| aggregation_sum_avg | 80 |
+| percent_change_ratio | 50 |
+| hard_multi_step | 30 |
 
 **By difficulty**
 
 | difficulty | rows |
 |---|---:|
-| medium | 351 |
-| easy | 124 |
-| hard | 25 |
+| medium | 658 |
+| easy | 302 |
+| hard | 40 |
 
 ## Verification protocol
 
 Every row is `verified=true`, but the mechanism differs by source:
 
-**Synthetic (402 rows) — correct-by-construction.**
+**Synthetic (902 rows) — correct-by-construction.**
 Each chart is rendered from a seeded pseudorandom value distribution. The
 answer to every question is computed from those underlying values
 *before* the chart image is drawn. There is no visual estimation involved.

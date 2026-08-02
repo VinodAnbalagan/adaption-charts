@@ -1,29 +1,29 @@
 {
   "chart_type": "donut",
-  "title": "Regional Revenue Share",
+  "title": "Website Traffic Sources",
   "categories": [
-    "APAC",
-    "NA",
-    "EMEA",
-    "LATAM"
+    "Email",
+    "Paid",
+    "Organic",
+    "Social"
   ],
   "values": [
-    3900,
-    6500,
-    4800,
-    7900
+    4600,
+    12300,
+    7900,
+    3900
   ],
   "percents": [
-    16.8831,
-    28.1385,
-    20.7792,
-    34.1991
+    16.0279,
+    42.8571,
+    27.5261,
+    13.5889
   ],
   "annotated": true,
   "chart_id": "syn_donut_0129",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 496,
-  "domain_index": 110
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 587,
+  "domain_index": 126
 }

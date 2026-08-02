@@ -1,32 +1,35 @@
 {
   "chart_type": "donut",
-  "title": "Revenue by Region",
+  "title": "Website Traffic Sources",
   "categories": [
-    "NA",
-    "MEA",
-    "LATAM",
-    "APAC",
-    "EMEA"
+    "Email",
+    "Referral",
+    "Social",
+    "Paid",
+    "Direct",
+    "Organic"
   ],
   "values": [
-    6000,
-    3500,
-    7100,
-    7200,
-    4000
+    2600,
+    10200,
+    14400,
+    14100,
+    11700,
+    8300
   ],
   "percents": [
-    21.5827,
-    12.5899,
-    25.5396,
-    25.8993,
-    14.3885
+    4.2414,
+    16.6395,
+    23.491,
+    23.0016,
+    19.0865,
+    13.54
   ],
   "annotated": true,
   "chart_id": "syn_donut_0119",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 486,
-  "domain_index": 100
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 577,
+  "domain_index": 116
 }

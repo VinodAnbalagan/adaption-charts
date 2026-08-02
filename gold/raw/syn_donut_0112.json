@@ -1,29 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Ad Spend by Channel",
+  "title": "Sales Mix",
   "categories": [
-    "Affiliate",
-    "Display",
-    "Social",
-    "SEO"
+    "Consulting",
+    "Hardware",
+    "Software",
+    "Services",
+    "Subscriptions"
   ],
   "values": [
+    5700,
+    4500,
+    3000,
     4700,
-    3100,
-    1400,
-    1200
+    3600
   ],
   "percents": [
-    45.1923,
-    29.8077,
-    13.4615,
-    11.5385
+    26.5116,
+    20.9302,
+    13.9535,
+    21.8605,
+    16.7442
   ],
   "annotated": true,
   "chart_id": "syn_donut_0112",
   "domain": "share_circle",
-  "entity": "channel",
-  "noun": "spend",
-  "overall_index": 479,
-  "domain_index": 93
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 570,
+  "domain_index": 109
 }

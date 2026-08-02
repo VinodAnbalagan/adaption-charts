@@ -1,32 +1,35 @@
 {
   "chart_type": "donut",
-  "title": "Traffic by Source",
+  "title": "FY25 Budget Allocation",
   "categories": [
-    "Organic",
-    "Email",
-    "Paid",
-    "Direct",
-    "Social"
+    "Operations",
+    "IT",
+    "Engineering",
+    "Marketing",
+    "Support",
+    "HR"
   ],
   "values": [
+    1400,
+    4300,
+    1700,
     2900,
-    11400,
-    6600,
-    13100,
-    10900
+    2000,
+    3500
   ],
   "percents": [
-    6.4588,
-    25.3898,
-    14.6993,
-    29.1759,
-    24.2762
+    8.8608,
+    27.2152,
+    10.7595,
+    18.3544,
+    12.6582,
+    22.1519
   ],
   "annotated": true,
   "chart_id": "syn_donut_0120",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 487,
-  "domain_index": 101
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 578,
+  "domain_index": 117
 }

@@ -1,35 +1,32 @@
 {
   "chart_type": "donut",
-  "title": "Traffic by Source",
+  "title": "Budget by Department",
   "categories": [
-    "Organic",
-    "Referral",
-    "Social",
-    "Paid",
-    "Direct",
-    "Email"
+    "IT",
+    "Engineering",
+    "Marketing",
+    "Support",
+    "HR"
   ],
   "values": [
-    9200,
-    5000,
-    12800,
-    3700,
-    12100,
-    13300
+    1000,
+    1800,
+    2700,
+    1100,
+    2600
   ],
   "percents": [
-    16.3993,
-    8.9127,
-    22.8164,
-    6.5954,
-    21.5686,
-    23.7077
+    10.8696,
+    19.5652,
+    29.3478,
+    11.9565,
+    28.2609
   ],
   "annotated": true,
   "chart_id": "syn_donut_0105",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 472,
-  "domain_index": 86
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 563,
+  "domain_index": 102
 }

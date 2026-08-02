@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "title": "Monthly Revenue by Team",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Alpha",
+    "Beta",
+    "Zeta",
+    "Omega",
+    "Delta"
+  ],
+  "values": [
+    5200,
+    6100,
+    7900,
+    8100,
+    2700
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0211",
+  "domain": "revenue_bar",
+  "entity": "team",
+  "overall_index": 127,
+  "domain_index": 79
+}
