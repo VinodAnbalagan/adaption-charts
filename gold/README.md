@@ -97,6 +97,33 @@ Each row:
 | easy | 331 |
 <!-- /AUTOGEN:composition -->
 
+## Perceptual difficulty
+
+Most chart-QA datasets vary difficulty by *arithmetic* — more steps in the
+calculation. That is not what challenges a vision-language model. A capable
+VLM handles multi-step arithmetic easily once it has read the values; what
+it struggles with is reading the values in the first place.
+
+358 rows (25.3%) are hard by **perceptual** construction. Eight mechanics:
+
+| mechanic | what it does | why it's hard |
+|---|---|---|
+| `truncated_axis` | y-axis starts well above zero | bar height ratios badly misrepresent value ratios; a model comparing pixels is wrong, a model reading labels is right |
+| `unlabeled` | no value annotations at all | values are snapped exactly onto gridlines, so the answer stays unambiguous — but only if the axis is actually read |
+| `near_tie` | top two values differ by ~1–2% | eyeballing the tallest bar fails |
+| `similar_colors` | series palette uses near-identical hues | the legend must be resolved rather than pattern-matched |
+| `many_categories` | 12–16 categories, rotated labels, small font | dense visual scanning |
+| `crowded_legend` | legend placed over the plot area | partial occlusion of the data |
+| `log_scale` | logarithmic y-axis | equal pixel distances are unequal value deltas |
+| `dual_axis` | two y-axes at different scales | reading the wrong axis yields a plausible but wrong number |
+
+Roughly 90 of these rows carry **no value labels whatsoever** — the answer
+must be read off gridlines. Answers remain correct-by-construction because
+values are generated as exact multiples of the tick step.
+
+Every hard row's `notes` field names its mechanic, e.g.
+`hard/truncated_axis; procedural gen (seed=777, idx=12)`.
+
 ## Verification protocol
 
 Every row is `verified=true`, but the mechanism differs by source:
