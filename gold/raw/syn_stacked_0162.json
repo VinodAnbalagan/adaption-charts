@@ -1,0 +1,43 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Revenue by Region: Product Breakdown",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "LATAM",
+    "EMEA",
+    "APAC",
+    "NA"
+  ],
+  "series_labels": [
+    "Basic",
+    "Pro",
+    "Premium"
+  ],
+  "series_values": [
+    [
+      2600,
+      2200,
+      1100,
+      1600
+    ],
+    [
+      2000,
+      3400,
+      2500,
+      2600
+    ],
+    [
+      1300,
+      2200,
+      1600,
+      3400
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0162",
+  "domain": "revenue_stacked",
+  "entity": "region",
+  "overall_index": 425,
+  "domain_index": 64
+}

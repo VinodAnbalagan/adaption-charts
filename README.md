@@ -1,168 +1,117 @@
 # adaption-charts
 
-Synthetic, **verified** marketing-analytics QA generator — built for the
-**[Adaption](https://adaptionlabs.ai) AutoScientist Challenge**.
+Chart question-answering dataset and LoRA adapter, built for the
+[Adaption Labs AutoScientist Challenge](https://adaptionlabs.ai/blog/autoscientist-challenge)
+(Part 2, Data Visualization track).
 
-It generates marketing reports (channel/segment spend, revenue, conversions, funnels), derives
-question–answer pairs from them, and attaches a reasoning trace that is **correct by
-construction**. The result is table-QA training data where the answers — and the reasoning —
-can be trusted.
+| artifact | link |
+|---|---|
+| model | [vinod-anbalagan/gridline](https://huggingface.co/vinod-anbalagan/gridline) |
+| dataset | [vinod-anbalagan/adaption-charts-p2-gold](https://huggingface.co/datasets/vinod-anbalagan/adaption-charts-p2-gold) |
+| model card | [`MODEL_CARD.md`](MODEL_CARD.md) |
+| dataset card | [`gold/README.md`](gold/README.md) |
+| experiment log | [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) |
+| run tracker | [`RUNS.md`](RUNS.md) |
 
-**Published artifacts:**
-- 📊 Dataset: [vinod-anbalagan/adaption-marketing-spend-revenue-qa](https://huggingface.co/datasets/vinod-anbalagan/adaption-marketing-spend-revenue-qa)
-- 🤖 Model (LoRA): [vinod-anbalagan/Llama-3.2-3B-marketing-spend-revenue-qa](https://huggingface.co/vinod-anbalagan/Llama-3.2-3B-marketing-spend-revenue-qa)
+**Result:** 62/38 pairwise win rate against base `gemma-3-27b-it-VLM`.
 
----
+## What's here
 
-## The idea
+A 1,415-row chart-QA dataset where every answer is either
+correct-by-construction or hand-verified, plus the generators that produce
+it and the findings from eleven training runs.
 
-Most public chart/table-QA datasets give you *answers*. The hard part — a **correct reasoning
-trace** — is usually missing or model-generated (and therefore sometimes wrong). This pipeline
-inverts the usual order:
+Two things distinguish it from other chart-QA sets:
 
-1. **Generate the data table first** (a marketing report with known numbers).
-2. **Derive the question and answer from that table** — so the answer is exact, with no
-   perception step that could misread a value.
-3. **Attach a deterministic reasoning trace** — computed from the numbers, not from re-reading
-   a chart.
-4. **Gate every row through a validator** before it's ever used.
+**Correct-by-construction labels.** Synthetic charts are rendered *from*
+seeded values, and answers are computed from those values before the image
+is drawn. The label never depends on reading the image, so there is no
+annotation error to propagate.
 
-That's the moat: public chart datasets have answers, not correct reasoning.
-
----
+**Perceptual difficulty, not arithmetic difficulty.** 25% of rows are hard
+because they are hard to *see* — truncated axes where bar heights
+misrepresent ratios, unlabeled charts where values sit exactly on
+gridlines, near-ties within 1–2%, near-identical series colours, occluded
+legends, log scales, dual axes. Most chart-QA datasets scale difficulty by
+adding calculation steps, which a capable VLM handles once it has read the
+values. Reading them is the hard part.
 
 ## Pipeline
 
 ```bash
-# 1. generate figures (--no-render skips PNGs; text track needs no images and runs in seconds)
-python scripts/build_pilot.py --no-render \
-  --bar 280 --line 280 --grouped 480 --stacked 600 --dashboard 480 --funnel 360 \
-  --out data_run
-
-# 2. hold out whole figures (never adapted/trained on) before serializing to text
-python scripts/split_holdout.py --pool data_run/canonical/train.jsonl \
-  --holdout-frac 0.15 --out data_run/split
-
-# 3. serialize each figure to text in multiple forms -> the Part 1 parquet
-python scripts/build_part1_text.py --pool data_run/split/train_pool.jsonl --out data_run/part1
-# -> data_run/part1/part1_text.parquet   (upload this to Adaptive Data)
+python pipeline/01_synthesize.py       # synthetic core (seeded, reproducible)
+python pipeline/07_hardgen.py          # perceptually-hard rows
+python pipeline/03_hardset_append.py   # hand-authored real-world rows
+python pipeline/04_verify.py           # schema + provenance checks
+python pipeline/05_publish.py --public # push dataset to HuggingFace
+python pipeline/08_push_cards.py --model-repo <id>   # push cards
 ```
 
-After adapting on the Adaption platform, gate the downloaded file:
+`pipeline/06_train.py` drives the Adaption API — dataset upload, adaptation,
+hyperparameter recommendation, AutoScientist training, checkpoint download.
 
-```bash
-python scripts/verify_adapted.py  --adapted <downloaded.json>   # numeric-preservation gate
-python scripts/diagnose_adapted.py --adapted <downloaded.json>  # artifact-vs-real failure triage
-python scripts/dissect_adapted.py  --adapted <downloaded.json>  # composition / target-quality forensics
-```
+Every synthetic row has a provenance JSON in `gold/raw/` recording the seed
+and underlying values, so any answer can be recomputed from source.
 
-Drop `--no-render` to also produce PNG charts (for the image/Part 2 track) plus an
-`inspect.html` sheet that shows image + ground-truth table + QA + reasoning side by side —
-eyeball ~20 before scaling.
-
----
-
-## QA taxonomy (13 reasoning types)
-
-Each task carries a `qa_type`, spanning simple lookups through multi-step and adversarial
-reasoning:
-
-| Type | Asks |
-|---|---|
-| `retrieve_value` | A single value from the report |
-| `find_extremum` | The single highest/lowest cell (not a row total) |
-| `compute_sum` | A total across a series |
-| `compute_difference` | The change between two values |
-| `compute_ratio_percent` | Share-of-total as a percentage (additive metrics only) |
-| `multi_series_lookup` | A value at a specific (category, series) grid cell |
-| `compare_values` | Which of two values is higher (or equal) |
-| `trend_direction` | Whether a metric rose, fell, or held |
-| `funnel_conversion` | A stage-to-stage conversion rate |
-| `diagnostic` | The funnel bottleneck (lowest-conversion transition) |
-| `multi_panel_linked_reasoning` | Cross-panel reasoning over a dashboard |
-| `table_extraction` | Normalize the whole report into structured JSON |
-| `unanswerable` | The figure is genuinely absent — the model must **abstain**, not guess |
-
-The `unanswerable` class is deliberate: it trains abstention, where capable models most often
-fail (they hallucinate a plausible number instead of declining).
-
-**Figure families:** single-series `bar` and `line`, `grouped_bar` and `stacked_bar` grids,
-multi-panel `dashboard` (KPI card + channel comparison + spend breakdown), and `funnel`.
-Tabular reports are serialized into several **text forms** (analyst prose, bullet summary,
-pivoted table, markdown table, compact block, and intentionally "noisy" layouts) so the same
-facts appear in multiple shapes — teaching robustness to layout, not to a single template.
-
----
-
-## The quality gate
-
-`build_pilot.py` runs `validate_dataset` automatically, catching row/column length mismatches,
-empty prompts/answers, evidence keys that don't exist in the table, non-parsing numeric
-answers, and `unanswerable` rows that secretly assert a value. **Fix DIRTY rows before
-scaling.**
-
-After adaptation, three tools read the result at increasing depth:
-- **`verify_adapted.py`** — the numeric-preservation gate. Did the platform keep your exact
-  answers? Refusal-aware, compound-label aware, with rounding tolerance for percentages.
-- **`diagnose_adapted.py`** — buckets failures into *verifier artifact* vs *genuine miss*, so a
-  low headline rate isn't mistaken for corruption.
-- **`dissect_adapted.py`** — forensics on a full adapted file: on-topic vs off-topic
-  composition, self-correcting/contradicting targets, bloat, and near-duplicates.
-
----
-
-## Repo layout
+### Layout
 
 ```
-src/chartgen/
-  schema.py       data model + task construction (answers exact, evidence linked)
-  generator.py    figure builders (bar/line/grouped/stacked/dashboard/funnel) + QA derivation
-  serialize.py    figure -> text forms (Part 1 text track)
-  validator.py    the DIRTY/clean gate
-  curation.py     difficulty/diversity helpers
-scripts/
-  build_pilot.py        generate + validate + export (+ optional --no-render)
-  split_holdout.py      hold out whole figures before text serialization
-  build_part1_text.py   serialize figures -> part1_text.parquet
-  verify_adapted.py / diagnose_adapted.py / dissect_adapted.py   post-adaptation gates
-  push_to_hf.py / upload_to_adaption.py                          publishing helpers
-BLUEPRINTS.md     the Adaptive Data steering text ("explain the verified answer; never re-derive")
+gold/
+  manifest.csv        the dataset (schema in gold/README.md)
+  images/             chart PNGs
+  raw/                per-chart provenance (seed + underlying values)
+  hardset_raw/        original screenshots for hand-authored rows
+pipeline/
+  lib/render.py       standard chart renderers
+  lib/hard_render.py  adversarial renderers (8 perceptual mechanics)
+  lib/pools.py        vocabulary and value pools
+  lib/phrasings.py    question templates, flat register
+adapted_data/         platform-adapted CSVs (evidence for the drift analysis)
 ```
 
-### Two JSONL formats
-- **canonical** (`canonical/train.jsonl`) — one row per *figure*, the full nested object; the
-  source of truth for regeneration.
-- **flat** (`flat/train.jsonl`) — one row per *task*, the shape Adaption ingests. Rows carry a
-  type so slices can be adapted with different configs (e.g. `table_extraction` with reasoning
-  off to protect exact numbers; QA with reasoning on).
+## Findings
 
----
+Documented in full in [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) and
+[`MODEL_CARD.md`](MODEL_CARD.md).
 
-## Adaptive Data blueprint
+**Adaptation rewrites completions, always.** With a blueprint explicitly
+forbidding it, 31.6% of completions diverged from source answers — 41 of
+them numerically wrong, including a `No` flipped to `Yes`. With all recipes
+off and no blueprint, 100% were rewritten into long explanations. The
+blueprint reduced damage substantially but did not prevent it. Verifiable
+against the CSVs in `adapted_data/`.
 
-The platform, by default, re-derives numeric answers and can reject exact ground truth as a
-"hallucination." [`BLUEPRINTS.md`](BLUEPRINTS.md) reverses that: **the completion is
-authoritative — explain it, never re-derive it.** Paste the canonical blueprint into the
-platform's Blueprint field and run with rephrase/hallucination off, concise on.
+**Maximal enhancement inverts the model, reproducibly.** Turning every
+Adaptive Data recipe on produced 69/31 in Part 1 of the challenge, and
+69/31 and 66/35 in Part 2 — different data, different domain, with a
+countermeasure blueprint in place, on both column choices. The adapted
+model loses to its own base in roughly two of three comparisons.
 
----
+**Train on your original columns.** The best run is the only confirmed
+configuration training on both original prompt and original completion.
+Adaptation is useful for ingestion and quality scoring; its rewritten
+completions are not a safe training target for exact-answer tasks.
 
-## Install
+**Negative result, reported.** Raising perceptual difficulty from 3.9% to
+25.3% of rows produced 55% against the earlier dataset's 62%. Either the
+harder rows made training harder without making the judged comparison
+easier, or the held-out slice does not over-sample them.
 
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e .
-```
+## Provenance and tooling
 
-## Roadmap
+Built with the Adaption Labs platform (Adaptive Data + AutoScientist).
+Hardset charts are screenshots of publicly available figures from
+Statistics Canada, the US Bureau of Labor Statistics, the World Health
+Organization, the European Central Bank, the Bank of Canada, and the
+Climate Policy Database; each row carries its source in the dataset's
+`notes` column.
 
-- **Part 2 (data-visualization track):** image-based QA — feed the rendered PNG charts
-  (already produced when `--no-render` is omitted) through the multimodal pipeline.
-- HTML/CSS dashboard renderer for more realistic (Tableau/GA4-style) figures.
-- Additional chart families (area, combo, scatter) and a held-out eval harness for
-  independent scoring of exported weights against the holdout split.
+The generators, verification scripts, and API tooling in `pipeline/` were
+written with LLM assistance (Claude). Dataset design, source selection,
+the hand-authored hardset, experimental design, and all findings are the
+author's. Ablation configurations were run and interpreted manually.
 
 ## License
 
-Code: MIT. Dataset: CC-BY-4.0. Model adapter: Llama 3.2 Community License (inherited from the
-base model).
+Code: MIT. Dataset: CC-BY-4.0 (see `gold/README.md` for source-specific
+attribution notes). Model: inherits the Gemma license.

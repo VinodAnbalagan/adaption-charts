@@ -1,0 +1,28 @@
+{
+  "chart_type": "bar",
+  "title": "Q2 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "Nonprofit",
+    "Startup",
+    "Education",
+    "Consumer",
+    "Mid-Market"
+  ],
+  "values": [
+    9800,
+    4100,
+    2800,
+    7400,
+    2200,
+    9500
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0156",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 72,
+  "domain_index": 42
+}

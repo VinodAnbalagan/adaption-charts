@@ -1,0 +1,29 @@
+{
+  "chart_type": "donut",
+  "title": "Traffic by Source",
+  "categories": [
+    "Organic",
+    "Social",
+    "Referral",
+    "Direct"
+  ],
+  "values": [
+    2500,
+    4100,
+    11500,
+    8900
+  ],
+  "percents": [
+    9.2593,
+    15.1852,
+    42.5926,
+    32.963
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0124",
+  "domain": "share_circle",
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 582,
+  "domain_index": 121
+}

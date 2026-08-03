@@ -1,0 +1,28 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Education",
+    "SMB",
+    "Enterprise",
+    "Consumer",
+    "Startup",
+    "Nonprofit"
+  ],
+  "values": [
+    4100,
+    6400,
+    7900,
+    5500,
+    1800,
+    10400
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0132",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 48,
+  "domain_index": 26
+}

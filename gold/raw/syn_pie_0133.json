@@ -1,0 +1,29 @@
+{
+  "chart_type": "pie",
+  "title": "Traffic by Source",
+  "categories": [
+    "Social",
+    "Referral",
+    "Direct",
+    "Organic"
+  ],
+  "values": [
+    13200,
+    7400,
+    13900,
+    13300
+  ],
+  "percents": [
+    27.6151,
+    15.4812,
+    29.0795,
+    27.8243
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0133",
+  "domain": "share_circle",
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 497,
+  "domain_index": 36
+}

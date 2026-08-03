@@ -1,0 +1,28 @@
+{
+  "chart_type": "bar",
+  "title": "Q1 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Education",
+    "Startup",
+    "Consumer",
+    "Government",
+    "Nonprofit",
+    "Enterprise"
+  ],
+  "values": [
+    2300,
+    4600,
+    8100,
+    10800,
+    5300,
+    3500
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0102",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 18,
+  "domain_index": 6
+}

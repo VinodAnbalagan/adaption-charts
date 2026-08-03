@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "title": "Q2 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Healthcare",
+    "Energy",
+    "Tech",
+    "Manufacturing",
+    "Media"
+  ],
+  "values": [
+    2100,
+    6900,
+    8000,
+    6700,
+    6100
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0142",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 58,
+  "domain_index": 32
+}

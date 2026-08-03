@@ -1,0 +1,35 @@
+{
+  "chart_type": "donut",
+  "title": "Marketing Spend by Channel",
+  "categories": [
+    "Email",
+    "Social",
+    "Display",
+    "SEO",
+    "Affiliate",
+    "Direct"
+  ],
+  "values": [
+    2900,
+    2200,
+    4400,
+    4000,
+    2000,
+    3100
+  ],
+  "percents": [
+    15.5914,
+    11.828,
+    23.6559,
+    21.5054,
+    10.7527,
+    16.6667
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0141",
+  "domain": "share_circle",
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 599,
+  "domain_index": 138
+}

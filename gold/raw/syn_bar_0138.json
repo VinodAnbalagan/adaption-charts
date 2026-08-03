@@ -1,0 +1,24 @@
+{
+  "chart_type": "bar",
+  "title": "FY2021 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Enterprise",
+    "Mid-Market",
+    "Consumer",
+    "Government"
+  ],
+  "values": [
+    6200,
+    7700,
+    4600,
+    3900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0138",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 54,
+  "domain_index": 30
+}

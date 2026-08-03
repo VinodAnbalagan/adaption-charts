@@ -1,0 +1,32 @@
+{
+  "chart_type": "pie",
+  "title": "Sales by Product Category",
+  "categories": [
+    "Services",
+    "Consulting",
+    "Subscriptions",
+    "Hardware",
+    "Software"
+  ],
+  "values": [
+    1700,
+    3200,
+    1100,
+    1600,
+    5500
+  ],
+  "percents": [
+    12.9771,
+    24.4275,
+    8.3969,
+    12.2137,
+    41.9847
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0176",
+  "domain": "share_circle",
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 540,
+  "domain_index": 79
+}

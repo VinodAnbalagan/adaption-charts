@@ -1,0 +1,28 @@
+{
+  "chart_type": "line",
+  "title": "Monthly Active Users \u2014 H1 2025",
+  "y_label": "Active users",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "values": [
+    12000,
+    13500,
+    14200,
+    15800,
+    16400,
+    17900
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_line_0003",
+  "domain": "users_line",
+  "entity": "month",
+  "overall_index": 8,
+  "domain_index": 0
+}

@@ -1,0 +1,29 @@
+{
+  "chart_type": "mixed",
+  "mechanic": "dual_axis",
+  "title": "Revenue and Conversion Rate",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "bar_label": "Revenue ($)",
+  "bar_values": [
+    2900,
+    2300,
+    6100,
+    4300
+  ],
+  "line_label": "Conversion Rate (%)",
+  "line_values": [
+    9.0,
+    4.4,
+    6.4,
+    7.9
+  ],
+  "annotated": true,
+  "chart_id": "hard_dual_0026",
+  "seed": 777,
+  "idx": 26
+}

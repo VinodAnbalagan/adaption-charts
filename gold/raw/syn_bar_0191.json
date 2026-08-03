@@ -1,0 +1,28 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Marketplace",
+    "Retail",
+    "Reseller",
+    "Partner",
+    "Wholesale",
+    "Online"
+  ],
+  "values": [
+    10000,
+    2400,
+    13600,
+    9100,
+    10300,
+    5900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0191",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 107,
+  "domain_index": 65
+}

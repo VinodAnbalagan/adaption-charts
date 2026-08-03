@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "title": "Q3 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Healthcare",
+    "Retail",
+    "Finance",
+    "Manufacturing",
+    "Tech"
+  ],
+  "values": [
+    3300,
+    5100,
+    7200,
+    4800,
+    6500
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0004",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 3,
+  "domain_index": 3
+}

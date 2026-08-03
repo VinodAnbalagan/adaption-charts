@@ -1,0 +1,24 @@
+{
+  "chart_type": "line",
+  "title": "FY23 Quarterly Revenue",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "values": [
+    17500,
+    22100,
+    23400,
+    20900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_line_0189",
+  "domain": "revenue_line",
+  "entity": "quarter",
+  "overall_index": 225,
+  "domain_index": 47
+}

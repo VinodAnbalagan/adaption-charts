@@ -1,0 +1,58 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "series_labels": [
+    "Nonprofit",
+    "Government",
+    "Startup",
+    "Enterprise"
+  ],
+  "series_values": [
+    [
+      8900,
+      2100,
+      11800,
+      5300,
+      5000,
+      3500
+    ],
+    [
+      10200,
+      9400,
+      11600,
+      4400,
+      6000,
+      9400
+    ],
+    [
+      8400,
+      5200,
+      9800,
+      3100,
+      11900,
+      8300
+    ],
+    [
+      11500,
+      8800,
+      3200,
+      7200,
+      6200,
+      7500
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0024",
+  "seed": 777,
+  "idx": 24
+}

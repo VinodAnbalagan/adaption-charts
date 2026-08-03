@@ -1,0 +1,24 @@
+{
+  "chart_type": "bar",
+  "mechanic": "log_scale",
+  "title": "Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget F",
+    "Widget D",
+    "Gizmo Y",
+    "Widget B",
+    "Widget A"
+  ],
+  "values": [
+    500,
+    95000,
+    20,
+    8000,
+    150
+  ],
+  "annotated": true,
+  "chart_id": "hard_log_0124",
+  "seed": 777,
+  "idx": 124
+}

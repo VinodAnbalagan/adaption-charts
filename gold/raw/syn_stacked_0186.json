@@ -1,0 +1,43 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Regional Revenue by Product",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "APAC",
+    "EMEA",
+    "NA",
+    "LATAM"
+  ],
+  "series_labels": [
+    "Software",
+    "Services",
+    "Hardware"
+  ],
+  "series_values": [
+    [
+      1500,
+      1100,
+      2800,
+      2400
+    ],
+    [
+      3300,
+      2400,
+      2300,
+      1300
+    ],
+    [
+      2300,
+      1800,
+      2500,
+      2100
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0186",
+  "domain": "revenue_stacked",
+  "entity": "region",
+  "overall_index": 449,
+  "domain_index": 88
+}

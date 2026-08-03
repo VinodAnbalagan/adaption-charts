@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "mechanic": "truncated_axis",
+  "title": "Q3 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "y_floor": 10300,
+  "categories": [
+    "Government",
+    "Mid-Market",
+    "Startup",
+    "SMB",
+    "Education"
+  ],
+  "values": [
+    10700,
+    11500,
+    10800,
+    10500,
+    12300
+  ],
+  "annotated": true,
+  "chart_id": "hard_trunc_0000",
+  "seed": 777,
+  "idx": 0
+}

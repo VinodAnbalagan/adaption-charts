@@ -1,0 +1,58 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "series_labels": [
+    "Startup",
+    "Nonprofit",
+    "Government",
+    "Enterprise"
+  ],
+  "series_values": [
+    [
+      3200,
+      4000,
+      4600,
+      4500,
+      3400,
+      6100
+    ],
+    [
+      8300,
+      7700,
+      4200,
+      5900,
+      3300,
+      8200
+    ],
+    [
+      3600,
+      4500,
+      5400,
+      2200,
+      8400,
+      5000
+    ],
+    [
+      8200,
+      9400,
+      10000,
+      6400,
+      8900,
+      7200
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0087",
+  "seed": 777,
+  "idx": 87
+}

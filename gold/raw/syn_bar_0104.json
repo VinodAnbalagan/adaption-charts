@@ -1,0 +1,24 @@
+{
+  "chart_type": "bar",
+  "title": "Weekly Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget F",
+    "Widget D",
+    "Widget C",
+    "Widget A"
+  ],
+  "values": [
+    2100,
+    7600,
+    7100,
+    2900
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0104",
+  "domain": "units_sold_bar",
+  "entity": "product",
+  "overall_index": 20,
+  "domain_index": 2
+}

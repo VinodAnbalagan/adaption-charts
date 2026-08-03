@@ -1,0 +1,41 @@
+{
+  "chart_type": "grouped_bar",
+  "mechanic": "similar_colors",
+  "title": "Revenue by Region",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "APAC",
+    "NA",
+    "LATAM",
+    "MEA"
+  ],
+  "series_labels": [
+    "2023",
+    "2024",
+    "2025"
+  ],
+  "series_values": [
+    [
+      3500,
+      4300,
+      6500,
+      3400
+    ],
+    [
+      5300,
+      6900,
+      6100,
+      8400
+    ],
+    [
+      9900,
+      9900,
+      7700,
+      10100
+    ]
+  ],
+  "annotated": true,
+  "chart_id": "hard_simcol_0112",
+  "seed": 777,
+  "idx": 112
+}
