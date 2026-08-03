@@ -1,0 +1,27 @@
+{
+  "chart_type": "line",
+  "mechanic": "unlabeled",
+  "title": "Monthly Signups",
+  "y_label": "Signups",
+  "tick_step": 200,
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "values": [
+    1800,
+    1400,
+    1600,
+    2000,
+    2400,
+    1000
+  ],
+  "annotated": false,
+  "chart_id": "hard_unline_0119",
+  "seed": 777,
+  "idx": 119
+}

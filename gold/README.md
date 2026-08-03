@@ -26,7 +26,7 @@ public dashboards and reports.
 ## At a glance
 
 <!-- AUTOGEN:counts -->
-- **1100 rows total** — 1002 synthetic + 98 hardset
+- **1415 rows total** — 1317 synthetic + 98 hardset
 <!-- /AUTOGEN:counts -->
 - **7 chart types** — bar, line, grouped_bar, stacked_bar, pie, donut, mixed
 - **10 task types** — every allowed task_type populated at target
@@ -58,32 +58,32 @@ Each row:
 
 | source | rows | share |
 |---|---:|---:|
-| synthetic | 1002 | 91.1% |
-| hardset | 98 | 8.9% |
+| synthetic | 1317 | 93.1% |
+| hardset | 98 | 6.9% |
 
 **By chart_type**
 
 | chart_type | rows |
 |---|---:|
-| bar | 237 |
-| line | 228 |
+| bar | 417 |
+| line | 288 |
+| grouped_bar | 201 |
 | stacked_bar | 184 |
-| grouped_bar | 171 |
 | pie | 155 |
+| mixed | 104 |
 | donut | 66 |
-| mixed | 59 |
 
 **By task_type**
 
 | task_type | rows |
 |---|---:|
-| lookup_value | 198 |
-| max_min | 151 |
+| max_min | 301 |
+| lookup_value | 273 |
+| delta_absolute | 156 |
+| rank_order | 141 |
 | compare_categories | 131 |
-| delta_absolute | 111 |
-| rank_order | 111 |
+| trend_direction | 124 |
 | multi_series_compare | 111 |
-| trend_direction | 109 |
 | aggregation_sum_avg | 89 |
 | percent_change_ratio | 56 |
 | hard_multi_step | 33 |
@@ -93,8 +93,8 @@ Each row:
 | difficulty | rows |
 |---|---:|
 | medium | 726 |
+| hard | 358 |
 | easy | 331 |
-| hard | 43 |
 <!-- /AUTOGEN:composition -->
 
 ## Verification protocol

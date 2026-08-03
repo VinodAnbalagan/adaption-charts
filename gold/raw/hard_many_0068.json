@@ -1,0 +1,40 @@
+{
+  "chart_type": "bar",
+  "mechanic": "many_categories",
+  "title": "Annual Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Insurance",
+    "Finance",
+    "Logistics",
+    "Healthcare",
+    "Construction",
+    "Tech",
+    "Energy",
+    "Hospitality",
+    "Manufacturing",
+    "Retail",
+    "Agriculture",
+    "Utilities",
+    "Automotive"
+  ],
+  "values": [
+    6200,
+    5300,
+    7200,
+    4000,
+    11200,
+    11300,
+    1400,
+    4900,
+    2300,
+    1100,
+    5500,
+    14200,
+    9600
+  ],
+  "annotated": true,
+  "chart_id": "hard_many_0068",
+  "seed": 777,
+  "idx": 68
+}

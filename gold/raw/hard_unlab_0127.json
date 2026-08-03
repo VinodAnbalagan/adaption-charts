@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "mechanic": "unlabeled",
+  "title": "Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "tick_step": 2000,
+  "categories": [
+    "Automotive",
+    "Construction",
+    "Utilities",
+    "Manufacturing",
+    "Hospitality"
+  ],
+  "values": [
+    6000,
+    10000,
+    12000,
+    18000,
+    16000
+  ],
+  "annotated": false,
+  "chart_id": "hard_unlab_0127",
+  "seed": 777,
+  "idx": 127
+}

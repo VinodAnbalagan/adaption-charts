@@ -1,0 +1,24 @@
+{
+  "chart_type": "bar",
+  "mechanic": "near_tie",
+  "title": "Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget E",
+    "Widget C",
+    "Widget B",
+    "Widget A",
+    "Widget F"
+  ],
+  "values": [
+    6400,
+    7100,
+    6100,
+    7000,
+    5400
+  ],
+  "annotated": true,
+  "chart_id": "hard_tie_0111",
+  "seed": 777,
+  "idx": 111
+}
