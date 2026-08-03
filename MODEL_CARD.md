@@ -34,6 +34,8 @@ correct-by-construction or hand-verified.
 |---|---|---|
 | AutoScientist held-out pairwise judge | Gridline vs. base Gemma-3-27B-VLM, ~200 held-out rows | **62% / 38%** |
 
+![Win rates](win-rates.png)
+
 The platform's metric is a **pairwise win rate**, not two independent
 scores. For each held-out question the judge sees the base model's answer
 and the adapted model's answer and picks the better one. The two figures
@@ -200,6 +202,13 @@ train_on_inputs        false
 Prompt column: `question` (original). Completion column: `answer`
 (original). Image column: chart PNG as multimodal context.
 
+Trained on 888 rows (the platform holds out the remainder for evaluation).
+Domain distribution as classified by the platform:
+data-analysis-visualization 98%, math 1%, market-analysis <1%,
+corporate-business <1%.
+
+![Training metrics](training-metrics.png)
+
 ## Usage
 
 ```python
@@ -251,9 +260,10 @@ charts, not exact digit extraction from text-heavy images.
   real-world hardset rows and is correspondingly thin.
 - **`mixed` (multi-panel dashboard) charts are underrepresented** — 104
   rows, mostly hardset.
-- **Evaluated only on the platform's own held-out slice** (~200 rows from
-  the same distribution). No independent external benchmark was run; the
-  62% figure is in-distribution.
+- **Evaluation is the platform's own.** Scored on an in-distribution
+  held-out slice (~200 rows) plus a broader domain test set for
+  generalization, both run by AutoScientist. No independent external
+  benchmark (ChartQA, ChartQAPro) was run by the author.
 - **Column provenance was lost for part of the ablation sweep.** The
   platform API does not record `column_mapping` per run, and several runs
   reused a dataset name. Four of eleven runs are reported as an
