@@ -7,7 +7,7 @@ Chart question-answering dataset and LoRA adapter, built for the
 | artifact | link |
 |---|---|
 | model | [vinod-anbalagan/gridline](https://huggingface.co/vinod-anbalagan/gridline) |
-| dataset | [vinod-anbalagan/adaption-charts-p2-gold](https://huggingface.co/datasets/vinod-anbalagan/adaption-charts-p2-gold) |
+| dataset | [vinod-anbalagan/gridline-chartqa](https://huggingface.co/datasets/vinod-anbalagan/gridline-chartqa) |
 | model card | [`MODEL_CARD.md`](MODEL_CARD.md) |
 | dataset card | [`gold/README.md`](gold/README.md) |
 | experiment log | [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md) |
