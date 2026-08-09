@@ -1,0 +1,42 @@
+{
+  "chart_type": "grouped_bar",
+  "mechanic": "similar_colors",
+  "title": "Revenue by Region",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "APAC",
+    "ANZ",
+    "MEA",
+    "NA"
+  ],
+  "series_labels": [
+    "Q1",
+    "Q2",
+    "Q3"
+  ],
+  "series_values": [
+    [
+      6500,
+      6800,
+      8000,
+      5400
+    ],
+    [
+      10300,
+      3600,
+      6600,
+      4500
+    ],
+    [
+      6800,
+      7900,
+      10600,
+      2800
+    ]
+  ],
+  "annotated": true,
+  "chart_id": "hard_simcol_0274",
+  "seed": 777,
+  "idx": 274,
+  "style": "minimal"
+}

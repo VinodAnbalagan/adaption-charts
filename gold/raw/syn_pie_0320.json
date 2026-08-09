@@ -1,0 +1,33 @@
+{
+  "chart_type": "pie",
+  "title": "Marketing Spend by Channel",
+  "categories": [
+    "Direct",
+    "Affiliate",
+    "Display",
+    "Social",
+    "SEO"
+  ],
+  "values": [
+    2800,
+    1100,
+    4700,
+    2400,
+    1700
+  ],
+  "percents": [
+    22.0472,
+    8.6614,
+    37.0079,
+    18.8976,
+    13.3858
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0320",
+  "domain": "share_circle",
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1580,
+  "domain_index": 223,
+  "style": "neutral"
+}

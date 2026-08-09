@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "mechanic": "truncated_axis",
+  "title": "Q2 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "y_floor": 8000,
+  "categories": [
+    "Consumer",
+    "Education",
+    "SMB",
+    "Startup",
+    "Mid-Market"
+  ],
+  "values": [
+    9100,
+    8700,
+    9300,
+    8900,
+    8200
+  ],
+  "annotated": true,
+  "chart_id": "hard_trunc_0270",
+  "seed": 777,
+  "idx": 270,
+  "style": "neutral"
+}

@@ -20,5 +20,6 @@
   "domain": "revenue_bar",
   "entity": "team",
   "overall_index": 25,
-  "domain_index": 11
+  "domain_index": 11,
+  "style": "dense"
 }

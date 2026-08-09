@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "FY2023 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "SMB",
+    "Nonprofit",
+    "Enterprise",
+    "Mid-Market"
+  ],
+  "values": [
+    9800,
+    2300,
+    11900,
+    6500,
+    5700
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0228",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 144,
+  "domain_index": 90,
+  "style": "minimal"
+}

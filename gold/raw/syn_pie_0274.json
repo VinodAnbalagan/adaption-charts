@@ -1,0 +1,36 @@
+{
+  "chart_type": "pie",
+  "title": "FY25 Budget Allocation",
+  "categories": [
+    "Operations",
+    "IT",
+    "Support",
+    "Engineering",
+    "HR",
+    "Sales"
+  ],
+  "values": [
+    2200,
+    3100,
+    2800,
+    4300,
+    1600,
+    1000
+  ],
+  "percents": [
+    14.6667,
+    20.6667,
+    18.6667,
+    28.6667,
+    10.6667,
+    6.6667
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0274",
+  "domain": "share_circle",
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1534,
+  "domain_index": 177,
+  "style": "minimal"
+}

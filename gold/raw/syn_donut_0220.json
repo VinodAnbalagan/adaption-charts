@@ -1,0 +1,33 @@
+{
+  "chart_type": "donut",
+  "title": "Regional Revenue Share",
+  "categories": [
+    "EMEA",
+    "MEA",
+    "APAC",
+    "NA",
+    "LATAM"
+  ],
+  "values": [
+    5100,
+    7500,
+    4500,
+    4200,
+    4900
+  ],
+  "percents": [
+    19.4656,
+    28.626,
+    17.1756,
+    16.0305,
+    18.7023
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0220",
+  "domain": "share_circle",
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 1762,
+  "domain_index": 405,
+  "style": "salmon"
+}

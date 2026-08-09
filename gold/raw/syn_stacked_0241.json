@@ -1,0 +1,48 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Revenue by Segment and Tier",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Enterprise",
+    "Government",
+    "Education",
+    "SMB",
+    "Consumer"
+  ],
+  "series_labels": [
+    "Basic",
+    "Pro",
+    "Premium"
+  ],
+  "series_values": [
+    [
+      2400,
+      2000,
+      900,
+      3500,
+      1500
+    ],
+    [
+      3000,
+      2400,
+      2800,
+      600,
+      2200
+    ],
+    [
+      1100,
+      2900,
+      1900,
+      2600,
+      1500
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0241",
+  "domain": "revenue_stacked",
+  "entity": "segment",
+  "overall_index": 1198,
+  "domain_index": 143,
+  "style": "pastel"
+}

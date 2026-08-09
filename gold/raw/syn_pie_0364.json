@@ -1,0 +1,33 @@
+{
+  "chart_type": "pie",
+  "title": "Budget by Department",
+  "categories": [
+    "Support",
+    "HR",
+    "Operations",
+    "Engineering",
+    "Sales"
+  ],
+  "values": [
+    1000,
+    600,
+    1400,
+    2000,
+    3900
+  ],
+  "percents": [
+    11.236,
+    6.7416,
+    15.7303,
+    22.4719,
+    43.8202
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0364",
+  "domain": "share_circle",
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1624,
+  "domain_index": 267,
+  "style": "minimal"
+}

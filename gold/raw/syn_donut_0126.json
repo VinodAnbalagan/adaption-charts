@@ -1,29 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Ad Spend by Channel",
+  "title": "Website Traffic Sources",
   "categories": [
-    "Affiliate",
+    "Organic",
     "Direct",
-    "SEO",
-    "Paid Search"
+    "Referral",
+    "Social",
+    "Paid",
+    "Email"
   ],
   "values": [
-    4100,
-    2800,
-    1500,
-    4900
+    9000,
+    11900,
+    9600,
+    10700,
+    5600,
+    14400
   ],
   "percents": [
-    30.8271,
-    21.0526,
-    11.2782,
-    36.8421
+    14.7059,
+    19.4444,
+    15.6863,
+    17.4837,
+    9.1503,
+    23.5294
   ],
   "annotated": true,
   "chart_id": "syn_donut_0126",
   "domain": "share_circle",
-  "entity": "channel",
-  "noun": "spend",
-  "overall_index": 584,
-  "domain_index": 123
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 1668,
+  "domain_index": 311,
+  "style": "pastel"
 }

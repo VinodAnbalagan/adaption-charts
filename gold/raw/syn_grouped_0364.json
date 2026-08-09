@@ -1,0 +1,38 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "2023-2024 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "SMB",
+    "Nonprofit",
+    "Enterprise",
+    "Startup"
+  ],
+  "series_labels": [
+    "2023",
+    "2024"
+  ],
+  "series_values": [
+    [
+      7000,
+      8000,
+      7700,
+      5000
+    ],
+    [
+      5100,
+      3000,
+      2700,
+      3700
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0364",
+  "domain": "revenue_grouped",
+  "entity": "segment",
+  "series_axis": "year",
+  "overall_index": 946,
+  "domain_index": 266,
+  "style": "dark"
+}

@@ -1,0 +1,44 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Revenue by Quarter and Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Q1",
+    "Q3",
+    "Q2",
+    "Q4"
+  ],
+  "series_labels": [
+    "Organic",
+    "Paid",
+    "Referral"
+  ],
+  "series_values": [
+    [
+      4000,
+      3000,
+      2300,
+      1600
+    ],
+    [
+      3100,
+      3900,
+      2500,
+      3400
+    ],
+    [
+      2300,
+      2800,
+      900,
+      1700
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0296",
+  "domain": "revenue_stacked",
+  "entity": "quarter",
+  "overall_index": 1253,
+  "domain_index": 198,
+  "style": "spreadsheet"
+}

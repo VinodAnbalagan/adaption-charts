@@ -1,0 +1,36 @@
+{
+  "chart_type": "mixed",
+  "mechanic": "dual_axis",
+  "title": "Revenue and Conversion Rate",
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "bar_label": "Revenue ($)",
+  "bar_values": [
+    11400,
+    6600,
+    11700,
+    2700,
+    4800,
+    11100
+  ],
+  "line_label": "Conversion Rate (%)",
+  "line_values": [
+    2.7,
+    5.3,
+    8.2,
+    1.8,
+    1.9,
+    7.6
+  ],
+  "annotated": true,
+  "chart_id": "hard_dual_0179",
+  "seed": 777,
+  "idx": 179,
+  "style": "bold"
+}

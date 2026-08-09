@@ -24,5 +24,6 @@
   "domain": "revenue_bar",
   "entity": "segment",
   "overall_index": 120,
-  "domain_index": 74
+  "domain_index": 74,
+  "style": "neutral"
 }

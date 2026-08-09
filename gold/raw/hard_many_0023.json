@@ -42,5 +42,6 @@
   "annotated": true,
   "chart_id": "hard_many_0023",
   "seed": 777,
-  "idx": 23
+  "idx": 23,
+  "style": "spreadsheet"
 }

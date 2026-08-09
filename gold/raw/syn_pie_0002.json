@@ -28,5 +28,6 @@
   "entity": "department",
   "noun": "budget",
   "overall_index": 14,
-  "domain_index": 1
+  "domain_index": 1,
+  "style": "minimal"
 }

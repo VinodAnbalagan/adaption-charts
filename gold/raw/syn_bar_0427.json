@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Revenue by Team",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Zeta",
+    "Delta",
+    "Epsilon",
+    "Beta"
+  ],
+  "values": [
+    6000,
+    2500,
+    1700,
+    9400
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0427",
+  "domain": "revenue_bar",
+  "entity": "team",
+  "overall_index": 343,
+  "domain_index": 223,
+  "style": "spreadsheet"
+}

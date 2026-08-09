@@ -39,5 +39,6 @@
   "domain": "revenue_stacked",
   "entity": "segment",
   "overall_index": 11,
-  "domain_index": 0
+  "domain_index": 0,
+  "style": "editorial"
 }

@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "H2 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Manufacturing",
+    "Media",
+    "Automotive",
+    "Retail",
+    "Tech"
+  ],
+  "values": [
+    8200,
+    6000,
+    1800,
+    7900,
+    3600
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0232",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 148,
+  "domain_index": 92,
+  "style": "pastel"
+}

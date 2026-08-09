@@ -1,29 +1,30 @@
 {
   "chart_type": "donut",
-  "title": "Regional Revenue Share",
+  "title": "Marketing Spend by Channel",
   "categories": [
-    "EMEA",
-    "NA",
-    "LATAM",
-    "APAC"
+    "Paid Search",
+    "Email",
+    "Affiliate",
+    "Direct"
   ],
   "values": [
-    2600,
-    5400,
-    5200,
-    6200
+    3400,
+    3500,
+    4400,
+    4200
   ],
   "percents": [
-    13.4021,
-    27.8351,
-    26.8041,
-    31.9588
+    21.9355,
+    22.5806,
+    28.3871,
+    27.0968
   ],
   "annotated": true,
   "chart_id": "syn_donut_0118",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 576,
-  "domain_index": 115
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1660,
+  "domain_index": 303,
+  "style": "neutral"
 }

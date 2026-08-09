@@ -1,32 +1,30 @@
 {
   "chart_type": "donut",
-  "title": "Budget by Department",
+  "title": "Regional Revenue Share",
   "categories": [
-    "IT",
-    "Engineering",
-    "Marketing",
-    "Support",
-    "HR"
+    "NA",
+    "MEA",
+    "APAC",
+    "EMEA"
   ],
   "values": [
-    1000,
-    1800,
-    2700,
-    1100,
-    2600
+    3500,
+    6000,
+    4000,
+    2300
   ],
   "percents": [
-    10.8696,
-    19.5652,
-    29.3478,
-    11.9565,
-    28.2609
+    22.1519,
+    37.9747,
+    25.3165,
+    14.557
   ],
   "annotated": true,
   "chart_id": "syn_donut_0105",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 563,
-  "domain_index": 102
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 1647,
+  "domain_index": 290,
+  "style": "academic"
 }

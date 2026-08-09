@@ -1,0 +1,59 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "series_labels": [
+    "Mid-Market",
+    "Consumer",
+    "Government",
+    "SMB"
+  ],
+  "series_values": [
+    [
+      9900,
+      8500,
+      11600,
+      11000,
+      5200,
+      5600
+    ],
+    [
+      9100,
+      2200,
+      3200,
+      6200,
+      10200,
+      7100
+    ],
+    [
+      6800,
+      7300,
+      3600,
+      9100,
+      2100,
+      11900
+    ],
+    [
+      7400,
+      7800,
+      8400,
+      7800,
+      8100,
+      8900
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0285",
+  "seed": 777,
+  "idx": 285,
+  "style": "dense"
+}

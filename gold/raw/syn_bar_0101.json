@@ -20,5 +20,6 @@
   "domain": "revenue_bar",
   "entity": "channel",
   "overall_index": 17,
-  "domain_index": 5
+  "domain_index": 5,
+  "style": "academic"
 }

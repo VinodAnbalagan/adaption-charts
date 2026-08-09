@@ -23,5 +23,6 @@
   "annotated": false,
   "chart_id": "hard_unline_0128",
   "seed": 777,
-  "idx": 128
+  "idx": 128,
+  "style": "pastel"
 }

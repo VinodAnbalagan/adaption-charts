@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Revenue by Team",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Gamma",
+    "Epsilon",
+    "Beta",
+    "Delta",
+    "Omega",
+    "Alpha"
+  ],
+  "values": [
+    3100,
+    8700,
+    6800,
+    8900,
+    9600,
+    5600
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0235",
+  "domain": "revenue_bar",
+  "entity": "team",
+  "overall_index": 151,
+  "domain_index": 95,
+  "style": "editorial"
+}

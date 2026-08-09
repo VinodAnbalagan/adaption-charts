@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Q1 Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget A",
+    "Gizmo X",
+    "Widget B",
+    "Widget C",
+    "Gizmo Y",
+    "Widget F"
+  ],
+  "values": [
+    2200,
+    2700,
+    6400,
+    4700,
+    6300,
+    4200
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0236",
+  "domain": "units_sold_bar",
+  "entity": "product",
+  "overall_index": 152,
+  "domain_index": 46,
+  "style": "salmon"
+}

@@ -1,0 +1,49 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "series_labels": [
+    "Consumer",
+    "Nonprofit",
+    "Mid-Market",
+    "Startup"
+  ],
+  "series_values": [
+    [
+      2600,
+      9600,
+      5300,
+      8900
+    ],
+    [
+      6700,
+      5000,
+      5900,
+      7400
+    ],
+    [
+      7500,
+      11500,
+      10800,
+      2700
+    ],
+    [
+      9500,
+      7800,
+      5300,
+      6100
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0168",
+  "seed": 777,
+  "idx": 168,
+  "style": "pastel"
+}

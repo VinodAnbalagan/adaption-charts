@@ -1,0 +1,41 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Segment: 2023 vs 2024",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "SMB",
+    "Enterprise",
+    "Government",
+    "Nonprofit",
+    "Consumer"
+  ],
+  "series_labels": [
+    "2023",
+    "2024"
+  ],
+  "series_values": [
+    [
+      5000,
+      5100,
+      7900,
+      5100,
+      6500
+    ],
+    [
+      7800,
+      4900,
+      6200,
+      8000,
+      7300
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0280",
+  "domain": "revenue_grouped",
+  "entity": "segment",
+  "series_axis": "year",
+  "overall_index": 862,
+  "domain_index": 182,
+  "style": "salmon"
+}

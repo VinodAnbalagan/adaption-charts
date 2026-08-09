@@ -1,0 +1,30 @@
+{
+  "chart_type": "pie",
+  "title": "Website Traffic Sources",
+  "categories": [
+    "Organic",
+    "Direct",
+    "Email",
+    "Paid"
+  ],
+  "values": [
+    9500,
+    13800,
+    10300,
+    12700
+  ],
+  "percents": [
+    20.5184,
+    29.8056,
+    22.2462,
+    27.4298
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0328",
+  "domain": "share_circle",
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 1588,
+  "domain_index": 231,
+  "style": "pastel"
+}

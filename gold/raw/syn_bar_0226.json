@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "FY2024 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Automotive",
+    "Finance",
+    "Manufacturing",
+    "Tech",
+    "Retail"
+  ],
+  "values": [
+    4700,
+    7800,
+    8800,
+    6500,
+    3400
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0226",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 142,
+  "domain_index": 88,
+  "style": "salmon"
+}

@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "mechanic": "truncated_axis",
+  "title": "Q4 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "y_floor": 10400,
+  "categories": [
+    "Consumer",
+    "Startup",
+    "Government",
+    "SMB",
+    "Mid-Market"
+  ],
+  "values": [
+    11600,
+    10600,
+    12000,
+    11900,
+    12100
+  ],
+  "annotated": true,
+  "chart_id": "hard_trunc_0243",
+  "seed": 777,
+  "idx": 243,
+  "style": "spreadsheet"
+}

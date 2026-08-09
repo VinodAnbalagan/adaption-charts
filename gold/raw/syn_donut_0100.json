@@ -1,32 +1,33 @@
 {
   "chart_type": "donut",
-  "title": "Budget by Department",
+  "title": "Revenue by Region",
   "categories": [
-    "Sales",
-    "Engineering",
-    "IT",
-    "Marketing",
-    "Operations"
+    "EMEA",
+    "LATAM",
+    "NA",
+    "MEA",
+    "APAC"
   ],
   "values": [
-    1700,
-    500,
-    1300,
-    4000,
-    2700
+    7100,
+    2000,
+    2400,
+    4100,
+    1600
   ],
   "percents": [
-    16.6667,
-    4.902,
-    12.7451,
-    39.2157,
-    26.4706
+    41.2791,
+    11.6279,
+    13.9535,
+    23.8372,
+    9.3023
   ],
   "annotated": true,
   "chart_id": "syn_donut_0100",
   "domain": "share_circle",
-  "entity": "department",
-  "noun": "budget",
-  "overall_index": 558,
-  "domain_index": 97
+  "entity": "region",
+  "noun": "revenue",
+  "overall_index": 1642,
+  "domain_index": 285,
+  "style": "salmon"
 }

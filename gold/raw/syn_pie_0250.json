@@ -1,0 +1,36 @@
+{
+  "chart_type": "pie",
+  "title": "Ad Spend by Channel",
+  "categories": [
+    "Direct",
+    "Paid Search",
+    "Display",
+    "SEO",
+    "Affiliate",
+    "Social"
+  ],
+  "values": [
+    3200,
+    4000,
+    3300,
+    3800,
+    2600,
+    3000
+  ],
+  "percents": [
+    16.0804,
+    20.1005,
+    16.5829,
+    19.0955,
+    13.0653,
+    15.0754
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0250",
+  "domain": "share_circle",
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1510,
+  "domain_index": 153,
+  "style": "neutral"
+}

@@ -44,6 +44,38 @@ enhanced completions were 100% rewritten rather than 31.6% drifted.
 Run 10 completes the grid and isolates epochs cleanly at the original
 completion column.
 
+## Round 2 — base model sweep (free, 500 credits granted by Adaption)
+
+All runs against the existing adapted dataset
+`96042399-fbd0-4d54-a44c-eb8bf76ad75e` (1,091 rows). Config held constant
+at the 62% winner: **original prompt + original completion, 4 epochs,
+platform-recommended recipe.** Only the base model varies.
+
+Six multimodal bases exist on the platform. Three are untested.
+
+| base | size | status | adapted win rate |
+|---|---:|---|---:|
+| `google/gemma-3-27b-it-VLM` | 27B | tested | 62% |
+| `google/gemma-3-4b-it-VLM` | 4B | only at 1 epoch / 23 steps | 53% (undertrained) |
+| `google/gemma-3-4b-it-VLM` | 4B | **untested at 4 epochs** | |
+| `Qwen/Qwen3.5-9B` | 9B | **untested** | |
+| `Qwen/Qwen3.5-0.8B` | 0.8B | **untested** | |
+| `google/gemma-4-31B-it-VLM` | 31B | untested (Part 1: inverted) | |
+| `meta-llama/Llama-4-Scout-17B-16E-Instruct` | 109B | untested | |
+
+Note: Qwen3.5 models are natively multimodal despite carrying no `-VLM`
+suffix. This was initially misread as text-only; corrected after the
+Adaption team flagged it. The API exposes no modality field — `id` and
+`display_name` are the only signals, and they are inconsistent across
+model families.
+
+Hypothesis being tested: win rate is driven mainly by format compliance
+(short exact answers vs. the base model's natural verbosity), so a weaker
+base — worse at both format and accuracy — should show a wider gap.
+
+Stated up front: unproven. The single 4B data point was undertrained and
+tells us little.
+
 ## Findings so far
 
 **Epochs.** 1 epoch (23 steps) undertrains: +6. 4 epochs (92 steps): +24.

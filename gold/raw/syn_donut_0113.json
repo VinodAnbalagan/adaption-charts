@@ -1,29 +1,30 @@
 {
   "chart_type": "donut",
-  "title": "Regional Revenue Share",
+  "title": "Marketing Spend by Channel",
   "categories": [
-    "APAC",
-    "NA",
-    "EMEA",
-    "LATAM"
+    "Social",
+    "SEO",
+    "Email",
+    "Affiliate"
   ],
   "values": [
-    3900,
-    6500,
-    4800,
-    7900
+    1700,
+    3600,
+    2600,
+    2800
   ],
   "percents": [
-    16.8831,
-    28.1385,
-    20.7792,
-    34.1991
+    15.8879,
+    33.6449,
+    24.2991,
+    26.1682
   ],
   "annotated": true,
   "chart_id": "syn_donut_0113",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 571,
-  "domain_index": 110
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1655,
+  "domain_index": 298,
+  "style": "dense"
 }

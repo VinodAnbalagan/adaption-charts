@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget A",
+    "Widget E",
+    "Widget C",
+    "Widget D",
+    "Widget B"
+  ],
+  "values": [
+    3900,
+    1400,
+    4400,
+    2900,
+    600
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0332",
+  "domain": "units_sold_bar",
+  "entity": "product",
+  "overall_index": 248,
+  "domain_index": 78,
+  "style": "pastel"
+}

@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "mechanic": "unlabeled",
+  "title": "Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "tick_step": 2000,
+  "categories": [
+    "Utilities",
+    "Education",
+    "Healthcare",
+    "Hospitality",
+    "Media"
+  ],
+  "values": [
+    8000,
+    10000,
+    12000,
+    14000,
+    4000
+  ],
+  "annotated": false,
+  "chart_id": "hard_unlab_0208",
+  "seed": 777,
+  "idx": 208,
+  "style": "pastel"
+}

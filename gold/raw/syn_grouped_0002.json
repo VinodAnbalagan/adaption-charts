@@ -33,5 +33,6 @@
   "entity": "region",
   "series_axis": "half",
   "overall_index": 10,
-  "domain_index": 1
+  "domain_index": 1,
+  "style": "neutral"
 }

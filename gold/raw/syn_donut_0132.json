@@ -1,32 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Sales Mix",
+  "title": "Budget by Department",
   "categories": [
-    "Software",
-    "Hardware",
-    "Consulting",
-    "Subscriptions",
-    "Services"
+    "Sales",
+    "Marketing",
+    "Support",
+    "Engineering",
+    "HR",
+    "Operations"
   ],
   "values": [
-    1800,
-    4400,
-    3000,
-    4200,
-    5400
+    2000,
+    3300,
+    1500,
+    2600,
+    2600,
+    4400
   ],
   "percents": [
-    9.5745,
-    23.4043,
-    15.9574,
-    22.3404,
-    28.7234
+    12.1951,
+    20.122,
+    9.1463,
+    15.8537,
+    15.8537,
+    26.8293
   ],
   "annotated": true,
   "chart_id": "syn_donut_0132",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 590,
-  "domain_index": 129
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1674,
+  "domain_index": 317,
+  "style": "minimal"
 }

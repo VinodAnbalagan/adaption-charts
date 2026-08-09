@@ -28,5 +28,6 @@
   "entity": "channel",
   "noun": "spend",
   "overall_index": 13,
-  "domain_index": 0
+  "domain_index": 0,
+  "style": "spreadsheet"
 }

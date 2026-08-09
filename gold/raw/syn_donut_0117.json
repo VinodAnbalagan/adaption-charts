@@ -1,32 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Sales by Product Category",
+  "title": "Budget by Department",
   "categories": [
-    "Services",
-    "Consulting",
-    "Software",
-    "Hardware",
-    "Subscriptions"
+    "Marketing",
+    "Support",
+    "Engineering",
+    "Operations",
+    "Sales",
+    "HR"
   ],
   "values": [
+    3700,
+    2600,
+    2000,
     2200,
-    2700,
-    3400,
-    4500,
-    3400
+    1000,
+    2200
   ],
   "percents": [
-    13.5802,
-    16.6667,
-    20.9877,
-    27.7778,
-    20.9877
+    27.0073,
+    18.9781,
+    14.5985,
+    16.0584,
+    7.2993,
+    16.0584
   ],
   "annotated": true,
   "chart_id": "syn_donut_0117",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 575,
-  "domain_index": 114
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1659,
+  "domain_index": 302,
+  "style": "bold"
 }

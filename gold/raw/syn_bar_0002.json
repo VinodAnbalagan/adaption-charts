@@ -22,5 +22,6 @@
   "domain": "revenue_bar",
   "entity": "product line",
   "overall_index": 1,
-  "domain_index": 1
+  "domain_index": 1,
+  "style": "editorial"
 }

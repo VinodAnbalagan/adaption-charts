@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "Q2 Revenue by Team",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Omega",
+    "Beta",
+    "Theta",
+    "Epsilon"
+  ],
+  "values": [
+    7100,
+    5400,
+    5300,
+    6600
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0373",
+  "domain": "revenue_bar",
+  "entity": "team",
+  "overall_index": 289,
+  "domain_index": 187,
+  "style": "bold"
+}

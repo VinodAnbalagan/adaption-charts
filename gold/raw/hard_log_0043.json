@@ -20,5 +20,6 @@
   "annotated": true,
   "chart_id": "hard_log_0043",
   "seed": 777,
-  "idx": 43
+  "idx": 43,
+  "style": "spreadsheet"
 }

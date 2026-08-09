@@ -21,5 +21,6 @@
   "annotated": false,
   "chart_id": "hard_unlab_0064",
   "seed": 777,
-  "idx": 64
+  "idx": 64,
+  "style": "minimal"
 }

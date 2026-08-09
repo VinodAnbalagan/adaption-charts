@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "Q3 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "Mid-Market",
+    "Nonprofit",
+    "Enterprise"
+  ],
+  "values": [
+    4000,
+    4000,
+    4300,
+    3900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0330",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 246,
+  "domain_index": 158,
+  "style": "dark"
+}

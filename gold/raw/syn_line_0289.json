@@ -1,0 +1,25 @@
+{
+  "chart_type": "line",
+  "title": "FY22 Quarterly Revenue",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "values": [
+    18700,
+    20100,
+    18400,
+    17300
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_line_0289",
+  "domain": "revenue_line",
+  "entity": "quarter",
+  "overall_index": 565,
+  "domain_index": 97,
+  "style": "dense"
+}

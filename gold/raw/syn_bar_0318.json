@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "FY2025 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "Mid-Market",
+    "SMB",
+    "Consumer",
+    "Startup",
+    "Nonprofit"
+  ],
+  "values": [
+    6500,
+    3700,
+    3200,
+    10300,
+    1700,
+    2000
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0318",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 234,
+  "domain_index": 150,
+  "style": "minimal"
+}

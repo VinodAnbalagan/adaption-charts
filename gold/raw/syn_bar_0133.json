@@ -24,5 +24,6 @@
   "domain": "revenue_bar",
   "entity": "team",
   "overall_index": 49,
-  "domain_index": 27
+  "domain_index": 27,
+  "style": "bold"
 }

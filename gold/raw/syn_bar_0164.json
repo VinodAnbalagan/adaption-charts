@@ -20,5 +20,6 @@
   "domain": "units_sold_bar",
   "entity": "product",
   "overall_index": 80,
-  "domain_index": 22
+  "domain_index": 22,
+  "style": "neutral"
 }

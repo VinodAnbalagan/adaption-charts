@@ -21,5 +21,6 @@
   "annotated": true,
   "chart_id": "hard_trunc_0081",
   "seed": 777,
-  "idx": 81
+  "idx": 81,
+  "style": "editorial"
 }

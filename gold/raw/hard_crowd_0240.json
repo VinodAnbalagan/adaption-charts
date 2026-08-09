@@ -1,0 +1,59 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "series_labels": [
+    "Consumer",
+    "Education",
+    "Mid-Market",
+    "SMB"
+  ],
+  "series_values": [
+    [
+      3800,
+      6000,
+      3500,
+      9100,
+      11600,
+      7000
+    ],
+    [
+      4500,
+      9600,
+      9100,
+      2800,
+      10800,
+      2800
+    ],
+    [
+      6100,
+      2900,
+      5000,
+      11600,
+      9000,
+      2600
+    ],
+    [
+      3500,
+      6500,
+      5900,
+      4900,
+      10800,
+      4800
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0240",
+  "seed": 777,
+  "idx": 240,
+  "style": "neutral"
+}

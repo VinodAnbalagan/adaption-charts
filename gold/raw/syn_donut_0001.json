@@ -25,5 +25,6 @@
   "entity": "category",
   "noun": "sales",
   "overall_index": 15,
-  "domain_index": 2
+  "domain_index": 2,
+  "style": "dense"
 }

@@ -1,0 +1,36 @@
+{
+  "chart_type": "donut",
+  "title": "Budget by Department",
+  "categories": [
+    "Support",
+    "Marketing",
+    "Sales",
+    "Operations",
+    "HR",
+    "IT"
+  ],
+  "values": [
+    500,
+    600,
+    1500,
+    4400,
+    3900,
+    3700
+  ],
+  "percents": [
+    3.4247,
+    4.1096,
+    10.274,
+    30.137,
+    26.7123,
+    25.3425
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0157",
+  "domain": "share_circle",
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1699,
+  "domain_index": 342,
+  "style": "bold"
+}

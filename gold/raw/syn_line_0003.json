@@ -24,5 +24,6 @@
   "domain": "users_line",
   "entity": "month",
   "overall_index": 8,
-  "domain_index": 0
+  "domain_index": 0,
+  "style": "pastel"
 }

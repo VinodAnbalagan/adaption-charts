@@ -44,6 +44,7 @@ from lib.hard_render import (  # noqa: E402
     render_log_scale_bar,
     render_dual_axis,
 )
+from lib.styles import use_style, style_for_index  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
 GOLD = REPO / "gold"
@@ -369,12 +370,23 @@ def main() -> None:
     rng = random.Random(args.seed)
 
     all_rows: list[dict] = []
+    per_style: dict[str, int] = {}
     for i in range(args.n_charts):
         gen = GENERATORS[i % len(GENERATORS)]
-        rows, prov, cid = gen(rng, i, args.seed)
-        prov.update({"chart_id": cid, "seed": args.seed, "idx": i})
+        # 9 generators and 10 styles are coprime, so a plain rotation on i
+        # visits all 90 (mechanic, style) pairs before repeating.
+        # NB: do not "offset" this — (i + i//9) % 10 never reaches index 9,
+        # which silently drops the last style entirely.
+        style = style_for_index(i)
+        with use_style(style):
+            rows, prov, cid = gen(rng, i, args.seed)
+        prov.update({"chart_id": cid, "seed": args.seed, "idx": i,
+                     "style": style})
+        for r in rows:
+            r["notes"] = f"{r.get('notes', '')}; style={style}"
         (RAW / f"{cid}.json").write_text(json.dumps(prov, indent=2))
         all_rows.extend(rows)
+        per_style[style] = per_style.get(style, 0) + 1
 
     # Merge: drop any previous hard/* rows, then append
     existing = []
@@ -398,6 +410,7 @@ def main() -> None:
     print(f"\nby mechanic: {dict(mech)}")
     print(f"by task_type: {dict(tt)}")
     print(f"by chart_type: {dict(ct)}")
+    print(f"by style (charts): {dict(sorted(per_style.items(), key=lambda x: -x[1]))}")
 
     n_hard = sum(1 for r in combined if r["difficulty"] == "hard")
     print(f"\ntotal hard rows in manifest: {n_hard} / {len(combined)} "
