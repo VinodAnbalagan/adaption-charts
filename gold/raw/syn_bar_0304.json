@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "H1 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Finance",
+    "Manufacturing",
+    "Tech",
+    "Energy",
+    "Media",
+    "Healthcare"
+  ],
+  "values": [
+    5200,
+    10800,
+    8500,
+    5000,
+    4600,
+    11500
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0304",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 220,
+  "domain_index": 140,
+  "style": "neutral"
+}

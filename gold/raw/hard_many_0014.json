@@ -38,5 +38,6 @@
   "annotated": true,
   "chart_id": "hard_many_0014",
   "seed": 777,
-  "idx": 14
+  "idx": 14,
+  "style": "minimal"
 }

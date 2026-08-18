@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "H1 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Mid-Market",
+    "Startup",
+    "Nonprofit",
+    "Consumer",
+    "Enterprise"
+  ],
+  "values": [
+    2900,
+    11700,
+    6200,
+    10200,
+    4300
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0276",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 192,
+  "domain_index": 122,
+  "style": "salmon"
+}

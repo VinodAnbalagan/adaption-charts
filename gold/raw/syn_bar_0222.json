@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "FY2022 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "SMB",
+    "Startup",
+    "Nonprofit",
+    "Consumer",
+    "Mid-Market",
+    "Education"
+  ],
+  "values": [
+    11700,
+    4900,
+    8200,
+    9700,
+    6200,
+    3900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0222",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 138,
+  "domain_index": 86,
+  "style": "pastel"
+}

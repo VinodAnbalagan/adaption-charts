@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "Monthly Units Sold by SKU",
+  "y_label": "Units sold",
+  "categories": [
+    "SKU-201",
+    "SKU-206",
+    "SKU-207",
+    "SKU-204"
+  ],
+  "values": [
+    400,
+    1700,
+    1100,
+    1800
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0357",
+  "domain": "units_sold_bar",
+  "entity": "SKU",
+  "overall_index": 273,
+  "domain_index": 87,
+  "style": "spreadsheet"
+}

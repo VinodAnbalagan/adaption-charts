@@ -1,0 +1,38 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Vertical: Q1 vs Q2",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Finance",
+    "Tech",
+    "Healthcare",
+    "Retail"
+  ],
+  "series_labels": [
+    "Q1",
+    "Q2"
+  ],
+  "series_values": [
+    [
+      2400,
+      3700,
+      10200,
+      11100
+    ],
+    [
+      7400,
+      10600,
+      2100,
+      8700
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0282",
+  "domain": "revenue_grouped",
+  "entity": "vertical",
+  "series_axis": "quarter",
+  "overall_index": 864,
+  "domain_index": 184,
+  "style": "minimal"
+}

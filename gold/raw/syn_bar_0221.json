@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "Q3 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Marketplace",
+    "Reseller",
+    "Direct",
+    "Partner"
+  ],
+  "values": [
+    9600,
+    11800,
+    11300,
+    7200
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0221",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 137,
+  "domain_index": 85,
+  "style": "academic"
+}

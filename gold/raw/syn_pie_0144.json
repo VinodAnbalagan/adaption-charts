@@ -24,6 +24,7 @@
   "domain": "share_circle",
   "entity": "department",
   "noun": "budget",
-  "overall_index": 508,
-  "domain_index": 47
+  "overall_index": 1404,
+  "domain_index": 47,
+  "style": "minimal"
 }

@@ -1,0 +1,38 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Region: H1 vs H2",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "MEA",
+    "APAC",
+    "NA",
+    "EMEA"
+  ],
+  "series_labels": [
+    "H1",
+    "H2"
+  ],
+  "series_values": [
+    [
+      3400,
+      5300,
+      2300,
+      8500
+    ],
+    [
+      4400,
+      9100,
+      2000,
+      7200
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0465",
+  "domain": "revenue_grouped",
+  "entity": "region",
+  "series_axis": "half",
+  "overall_index": 1047,
+  "domain_index": 367,
+  "style": "academic"
+}

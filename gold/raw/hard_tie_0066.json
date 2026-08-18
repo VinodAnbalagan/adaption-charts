@@ -20,5 +20,6 @@
   "annotated": true,
   "chart_id": "hard_tie_0066",
   "seed": 777,
-  "idx": 66
+  "idx": 66,
+  "style": "dark"
 }

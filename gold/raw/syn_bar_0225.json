@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Weekly Units Sold by SKU",
+  "y_label": "Units sold",
+  "categories": [
+    "SKU-203",
+    "SKU-206",
+    "SKU-204",
+    "SKU-202",
+    "SKU-205",
+    "SKU-207"
+  ],
+  "values": [
+    400,
+    900,
+    900,
+    2000,
+    1900,
+    700
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0225",
+  "domain": "units_sold_bar",
+  "entity": "SKU",
+  "overall_index": 141,
+  "domain_index": 43,
+  "style": "editorial"
+}

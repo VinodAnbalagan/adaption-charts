@@ -1,0 +1,30 @@
+{
+  "chart_type": "donut",
+  "title": "Website Traffic Sources",
+  "categories": [
+    "Email",
+    "Paid",
+    "Social",
+    "Referral"
+  ],
+  "values": [
+    2500,
+    13200,
+    8600,
+    3300
+  ],
+  "percents": [
+    9.058,
+    47.8261,
+    31.1594,
+    11.9565
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0156",
+  "domain": "share_circle",
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 1698,
+  "domain_index": 341,
+  "style": "pastel"
+}

@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Q3 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Finance",
+    "Retail",
+    "Media",
+    "Automotive",
+    "Manufacturing",
+    "Energy"
+  ],
+  "values": [
+    4000,
+    3300,
+    8800,
+    7800,
+    9000,
+    7900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0412",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 328,
+  "domain_index": 212,
+  "style": "pastel"
+}

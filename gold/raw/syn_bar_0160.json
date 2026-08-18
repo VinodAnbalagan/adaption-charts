@@ -20,5 +20,6 @@
   "domain": "revenue_bar",
   "entity": "vertical",
   "overall_index": 76,
-  "domain_index": 44
+  "domain_index": 44,
+  "style": "dark"
 }

@@ -1,29 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Sales by Product Category",
+  "title": "FY25 Budget Allocation",
   "categories": [
-    "Consulting",
-    "Software",
-    "Subscriptions",
-    "Hardware"
+    "Operations",
+    "IT",
+    "HR",
+    "Sales",
+    "Marketing",
+    "Engineering"
   ],
   "values": [
-    1600,
-    2800,
-    4000,
-    3900
+    3000,
+    3400,
+    900,
+    1500,
+    3300,
+    2100
   ],
   "percents": [
-    13.0081,
-    22.7642,
-    32.5203,
-    31.7073
+    21.1268,
+    23.9437,
+    6.338,
+    10.5634,
+    23.2394,
+    14.7887
   ],
   "annotated": true,
   "chart_id": "syn_donut_0137",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 595,
-  "domain_index": 134
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1679,
+  "domain_index": 322,
+  "style": "bold"
 }

@@ -54,5 +54,6 @@
   "annotated": false,
   "chart_id": "hard_crowd_0060",
   "seed": 777,
-  "idx": 60
+  "idx": 60,
+  "style": "neutral"
 }

@@ -27,6 +27,7 @@
   "chart_id": "syn_line_0115",
   "domain": "signups_line",
   "entity": "week",
-  "overall_index": 151,
-  "domain_index": 3
+  "overall_index": 391,
+  "domain_index": 3,
+  "style": "editorial"
 }

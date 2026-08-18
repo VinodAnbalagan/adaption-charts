@@ -1,0 +1,36 @@
+{
+  "chart_type": "mixed",
+  "mechanic": "dual_axis",
+  "title": "Revenue and Conversion Rate",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "bar_label": "Revenue ($)",
+  "bar_values": [
+    3100,
+    6500,
+    5300,
+    11200,
+    9400,
+    10100
+  ],
+  "line_label": "Conversion Rate (%)",
+  "line_values": [
+    1.9,
+    4.1,
+    9.4,
+    6.4,
+    6.8,
+    1.7
+  ],
+  "annotated": true,
+  "chart_id": "hard_dual_0278",
+  "seed": 777,
+  "idx": 278,
+  "style": "pastel"
+}

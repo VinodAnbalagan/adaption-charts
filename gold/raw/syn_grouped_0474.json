@@ -1,0 +1,38 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Vertical: Q3 vs Q4",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Energy",
+    "Retail",
+    "Media",
+    "Finance"
+  ],
+  "series_labels": [
+    "Q3",
+    "Q4"
+  ],
+  "series_values": [
+    [
+      11700,
+      3500,
+      7600,
+      9500
+    ],
+    [
+      3900,
+      9500,
+      3300,
+      8000
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0474",
+  "domain": "revenue_grouped",
+  "entity": "vertical",
+  "series_axis": "quarter",
+  "overall_index": 1056,
+  "domain_index": 376,
+  "style": "dark"
+}

@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "Q2 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Reseller",
+    "Retail",
+    "Wholesale",
+    "Direct",
+    "Marketplace"
+  ],
+  "values": [
+    12800,
+    5200,
+    3200,
+    10800,
+    12700
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0329",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 245,
+  "domain_index": 157,
+  "style": "dense"
+}

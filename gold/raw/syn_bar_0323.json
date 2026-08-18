@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "H1 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Online",
+    "Reseller",
+    "Direct",
+    "Partner",
+    "Marketplace"
+  ],
+  "values": [
+    10500,
+    5300,
+    13100,
+    7500,
+    6800
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0323",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 239,
+  "domain_index": 153,
+  "style": "bold"
+}

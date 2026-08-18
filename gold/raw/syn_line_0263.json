@@ -1,0 +1,33 @@
+{
+  "chart_type": "line",
+  "title": "Weekly Signups \u2014 Q4",
+  "y_label": "Signups",
+  "x_labels": [
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6",
+    "W7",
+    "W8"
+  ],
+  "values": [
+    900,
+    800,
+    800,
+    800,
+    700,
+    700,
+    700,
+    500
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_line_0263",
+  "domain": "signups_line",
+  "entity": "week",
+  "overall_index": 539,
+  "domain_index": 40,
+  "style": "bold"
+}

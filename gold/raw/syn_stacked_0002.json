@@ -39,5 +39,6 @@
   "domain": "revenue_stacked",
   "entity": "quarter",
   "overall_index": 12,
-  "domain_index": 1
+  "domain_index": 1,
+  "style": "salmon"
 }

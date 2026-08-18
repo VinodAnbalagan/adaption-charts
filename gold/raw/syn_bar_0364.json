@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "Q1 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Healthcare",
+    "Energy",
+    "Finance",
+    "Manufacturing",
+    "Automotive"
+  ],
+  "values": [
+    11400,
+    11500,
+    3900,
+    5100,
+    5600
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0364",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 280,
+  "domain_index": 180,
+  "style": "neutral"
+}

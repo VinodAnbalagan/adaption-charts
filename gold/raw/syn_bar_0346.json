@@ -1,0 +1,27 @@
+{
+  "chart_type": "bar",
+  "title": "FY2021 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Manufacturing",
+    "Finance",
+    "Healthcare",
+    "Retail",
+    "Energy"
+  ],
+  "values": [
+    4000,
+    6100,
+    1700,
+    9800,
+    7600
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0346",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 262,
+  "domain_index": 168,
+  "style": "salmon"
+}

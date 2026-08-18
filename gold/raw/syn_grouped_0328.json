@@ -1,0 +1,41 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "2024-2025 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Consumer",
+    "Nonprofit",
+    "Startup",
+    "Education",
+    "Enterprise"
+  ],
+  "series_labels": [
+    "2024",
+    "2025"
+  ],
+  "series_values": [
+    [
+      8400,
+      6000,
+      9600,
+      5300,
+      6100
+    ],
+    [
+      8900,
+      4600,
+      9400,
+      6800,
+      9800
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0328",
+  "domain": "revenue_grouped",
+  "entity": "segment",
+  "series_axis": "year",
+  "overall_index": 910,
+  "domain_index": 230,
+  "style": "neutral"
+}

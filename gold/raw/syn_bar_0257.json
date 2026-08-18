@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Q1 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Reseller",
+    "Wholesale",
+    "Retail",
+    "Direct",
+    "Online",
+    "Partner"
+  ],
+  "values": [
+    3900,
+    11200,
+    14600,
+    7200,
+    2600,
+    5900
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0257",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 173,
+  "domain_index": 109,
+  "style": "spreadsheet"
+}

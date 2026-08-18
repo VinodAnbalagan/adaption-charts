@@ -32,6 +32,7 @@
   "domain": "revenue_grouped",
   "entity": "vertical",
   "series_axis": "quarter",
-  "overall_index": 356,
-  "domain_index": 120
+  "overall_index": 800,
+  "domain_index": 120,
+  "style": "neutral"
 }

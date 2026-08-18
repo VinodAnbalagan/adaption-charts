@@ -38,6 +38,7 @@
   "chart_id": "syn_stacked_0124",
   "domain": "revenue_stacked",
   "entity": "segment",
-  "overall_index": 387,
-  "domain_index": 26
+  "overall_index": 1081,
+  "domain_index": 26,
+  "style": "editorial"
 }

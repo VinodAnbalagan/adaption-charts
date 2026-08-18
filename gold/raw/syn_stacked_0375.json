@@ -1,0 +1,44 @@
+{
+  "chart_type": "stacked_bar",
+  "title": "Regional Revenue by Product",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "NA",
+    "EMEA",
+    "APAC",
+    "LATAM"
+  ],
+  "series_labels": [
+    "Basic",
+    "Pro",
+    "Premium"
+  ],
+  "series_values": [
+    [
+      1900,
+      800,
+      1000,
+      3200
+    ],
+    [
+      1900,
+      2700,
+      900,
+      2200
+    ],
+    [
+      3100,
+      1900,
+      2000,
+      3000
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_stacked_0375",
+  "domain": "revenue_stacked",
+  "entity": "region",
+  "overall_index": 1332,
+  "domain_index": 277,
+  "style": "salmon"
+}

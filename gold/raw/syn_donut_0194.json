@@ -1,0 +1,33 @@
+{
+  "chart_type": "donut",
+  "title": "Sales Mix",
+  "categories": [
+    "Software",
+    "Consulting",
+    "Services",
+    "Subscriptions",
+    "Hardware"
+  ],
+  "values": [
+    2300,
+    2300,
+    5500,
+    3300,
+    1300
+  ],
+  "percents": [
+    15.6463,
+    15.6463,
+    37.415,
+    22.449,
+    8.8435
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0194",
+  "domain": "share_circle",
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 1736,
+  "domain_index": 379,
+  "style": "dark"
+}

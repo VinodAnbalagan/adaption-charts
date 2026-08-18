@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Q4 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Manufacturing",
+    "Media",
+    "Healthcare",
+    "Finance",
+    "Retail",
+    "Tech"
+  ],
+  "values": [
+    6000,
+    5500,
+    3000,
+    11600,
+    3100,
+    10000
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0334",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 250,
+  "domain_index": 160,
+  "style": "neutral"
+}

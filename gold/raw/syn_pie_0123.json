@@ -24,6 +24,7 @@
   "domain": "share_circle",
   "entity": "source",
   "noun": "traffic",
-  "overall_index": 487,
-  "domain_index": 26
+  "overall_index": 1383,
+  "domain_index": 26,
+  "style": "spreadsheet"
 }

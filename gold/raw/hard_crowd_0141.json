@@ -1,0 +1,59 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "series_labels": [
+    "Nonprofit",
+    "Mid-Market",
+    "SMB",
+    "Startup"
+  ],
+  "series_values": [
+    [
+      6100,
+      2000,
+      9700,
+      8500,
+      7600,
+      11100
+    ],
+    [
+      11500,
+      5100,
+      9900,
+      6600,
+      2600,
+      5100
+    ],
+    [
+      9500,
+      7700,
+      4500,
+      4900,
+      4900,
+      7500
+    ],
+    [
+      3800,
+      5400,
+      7600,
+      11300,
+      2000,
+      8400
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0141",
+  "seed": 777,
+  "idx": 141,
+  "style": "editorial"
+}

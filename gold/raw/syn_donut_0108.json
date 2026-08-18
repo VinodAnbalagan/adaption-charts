@@ -1,32 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Revenue by Region",
+  "title": "Ad Spend by Channel",
   "categories": [
-    "APAC",
-    "LATAM",
-    "NA",
-    "EMEA",
-    "MEA"
+    "Paid Search",
+    "Direct",
+    "Email",
+    "Affiliate",
+    "Social",
+    "Display"
   ],
   "values": [
-    2400,
-    6300,
-    3100,
-    7600,
-    2600
+    1200,
+    1900,
+    3700,
+    3500,
+    2600,
+    4600
   ],
   "percents": [
-    10.9091,
-    28.6364,
-    14.0909,
-    34.5455,
-    11.8182
+    6.8571,
+    10.8571,
+    21.1429,
+    20.0,
+    14.8571,
+    26.2857
   ],
   "annotated": true,
   "chart_id": "syn_donut_0108",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 566,
-  "domain_index": 105
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1650,
+  "domain_index": 293,
+  "style": "neutral"
 }

@@ -1,0 +1,26 @@
+{
+  "chart_type": "bar",
+  "mechanic": "truncated_axis",
+  "title": "Q1 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "y_floor": 11700,
+  "categories": [
+    "Mid-Market",
+    "Startup",
+    "Consumer",
+    "Nonprofit",
+    "SMB"
+  ],
+  "values": [
+    13200,
+    13300,
+    12100,
+    11900,
+    12500
+  ],
+  "annotated": true,
+  "chart_id": "hard_trunc_0144",
+  "seed": 777,
+  "idx": 144,
+  "style": "minimal"
+}

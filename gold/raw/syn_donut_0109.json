@@ -1,35 +1,30 @@
 {
   "chart_type": "donut",
-  "title": "Traffic by Source",
+  "title": "Sales by Product Category",
   "categories": [
-    "Social",
-    "Referral",
-    "Direct",
-    "Email",
-    "Paid",
-    "Organic"
+    "Hardware",
+    "Software",
+    "Services",
+    "Consulting"
   ],
   "values": [
-    9000,
-    3300,
-    14400,
-    11500,
-    5700,
-    8800
+    2000,
+    4900,
+    3800,
+    5700
   ],
   "percents": [
-    17.0778,
-    6.2619,
-    27.3245,
-    21.8216,
-    10.8159,
-    16.6983
+    12.1951,
+    29.878,
+    23.1707,
+    34.7561
   ],
   "annotated": true,
   "chart_id": "syn_donut_0109",
   "domain": "share_circle",
-  "entity": "source",
-  "noun": "traffic",
-  "overall_index": 567,
-  "domain_index": 106
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 1651,
+  "domain_index": 294,
+  "style": "editorial"
 }

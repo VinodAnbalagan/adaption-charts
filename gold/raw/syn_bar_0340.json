@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "FY2023 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Automotive",
+    "Energy",
+    "Media",
+    "Tech",
+    "Manufacturing",
+    "Finance"
+  ],
+  "values": [
+    8200,
+    7100,
+    11000,
+    6600,
+    3900,
+    2400
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0340",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 256,
+  "domain_index": 164,
+  "style": "dark"
+}

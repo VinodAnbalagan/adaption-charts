@@ -21,5 +21,6 @@
   "annotated": true,
   "chart_id": "hard_trunc_0063",
   "seed": 777,
-  "idx": 63
+  "idx": 63,
+  "style": "spreadsheet"
 }

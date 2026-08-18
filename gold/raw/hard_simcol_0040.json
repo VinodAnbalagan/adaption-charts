@@ -37,5 +37,6 @@
   "annotated": true,
   "chart_id": "hard_simcol_0040",
   "seed": 777,
-  "idx": 40
+  "idx": 40,
+  "style": "neutral"
 }

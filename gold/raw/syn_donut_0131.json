@@ -1,29 +1,30 @@
 {
   "chart_type": "donut",
-  "title": "Marketing Spend by Channel",
+  "title": "Traffic by Source",
   "categories": [
-    "Display",
-    "Affiliate",
-    "Social",
-    "SEO"
+    "Paid",
+    "Email",
+    "Direct",
+    "Organic"
   ],
   "values": [
-    2100,
-    3300,
-    3600,
-    2700
+    3900,
+    9500,
+    11900,
+    15000
   ],
   "percents": [
-    17.9487,
-    28.2051,
-    30.7692,
-    23.0769
+    9.6774,
+    23.5732,
+    29.5285,
+    37.2208
   ],
   "annotated": true,
   "chart_id": "syn_donut_0131",
   "domain": "share_circle",
-  "entity": "channel",
-  "noun": "spend",
-  "overall_index": 589,
-  "domain_index": 128
+  "entity": "source",
+  "noun": "traffic",
+  "overall_index": 1673,
+  "domain_index": 316,
+  "style": "spreadsheet"
 }

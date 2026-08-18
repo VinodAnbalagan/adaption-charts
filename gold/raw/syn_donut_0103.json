@@ -1,32 +1,36 @@
 {
   "chart_type": "donut",
-  "title": "Revenue by Region",
+  "title": "Marketing Spend by Channel",
   "categories": [
-    "NA",
-    "MEA",
-    "LATAM",
-    "APAC",
-    "EMEA"
+    "Direct",
+    "Email",
+    "Social",
+    "SEO",
+    "Paid Search",
+    "Display"
   ],
   "values": [
-    6000,
-    3500,
-    7100,
-    7200,
-    4000
+    3100,
+    1400,
+    2700,
+    4600,
+    2300,
+    1200
   ],
   "percents": [
-    21.5827,
-    12.5899,
-    25.5396,
-    25.8993,
-    14.3885
+    20.2614,
+    9.1503,
+    17.6471,
+    30.0654,
+    15.0327,
+    7.8431
   ],
   "annotated": true,
   "chart_id": "syn_donut_0103",
   "domain": "share_circle",
-  "entity": "region",
-  "noun": "revenue",
-  "overall_index": 561,
-  "domain_index": 100
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1645,
+  "domain_index": 288,
+  "style": "dense"
 }

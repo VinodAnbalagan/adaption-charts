@@ -1,0 +1,28 @@
+{
+  "chart_type": "line",
+  "mechanic": "unlabeled",
+  "title": "Monthly Signups",
+  "y_label": "Signups",
+  "tick_step": 500,
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "values": [
+    3500,
+    4500,
+    5500,
+    1500,
+    6000,
+    3000
+  ],
+  "annotated": false,
+  "chart_id": "hard_unline_0254",
+  "seed": 777,
+  "idx": 254,
+  "style": "minimal"
+}

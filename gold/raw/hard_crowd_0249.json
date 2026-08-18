@@ -1,0 +1,49 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "series_labels": [
+    "Startup",
+    "Enterprise",
+    "Education",
+    "Mid-Market"
+  ],
+  "series_values": [
+    [
+      8300,
+      8600,
+      3800,
+      7000
+    ],
+    [
+      11100,
+      3300,
+      4800,
+      9900
+    ],
+    [
+      6900,
+      11200,
+      10800,
+      4000
+    ],
+    [
+      6400,
+      10800,
+      11000,
+      3700
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0249",
+  "seed": 777,
+  "idx": 249,
+  "style": "bold"
+}

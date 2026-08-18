@@ -1,0 +1,33 @@
+{
+  "chart_type": "donut",
+  "title": "FY25 Budget Allocation",
+  "categories": [
+    "Operations",
+    "IT",
+    "Marketing",
+    "Engineering",
+    "Support"
+  ],
+  "values": [
+    1600,
+    3000,
+    700,
+    2500,
+    1600
+  ],
+  "percents": [
+    17.0213,
+    31.9149,
+    7.4468,
+    26.5957,
+    17.0213
+  ],
+  "annotated": true,
+  "chart_id": "syn_donut_0217",
+  "domain": "share_circle",
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1759,
+  "domain_index": 402,
+  "style": "bold"
+}

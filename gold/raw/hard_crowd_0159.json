@@ -1,0 +1,59 @@
+{
+  "chart_type": "line",
+  "mechanic": "crowded_legend",
+  "title": "Revenue Trend by Segment",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "series_labels": [
+    "Education",
+    "Mid-Market",
+    "Nonprofit",
+    "Consumer"
+  ],
+  "series_values": [
+    [
+      8600,
+      10100,
+      8300,
+      11400,
+      9500,
+      11200
+    ],
+    [
+      7200,
+      4200,
+      3700,
+      4300,
+      11700,
+      9000
+    ],
+    [
+      2300,
+      5700,
+      3400,
+      4300,
+      2200,
+      7300
+    ],
+    [
+      8600,
+      7600,
+      2000,
+      2600,
+      3000,
+      8000
+    ]
+  ],
+  "annotated": false,
+  "chart_id": "hard_crowd_0159",
+  "seed": 777,
+  "idx": 159,
+  "style": "bold"
+}

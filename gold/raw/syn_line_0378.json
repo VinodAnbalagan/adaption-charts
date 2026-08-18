@@ -1,0 +1,29 @@
+{
+  "chart_type": "line",
+  "title": "Monthly Active Users \u2014 H2 2025",
+  "y_label": "Active users",
+  "x_labels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "values": [
+    21800,
+    19800,
+    17300,
+    13600,
+    9400,
+    5500
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_line_0378",
+  "domain": "users_line",
+  "entity": "month",
+  "overall_index": 654,
+  "domain_index": 70,
+  "style": "minimal"
+}

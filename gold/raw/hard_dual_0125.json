@@ -31,5 +31,6 @@
   "annotated": true,
   "chart_id": "hard_dual_0125",
   "seed": 777,
-  "idx": 125
+  "idx": 125,
+  "style": "dense"
 }

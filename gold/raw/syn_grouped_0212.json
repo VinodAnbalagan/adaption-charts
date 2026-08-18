@@ -32,6 +32,7 @@
   "domain": "revenue_grouped",
   "entity": "segment",
   "series_axis": "year",
-  "overall_index": 350,
-  "domain_index": 114
+  "overall_index": 794,
+  "domain_index": 114,
+  "style": "minimal"
 }

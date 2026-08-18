@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "H2 Revenue by Channel",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Wholesale",
+    "Marketplace",
+    "Retail",
+    "Reseller"
+  ],
+  "values": [
+    8000,
+    3000,
+    13600,
+    3100
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0395",
+  "domain": "revenue_bar",
+  "entity": "channel",
+  "overall_index": 311,
+  "domain_index": 201,
+  "style": "editorial"
+}

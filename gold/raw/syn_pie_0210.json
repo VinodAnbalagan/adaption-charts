@@ -1,0 +1,36 @@
+{
+  "chart_type": "pie",
+  "title": "Marketing Spend by Channel",
+  "categories": [
+    "Social",
+    "Direct",
+    "Email",
+    "Paid Search",
+    "Affiliate",
+    "Display"
+  ],
+  "values": [
+    1600,
+    4600,
+    4400,
+    2800,
+    4400,
+    1900
+  ],
+  "percents": [
+    8.1218,
+    23.3503,
+    22.335,
+    14.2132,
+    22.335,
+    9.6447
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0210",
+  "domain": "share_circle",
+  "entity": "channel",
+  "noun": "spend",
+  "overall_index": 1470,
+  "domain_index": 113,
+  "style": "neutral"
+}

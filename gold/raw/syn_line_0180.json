@@ -23,6 +23,7 @@
   "chart_id": "syn_line_0180",
   "domain": "revenue_line",
   "entity": "month",
-  "overall_index": 216,
-  "domain_index": 42
+  "overall_index": 456,
+  "domain_index": 42,
+  "style": "dark"
 }

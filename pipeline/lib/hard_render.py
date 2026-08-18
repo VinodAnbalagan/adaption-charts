@@ -60,6 +60,18 @@ _STYLE = {
 _BAR_COLOR = "#4C72B0"
 _LINE_COLOR = "#DD8452"
 _PALETTE = ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3"]
+
+# Figure geometry — patched by lib.styles.use_style() so a style can change
+# aspect ratio and resolution without touchingeach renderer signature.
+_SCALE = (1.0, 1.0)   # (width_mult, height_mult)
+_DPI = 110
+
+
+def _fs(w: float, h: float) -> tuple[float, float]:
+    """Apply the active style's figure-size multipliers."""
+    return (w * _SCALE[0], h * _SCALE[1])
+
+
 # Deliberately hard to tell apart
 _SIMILAR = ["#4C72B0", "#5A7EB8", "#6889C0", "#7694C8", "#84A0D0"]
 
@@ -67,7 +79,7 @@ _SIMILAR = ["#4C72B0", "#5A7EB8", "#6889C0", "#7694C8", "#84A0D0"]
 def _save(fig, out_path: Path) -> None:
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=110, bbox_inches="tight")
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -90,7 +102,7 @@ def render_truncated_bar(
     reads text is correct and a model that compares pixel heights is not.
     """
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         bars = ax.bar(list(categories), list(values), color=_BAR_COLOR, width=0.65)
         ax.set_title(title, pad=12)
         ax.set_ylabel(y_label)
@@ -129,7 +141,7 @@ def render_unlabeled_bar(
             f"value {v} is not a multiple of tick_step {tick_step}"
 
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         ax.bar(list(categories), list(values), color=_BAR_COLOR, width=0.65)
         ax.set_title(title, pad=12)
         ax.set_ylabel(y_label)
@@ -159,7 +171,7 @@ def render_unlabeled_line(
             f"value {v} is not a multiple of tick_step {tick_step}"
 
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         x = list(range(len(x_labels)))
         ax.plot(x, list(values), color=_LINE_COLOR, marker="o",
                 linewidth=2.2, markersize=6)
@@ -195,7 +207,7 @@ def render_near_tie_bar(
     Eyeballing the tallest bar is unreliable; the model must read labels.
     """
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         bars = ax.bar(list(categories), list(values), color=_BAR_COLOR, width=0.65)
         ax.set_title(title, pad=12)
         ax.set_ylabel(y_label)
@@ -232,7 +244,7 @@ def render_similar_colors_grouped(
     x = list(range(n_cats))
 
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(9, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(9, 5), dpi=_DPI)
         for i, (label, values) in enumerate(zip(series_labels, series_values)):
             offset = (i - (n_series - 1) / 2) * bar_width
             positions = [xi + offset for xi in x]
@@ -270,7 +282,7 @@ def render_many_categories_bar(
 ) -> dict:
     """12-16 categories with rotated labels and small annotation font."""
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(11, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(11, 5), dpi=_DPI)
         bars = ax.bar(list(categories), list(values), color=_BAR_COLOR, width=0.7)
         ax.set_title(title, pad=12)
         ax.set_ylabel(y_label)
@@ -301,7 +313,7 @@ def render_crowded_legend_line(
 ) -> dict:
     """Multi-line chart with the legend sitting over the plot area."""
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         x = list(range(len(x_labels)))
         for i, (label, values) in enumerate(zip(series_labels, series_values)):
             ax.plot(x, list(values), label=label,
@@ -335,7 +347,7 @@ def render_log_scale_bar(
 ) -> dict:
     """Log-scale y-axis: equal pixel distances are NOT equal value deltas."""
     with plt.rc_context(_STYLE):
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=110)
+        fig, ax = plt.subplots(figsize=_fs(8, 5), dpi=_DPI)
         bars = ax.bar(list(categories), list(values), color=_BAR_COLOR, width=0.65)
         ax.set_yscale("log")
         ax.set_title(title, pad=12)
@@ -370,7 +382,7 @@ def render_dual_axis(
     wrong axis produces a plausible-but-wrong number.
     """
     with plt.rc_context(_STYLE):
-        fig, ax1 = plt.subplots(figsize=(9, 5), dpi=110)
+        fig, ax1 = plt.subplots(figsize=_fs(9, 5), dpi=_DPI)
         x = list(range(len(x_labels)))
         bars = ax1.bar(x, list(bar_values), color=_BAR_COLOR, width=0.6,
                        label=bar_label)

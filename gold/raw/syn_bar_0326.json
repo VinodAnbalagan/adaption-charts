@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "Weekly Units Sold by Product",
+  "y_label": "Units sold",
+  "categories": [
+    "Widget E",
+    "Widget B",
+    "Widget A",
+    "Gizmo Y",
+    "Gizmo X",
+    "Widget C"
+  ],
+  "values": [
+    1800,
+    800,
+    2300,
+    500,
+    1700,
+    8000
+  ],
+  "annotated": true,
+  "value_fmt": "{:.0f}",
+  "chart_id": "syn_bar_0326",
+  "domain": "units_sold_bar",
+  "entity": "product",
+  "overall_index": 242,
+  "domain_index": 76,
+  "style": "salmon"
+}

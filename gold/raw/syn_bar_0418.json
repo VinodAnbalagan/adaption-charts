@@ -1,0 +1,25 @@
+{
+  "chart_type": "bar",
+  "title": "FY2024 Revenue by Vertical",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Healthcare",
+    "Manufacturing",
+    "Automotive",
+    "Energy"
+  ],
+  "values": [
+    11900,
+    9200,
+    6800,
+    6000
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0418",
+  "domain": "revenue_bar",
+  "entity": "vertical",
+  "overall_index": 334,
+  "domain_index": 216,
+  "style": "minimal"
+}

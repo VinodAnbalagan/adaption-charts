@@ -24,6 +24,7 @@
   "domain": "share_circle",
   "entity": "channel",
   "noun": "spend",
-  "overall_index": 499,
-  "domain_index": 38
+  "overall_index": 1395,
+  "domain_index": 38,
+  "style": "dense"
 }

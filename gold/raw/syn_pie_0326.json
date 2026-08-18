@@ -1,0 +1,30 @@
+{
+  "chart_type": "pie",
+  "title": "Sales Mix",
+  "categories": [
+    "Subscriptions",
+    "Services",
+    "Hardware",
+    "Software"
+  ],
+  "values": [
+    3500,
+    3900,
+    1900,
+    3600
+  ],
+  "percents": [
+    27.1318,
+    30.2326,
+    14.7287,
+    27.907
+  ],
+  "annotated": true,
+  "chart_id": "syn_pie_0326",
+  "domain": "share_circle",
+  "entity": "category",
+  "noun": "sales",
+  "overall_index": 1586,
+  "domain_index": 229,
+  "style": "dark"
+}

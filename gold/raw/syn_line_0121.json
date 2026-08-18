@@ -19,6 +19,7 @@
   "chart_id": "syn_line_0121",
   "domain": "revenue_line",
   "entity": "quarter",
-  "overall_index": 157,
-  "domain_index": 13
+  "overall_index": 397,
+  "domain_index": 13,
+  "style": "academic"
 }

@@ -25,5 +25,6 @@
   "annotated": true,
   "chart_id": "hard_dual_0080",
   "seed": 777,
-  "idx": 80
+  "idx": 80,
+  "style": "neutral"
 }

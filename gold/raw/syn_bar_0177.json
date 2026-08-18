@@ -22,5 +22,6 @@
   "domain": "units_sold_bar",
   "entity": "SKU",
   "overall_index": 93,
-  "domain_index": 27
+  "domain_index": 27,
+  "style": "spreadsheet"
 }

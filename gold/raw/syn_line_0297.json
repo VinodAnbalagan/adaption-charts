@@ -1,0 +1,25 @@
+{
+  "chart_type": "line",
+  "title": "Quarterly Revenue \u2014 FY25",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "values": [
+    34600,
+    36500,
+    35600,
+    35200
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_line_0297",
+  "domain": "revenue_line",
+  "entity": "quarter",
+  "overall_index": 573,
+  "domain_index": 101,
+  "style": "spreadsheet"
+}

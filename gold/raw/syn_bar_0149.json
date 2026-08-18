@@ -24,5 +24,6 @@
   "domain": "revenue_bar",
   "entity": "channel",
   "overall_index": 65,
-  "domain_index": 37
+  "domain_index": 37,
+  "style": "dense"
 }

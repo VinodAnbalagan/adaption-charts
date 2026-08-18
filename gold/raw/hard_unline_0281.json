@@ -1,0 +1,28 @@
+{
+  "chart_type": "line",
+  "mechanic": "unlabeled",
+  "title": "Monthly Signups",
+  "y_label": "Signups",
+  "tick_step": 200,
+  "x_labels": [
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6"
+  ],
+  "values": [
+    1000,
+    2400,
+    1600,
+    1400,
+    800,
+    2000
+  ],
+  "annotated": false,
+  "chart_id": "hard_unline_0281",
+  "seed": 777,
+  "idx": 281,
+  "style": "editorial"
+}

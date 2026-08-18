@@ -24,5 +24,6 @@
   "domain": "units_sold_bar",
   "entity": "product",
   "overall_index": 122,
-  "domain_index": 36
+  "domain_index": 36,
+  "style": "salmon"
 }

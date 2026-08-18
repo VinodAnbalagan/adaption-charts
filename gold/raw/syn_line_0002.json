@@ -24,5 +24,6 @@
   "domain": "revenue_line",
   "entity": "month",
   "overall_index": 7,
-  "domain_index": 1
+  "domain_index": 1,
+  "style": "academic"
 }

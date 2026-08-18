@@ -22,5 +22,6 @@
   "domain": "revenue_bar",
   "entity": "vertical",
   "overall_index": 52,
-  "domain_index": 28
+  "domain_index": 28,
+  "style": "salmon"
 }

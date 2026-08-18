@@ -1,0 +1,29 @@
+{
+  "chart_type": "bar",
+  "title": "H2 Revenue by Segment",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Government",
+    "Startup",
+    "Enterprise",
+    "SMB",
+    "Nonprofit",
+    "Mid-Market"
+  ],
+  "values": [
+    2100,
+    3100,
+    8900,
+    3000,
+    2700,
+    7000
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_bar_0264",
+  "domain": "revenue_bar",
+  "entity": "segment",
+  "overall_index": 180,
+  "domain_index": 114,
+  "style": "neutral"
+}

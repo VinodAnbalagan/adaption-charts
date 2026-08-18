@@ -26,7 +26,7 @@ public dashboards and reports.
 ## At a glance
 
 <!-- AUTOGEN:counts -->
-- **1415 rows total** — 1317 synthetic + 98 hardset
+- **3803 rows total** — 3705 synthetic + 98 hardset
 <!-- /AUTOGEN:counts -->
 - **7 chart types** — bar, line, grouped_bar, stacked_bar, pie, donut, mixed
 - **10 task types** — every allowed task_type populated at target
@@ -58,43 +58,43 @@ Each row:
 
 | source | rows | share |
 |---|---:|---:|
-| synthetic | 1317 | 93.1% |
-| hardset | 98 | 6.9% |
+| synthetic | 3705 | 97.4% |
+| hardset | 98 | 2.6% |
 
 **By chart_type**
 
 | chart_type | rows |
 |---|---:|
-| bar | 417 |
-| line | 288 |
-| grouped_bar | 201 |
-| stacked_bar | 184 |
-| pie | 155 |
-| mixed | 104 |
-| donut | 66 |
+| bar | 1088 |
+| line | 778 |
+| grouped_bar | 610 |
+| stacked_bar | 503 |
+| pie | 474 |
+| donut | 192 |
+| mixed | 158 |
 
 **By task_type**
 
 | task_type | rows |
 |---|---:|
-| max_min | 301 |
-| lookup_value | 273 |
-| delta_absolute | 156 |
-| rank_order | 141 |
-| compare_categories | 131 |
-| trend_direction | 124 |
-| multi_series_compare | 111 |
-| aggregation_sum_avg | 89 |
-| percent_change_ratio | 56 |
-| hard_multi_step | 33 |
+| lookup_value | 723 |
+| max_min | 702 |
+| delta_absolute | 433 |
+| rank_order | 399 |
+| compare_categories | 355 |
+| multi_series_compare | 333 |
+| trend_direction | 326 |
+| aggregation_sum_avg | 267 |
+| percent_change_ratio | 168 |
+| hard_multi_step | 97 |
 
 **By difficulty**
 
 | difficulty | rows |
 |---|---:|
-| medium | 726 |
-| hard | 358 |
-| easy | 331 |
+| medium | 1986 |
+| easy | 1011 |
+| hard | 806 |
 <!-- /AUTOGEN:composition -->
 
 ## Perceptual difficulty

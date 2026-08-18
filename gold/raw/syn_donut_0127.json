@@ -1,32 +1,33 @@
 {
   "chart_type": "donut",
-  "title": "Sales Mix",
+  "title": "FY25 Budget Allocation",
   "categories": [
-    "Subscriptions",
-    "Consulting",
-    "Services",
-    "Software",
-    "Hardware"
+    "Operations",
+    "Marketing",
+    "Support",
+    "IT",
+    "HR"
   ],
   "values": [
-    4100,
-    4600,
-    3700,
+    2000,
+    1100,
     3300,
-    4500
+    1600,
+    3200
   ],
   "percents": [
-    20.297,
-    22.7723,
-    18.3168,
-    16.3366,
-    22.2772
+    17.8571,
+    9.8214,
+    29.4643,
+    14.2857,
+    28.5714
   ],
   "annotated": true,
   "chart_id": "syn_donut_0127",
   "domain": "share_circle",
-  "entity": "category",
-  "noun": "sales",
-  "overall_index": 585,
-  "domain_index": 124
+  "entity": "department",
+  "noun": "budget",
+  "overall_index": 1669,
+  "domain_index": 312,
+  "style": "bold"
 }

@@ -1,0 +1,41 @@
+{
+  "chart_type": "grouped_bar",
+  "title": "Revenue by Vertical: Q3 vs Q4",
+  "y_label": "Revenue ($)",
+  "categories": [
+    "Healthcare",
+    "Tech",
+    "Finance",
+    "Retail",
+    "Media"
+  ],
+  "series_labels": [
+    "Q3",
+    "Q4"
+  ],
+  "series_values": [
+    [
+      5800,
+      4200,
+      3000,
+      2800,
+      11300
+    ],
+    [
+      6100,
+      9900,
+      11300,
+      8900,
+      12000
+    ]
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_grouped_0458",
+  "domain": "revenue_grouped",
+  "entity": "vertical",
+  "series_axis": "quarter",
+  "overall_index": 1040,
+  "domain_index": 360,
+  "style": "neutral"
+}

@@ -1,0 +1,29 @@
+{
+  "chart_type": "line",
+  "title": "Revenue by Month \u2014 H1 2024",
+  "y_label": "Revenue ($)",
+  "x_labels": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ],
+  "values": [
+    8800,
+    9100,
+    9600,
+    8800,
+    8000,
+    7000
+  ],
+  "annotated": true,
+  "value_fmt": "${:.0f}",
+  "chart_id": "syn_line_0404",
+  "domain": "revenue_line",
+  "entity": "month",
+  "overall_index": 680,
+  "domain_index": 154,
+  "style": "neutral"
+}
